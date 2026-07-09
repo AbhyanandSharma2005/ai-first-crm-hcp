@@ -1,186 +1,214 @@
-import {
-  TextField,
-  Button,
-  Typography,
-  Stack,
-  Paper
-} from "@mui/material";
+import React, { useState } from "react";
+import API from "../api/api";
 
 
-import SendIcon from "@mui/icons-material/Send";
+function ChatBox() {
+
+    const [message, setMessage] = useState("");
+
+    const [chatMessages, setChatMessages] = useState([]);
 
 
-import {
-useState
-} from "react";
+    const sendMessage = async () => {
+
+        if (!message.trim()) {
+            return;
+        }
 
 
-
-function ChatBox(){
-
-
-const [message,setMessage]=useState("");
-
-const [chat,setChat]=useState([]);
+        const userMessage = {
+            sender: "You",
+            text: message
+        };
 
 
-
-const sendMessage=()=>{
-
-
-if(!message.trim())
-return;
+        setChatMessages((previous) => [
+            ...previous,
+            userMessage
+        ]);
 
 
 
-setChat([
+        try {
 
-...chat,
+            const response = await API.post(
+                "/chat/",
+                {
+                    message: message
+                }
+            );
 
-{
-sender:"user",
-text:message
+
+            const aiMessage = {
+
+                sender: "AI Assistant",
+
+                text: response.data.response
+
+            };
+
+
+            setChatMessages((previous) => [
+
+                ...previous,
+
+                aiMessage
+
+            ]);
+
+
+        } 
+        
+        catch (error) {
+
+
+            console.error(
+                "Chat API Error:",
+                error
+            );
+
+
+            setChatMessages((previous) => [
+
+                ...previous,
+
+                {
+
+                    sender: "AI Assistant",
+
+                    text:
+                    "Unable to connect with AI service."
+
+                }
+
+            ]);
+
+        }
+
+
+        setMessage("");
+
+    };
+
+
+
+    return (
+
+        <div
+        style={{
+            border:"1px solid #ccc",
+            padding:"20px",
+            borderRadius:"10px"
+        }}
+        >
+
+
+            <h3>
+                AI CRM Assistant
+            </h3>
+
+
+
+            <div
+            style={{
+                height:"250px",
+                overflowY:"auto",
+                border:"1px solid #ddd",
+                padding:"10px",
+                marginBottom:"15px"
+            }}
+            >
+
+
+                {
+                    chatMessages.map(
+                        (msg,index)=>(
+
+                            <div key={index}>
+
+                                <strong>
+                                    {msg.sender}
+                                </strong>
+
+                                :
+
+                                <span>
+                                    {" "}
+                                    {msg.text}
+                                </span>
+
+                            </div>
+
+                        )
+                    )
+                }
+
+
+            </div>
+
+
+
+            <input
+
+            type="text"
+
+            placeholder=
+            "Ask AI CRM Assistant..."
+
+            value={message}
+
+
+            onChange={
+                (e)=>
+                setMessage(
+                    e.target.value
+                )
+            }
+
+
+            onKeyDown={
+                (e)=>{
+
+                    if(e.key==="Enter")
+                    {
+                        sendMessage();
+                    }
+
+                }
+            }
+
+
+            style={{
+                width:"80%",
+                padding:"10px"
+            }}
+
+            />
+
+
+
+            <button
+
+            onClick={sendMessage}
+
+            style={{
+                padding:"10px",
+                marginLeft:"10px"
+            }}
+
+            >
+
+                Send
+
+            </button>
+
+
+
+        </div>
+
+    );
+
 }
-
-]);
-
-
-
-setMessage("");
-
-};
-
-
-
-return (
-
-<div>
-
-
-<Typography
-
-variant="h6"
-
-fontWeight="600"
-
-gutterBottom
-
->
-
-AI Interaction Assistant
-
-</Typography>
-
-
-
-
-<Paper
-
-sx={{
-
-height:250,
-
-padding:2,
-
-overflow:"auto",
-
-background:"#fafafa"
-
-}}
-
->
-
-
-
-{
-chat.map((item,index)=>(
-
-
-<Typography
-
-key={index}
-
-sx={{
-
-mb:1
-
-}}
-
->
-
-
-<b>
-{item.sender}:
-</b>
-
-{" "}
-
-{item.text}
-
-
-</Typography>
-
-
-))
-
-}
-
-
-
-</Paper>
-
-
-
-
-<Stack
-direction="row"
-spacing={1}
-sx={{
-mt:2
-}}
->
-
-
-<TextField
-
-fullWidth
-
-placeholder="Describe your HCP meeting..."
-
-value={message}
-
-onChange={(e)=>setMessage(e.target.value)}
-
-/>
-
-
-
-<Button
-
-variant="contained"
-
-onClick={sendMessage}
-
-endIcon={<SendIcon/>}
-
->
-
-Send
-
-</Button>
-
-
-</Stack>
-
-
-</div>
-
-
-);
-
-
-}
-
 
 
 export default ChatBox;

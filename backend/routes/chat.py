@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from agents.graph import crm_agent
+
 
 router = APIRouter(
     prefix="/chat",
@@ -8,16 +10,54 @@ router = APIRouter(
 )
 
 
+
 class ChatRequest(BaseModel):
+
     message: str
 
 
-@router.post("/")
-def chat(request: ChatRequest):
-    """
-    Temporary AI chat endpoint.
-    Later this will call LangGraph + Groq.
-    """
+
+class ChatResponse(BaseModel):
+
+    response: str
+
+
+
+@router.post(
+    "/",
+    response_model=ChatResponse
+)
+def chat_with_agent(
+    request: ChatRequest
+):
+
+    result = crm_agent.invoke(
+
+        {
+
+            "message":
+            request.message,
+
+
+            "intent":
+            None,
+
+
+            "tool_result":
+            None,
+
+
+            "response":
+            None
+
+        }
+
+    )
+
+
     return {
-        "reply": f"AI received: {request.message}"
+
+        "response":
+        result["response"]
+
     }

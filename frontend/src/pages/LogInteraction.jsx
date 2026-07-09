@@ -1,99 +1,95 @@
-import {
-  Grid,
-  Paper,
-  Typography
-} from "@mui/material";
+import React from "react";
+
 
 import InteractionForm from "../components/InteractionForm";
+
 import ChatBox from "../components/ChatBox";
 
-
-function LogInteraction() {
-
-
-  return (
-
-    <div>
-
-      <Typography
-        variant="h4"
-        fontWeight="600"
-        gutterBottom
-      >
-        Log HCP Interaction
-      </Typography>
-
-
-      <Typography
-        color="text.secondary"
-        sx={{ mb: 3 }}
-      >
-        Record Healthcare Professional interactions using
-        a structured form or AI-powered conversation.
-      </Typography>
+import InteractionHistory from "../components/InteractionHistory";
 
 
 
-      <Grid
-        container
-        spacing={3}
-      >
+function LogInteraction(){
 
 
-        <Grid
-          item
-          xs={12}
-          md={6}
-        >
+    return (
 
-          <Paper
-            elevation={3}
-            sx={{
-              padding:3,
-              borderRadius:3
-            }}
-          >
-
-            <InteractionForm />
-
-          </Paper>
-
-
-        </Grid>
-
-
-
-
-        <Grid
-          item
-          xs={12}
-          md={6}
+        <div
+        style={{
+            padding:"20px"
+        }}
         >
 
 
-          <Paper
-            elevation={3}
-            sx={{
-              padding:3,
-              borderRadius:3
-            }}
-          >
-
-            <ChatBox />
-
-          </Paper>
+            <h1>
+                Log HCP Interaction
+            </h1>
 
 
-        </Grid>
+
+            <p>
+                Record healthcare professional interactions
+                using structured form or AI assistant.
+            </p>
 
 
-      </Grid>
+
+            <hr />
 
 
-    </div>
 
-  );
+            <section>
 
+                <h2>
+                    Structured Interaction Form
+                </h2>
+
+
+                <InteractionForm />
+
+            </section>
+
+
+
+            <hr />
+
+
+
+            <section>
+
+                <h2>
+                    AI Conversational Assistant
+                </h2>
+
+
+                <ChatBox />
+
+
+            </section>
+
+
+
+            <hr />
+
+
+
+            <section>
+
+                <h2>
+                    Interaction History
+                </h2>
+
+
+                <InteractionHistory />
+
+
+            </section>
+
+
+
+        </div>
+
+    );
 
 }
 

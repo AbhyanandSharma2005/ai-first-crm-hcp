@@ -2,7 +2,6 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-
 from routes import interaction, chat
 
 
@@ -15,19 +14,19 @@ app = FastAPI(
 
 app.add_middleware(
 
-CORSMiddleware,
+    CORSMiddleware,
 
-allow_origins=[
-    "*"
-],
+    allow_origins=[
+        "*"
+    ],
 
-allow_methods=[
-    "*"
-],
+    allow_methods=[
+        "*"
+    ],
 
-allow_headers=[
-    "*"
-]
+    allow_headers=[
+        "*"
+    ]
 
 )
 
@@ -49,7 +48,7 @@ def home():
 
     return {
 
-    "message":
-    "AI CRM Backend Running"
+        "message":
+        "AI CRM Backend Running"
 
     }
