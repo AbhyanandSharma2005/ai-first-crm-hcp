@@ -1,14 +1,67 @@
+from database import SessionLocal
+
+from models import Interaction
+
+
+
 def edit_interaction_tool(state):
 
-    return {
 
-        "tool_result":
-        {
-            "tool":
-            "Edit Interaction",
+    db = SessionLocal()
 
-            "message":
-            "Interaction updated successfully"
+
+    try:
+
+        interaction = (
+            db.query(Interaction)
+            .first()
+        )
+
+
+        if not interaction:
+
+            return {
+
+                "tool_result":
+
+                {
+                    "status":
+                    "failed",
+
+                    "message":
+                    "No interaction found"
+                }
+
+            }
+
+
+
+        interaction.summary = (
+            state["message"]
+        )
+
+
+        db.commit()
+
+
+
+        return {
+
+            "tool_result":
+
+            {
+
+                "status":
+                "success",
+
+                "message":
+                "Interaction updated"
+
+            }
+
         }
 
-    }
+
+    finally:
+
+        db.close()
