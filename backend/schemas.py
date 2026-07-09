@@ -36,6 +36,34 @@ class InteractionBase(BaseModel):
     product: str
     follow_up: date
 
+class InteractionCreate(BaseModel):
+
+    hcp_name: str
+
+    summary: str
+
+    product: str
+
+    follow_up: date
+
+
+
+class InteractionResponse(BaseModel):
+
+    id: int
+
+    hcp_name: str
+
+    summary: str
+
+    product: str
+
+    follow_up: date
+
+
+    class Config:
+
+        from_attributes = True
 
 class InteractionCreate(InteractionBase):
     """
