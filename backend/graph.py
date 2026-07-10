@@ -10,7 +10,7 @@ Intent Classifier
    ↓
 Intent Router
    ↓
-Log Interaction Tool (Placeholder)
+Log Interaction Tool
    ↓
 END
 """
@@ -20,6 +20,7 @@ from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 
 from services.intent_classifier import intent_classifier
+from tools.log_interaction_tool import log_interaction_tool
 
 
 # ============================================================
@@ -100,25 +101,72 @@ def intent_classifier_node(state: AgentState) -> AgentState:
 
 
 # ============================================================
-# Placeholder Tool
+# Log Interaction Tool Node
 # ============================================================
 
 def log_interaction_node(state: AgentState) -> AgentState:
     """
-    Temporary placeholder.
-    Later this will call the real Interaction Service.
+    Executes the Log Interaction tool and updates
+    the graph state with the returned values.
     """
 
     print("\n==============================")
     print("LOG INTERACTION TOOL")
     print("==============================")
 
-    state["tool_output"] = (
-        f"[Placeholder] Interaction logged for message: "
-        f"{state['user_message']}"
-    )
+    try:
 
-    state["final_response"] = state["tool_output"]
+        result = log_interaction_tool(state)
+
+        tool_result = result.get("tool_result", {})
+
+        if tool_result.get("status") == "success":
+
+            state["interaction_id"] = tool_result.get(
+                "interaction_id"
+            )
+
+            state["summary"] = tool_result.get(
+                "summary"
+            )
+
+            state["tool_output"] = (
+                f"Interaction logged successfully "
+                f"(ID: {state['interaction_id']})"
+            )
+
+            state["final_response"] = (
+                "Interaction logged successfully.\n\n"
+                f"Summary:\n{state['summary']}"
+            )
+
+            state["error"] = None
+
+        else:
+
+            error_message = tool_result.get(
+                "message",
+                "Unknown error occurred."
+            )
+
+            state["error"] = error_message
+
+            state["tool_output"] = ""
+
+            state["final_response"] = (
+                "Sorry, I couldn't log the interaction."
+            )
+
+    except Exception as e:
+
+        state["error"] = str(e)
+
+        state["tool_output"] = ""
+
+        state["final_response"] = (
+            "An unexpected error occurred while "
+            "logging the interaction."
+        )
 
     return state
 
@@ -134,6 +182,7 @@ def route_intent(state: AgentState):
     print("\n==============================")
     print("ROUTER")
     print("==============================")
+
     print("Routing Intent:", intent)
 
     if intent == "LOG_INTERACTION":
@@ -173,7 +222,9 @@ graph_builder.add_node(
 # Entry Point
 # ============================================================
 
-graph_builder.set_entry_point("start")
+graph_builder.set_entry_point(
+    "start"
+)
 
 
 # ============================================================
@@ -243,7 +294,9 @@ if __name__ == "__main__":
 
     }
 
-    result = graph.invoke(sample_state)
+    result = graph.invoke(
+        sample_state
+    )
 
     print("\n==============================")
     print("GRAPH RESULT")
