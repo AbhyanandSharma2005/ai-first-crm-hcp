@@ -7,6 +7,9 @@ from config import (
 
 
 class GroqService:
+    """
+    Wrapper around the Groq API.
+    """
 
     def __init__(self):
 
@@ -20,6 +23,10 @@ class GroqService:
         )
 
         self.model = GROQ_MODEL
+
+    # ---------------------------------------------------------
+    # Generic Chat Method
+    # ---------------------------------------------------------
 
     def chat(
         self,
@@ -53,14 +60,53 @@ class GroqService:
 
         )
 
-        return completion.choices[0].message.content
+        return completion.choices[0].message.content.strip()
+
+    # ---------------------------------------------------------
+    # Compatibility Method
+    # ---------------------------------------------------------
+
+    def generate_response(
+        self,
+        prompt: str,
+        temperature: float = 0.3,
+        max_tokens: int = 1024
+    ) -> str:
+        """
+        Compatibility wrapper for older code.
+
+        Uses a default CRM system prompt internally.
+        """
+
+        system_prompt = (
+            "You are an AI assistant for a Healthcare CRM. "
+            "Always follow the user's instructions carefully."
+        )
+
+        return self.chat(
+
+            system_prompt=system_prompt,
+
+            user_prompt=prompt,
+
+            temperature=temperature,
+
+            max_tokens=max_tokens
+
+        )
+
+    # ---------------------------------------------------------
 
     def health_check(self):
 
         return {
+
             "provider": "Groq",
+
             "model": self.model,
+
             "status": "Connected"
+
         }
 
 
