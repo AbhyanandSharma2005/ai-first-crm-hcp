@@ -1,220 +1,295 @@
-import {
-  TextField,
-  Button,
-  Typography,
-  Stack
-} from "@mui/material";
+import React, { useState } from "react";
 
-
-import SaveIcon from "@mui/icons-material/Save";
-
-
-import { useState } from "react";
+import API from "../api/api";
 
 
 
 function InteractionForm(){
 
 
-const [formData,setFormData] = useState({
+    const [formData,setFormData] = useState({
 
-hcpName:"",
-hospital:"",
-specialization:"",
-discussion:"",
-product:"",
-followUp:""
+        hcp_name:"",
 
-});
+        summary:"",
 
+        product:"",
 
+        follow_up:""
 
-const handleChange=(e)=>{
+    });
 
-setFormData({
 
-...formData,
 
-[e.target.name]:e.target.value
+    const [message,setMessage] = useState("");
 
-});
 
-};
 
+    const handleChange = (e)=>{
 
 
-const handleSubmit=(e)=>{
+        setFormData({
 
-e.preventDefault();
+            ...formData,
 
-console.log(formData);
+            [e.target.name]:
+            e.target.value
 
-alert("Interaction saved successfully");
+        });
 
 
-};
+    };
 
 
 
-return (
+    const submitInteraction = async(e)=>{
 
 
-<form onSubmit={handleSubmit}>
+        e.preventDefault();
 
 
-<Typography
-variant="h6"
-fontWeight="600"
-gutterBottom
->
-Structured Interaction Form
-</Typography>
 
+        try{
 
 
-<Stack spacing={2}>
+            const response = await API.post(
 
+                "/interaction/",
 
-<TextField
+                formData
 
-label="HCP Name"
+            );
 
-name="hcpName"
 
-value={formData.hcpName}
 
-onChange={handleChange}
+            console.log(response.data);
 
-fullWidth
 
-/>
 
+            setMessage(
+                "Interaction saved successfully"
+            );
 
 
 
-<TextField
+            setFormData({
 
-label="Hospital / Clinic"
+                hcp_name:"",
 
-name="hospital"
+                summary:"",
 
-value={formData.hospital}
+                product:"",
 
-onChange={handleChange}
+                follow_up:""
 
-fullWidth
+            });
 
-/>
 
 
+        }
 
 
-<TextField
+        catch(error){
 
-label="Specialization"
 
-name="specialization"
+            console.error(
+                error
+            );
 
-value={formData.specialization}
 
-onChange={handleChange}
+            setMessage(
+                "Failed to save interaction"
+            );
 
-fullWidth
+        }
 
-/>
 
+    };
 
 
 
-<TextField
+    return (
 
-label="Products Discussed"
+        <div>
 
-name="product"
 
-value={formData.product}
+            <form
+            onSubmit={submitInteraction}
+            >
 
-onChange={handleChange}
 
-fullWidth
+                <div>
 
-/>
+                <label>
+                    HCP Name
+                </label>
 
+                <br/>
 
 
+                <input
 
-<TextField
+                name="hcp_name"
 
-label="Discussion Summary"
+                value={
+                    formData.hcp_name
+                }
 
-name="discussion"
+                onChange={
+                    handleChange
+                }
 
-value={formData.discussion}
+                placeholder="Doctor Name"
 
-onChange={handleChange}
+                />
 
-multiline
+                </div>
 
-rows={4}
 
-fullWidth
 
-/>
+                <br/>
 
 
 
+                <div>
 
-<TextField
 
-label="Follow-up Date"
+                <label>
+                    Interaction Summary
+                </label>
 
-name="followUp"
 
-type="date"
+                <br/>
 
-InputLabelProps={{
-shrink:true
-}}
 
-value={formData.followUp}
+                <textarea
 
-onChange={handleChange}
+                name="summary"
 
-fullWidth
+                value={
+                    formData.summary
+                }
 
-/>
+                onChange={
+                    handleChange
+                }
 
 
+                placeholder=
+                "Describe interaction"
 
+                />
 
 
-<Button
+                </div>
 
-type="submit"
 
-variant="contained"
 
-startIcon={<SaveIcon/>}
+                <br/>
 
->
 
-Save Interaction
 
-</Button>
+                <div>
 
 
+                <label>
+                    Product Discussed
+                </label>
 
-</Stack>
 
+                <br/>
 
-</form>
 
+                <input
 
-);
+                name="product"
+
+                value={
+                    formData.product
+                }
+
+                onChange={
+                    handleChange
+                }
+
+
+                placeholder="Product name"
+
+                />
+
+
+                </div>
+
+
+
+                <br/>
+
+
+
+                <div>
+
+
+                <label>
+                    Follow Up Date
+                </label>
+
+
+                <br/>
+
+
+                <input
+
+                type="date"
+
+                name="follow_up"
+
+
+                value={
+                    formData.follow_up
+                }
+
+
+                onChange={
+                    handleChange
+                }
+
+                />
+
+
+                </div>
+
+
+
+                <br/>
+
+
+                <button
+                type="submit"
+                >
+
+                    Save Interaction
+
+                </button>
+
+
+
+            </form>
+
+
+
+            <p>
+
+            {message}
+
+            </p>
+
+
+        </div>
+
+    );
 
 
 }
-
 
 
 export default InteractionForm;
