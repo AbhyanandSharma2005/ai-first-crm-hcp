@@ -3,19 +3,23 @@ graph.py
 
 LangGraph Agent for AI-First CRM HCP Module
 
-This graph will manage:
-1. Intent Classification
-2. Tool Selection
-3. Tool Execution
-4. Response Generation
+Flow:
+Start
+   ↓
+Intent Classifier
+   ↓
+Intent Router
+   ↓
+Log Interaction Tool (Placeholder)
+   ↓
+END
 """
 
 from typing import TypedDict, Optional
+
 from langgraph.graph import StateGraph, END
+
 from services.intent_classifier import intent_classifier
-
-
-
 
 
 # ============================================================
@@ -27,19 +31,13 @@ class AgentState(TypedDict):
     Shared state used by every LangGraph node.
     """
 
-    # Original user message
     user_message: str
 
-    # Intent detected by the classifier
     intent: str
 
-    # Output produced by a tool
     tool_output: str
 
-    # Final response returned to frontend
     final_response: str
-
-    # -------- Future fields --------
 
     interaction_id: Optional[int]
 
@@ -57,14 +55,6 @@ class AgentState(TypedDict):
 # ============================================================
 # Start Node
 # ============================================================
-def intent_classifier_node(state: AgentState) -> AgentState:
-    message = state["user_message"]
-
-    detected_intent = intent_classifier.classify(message)
-
-    state["intent"] = detected_intent
-
-    return state
 
 def start_node(state: AgentState) -> AgentState:
     """
@@ -72,6 +62,7 @@ def start_node(state: AgentState) -> AgentState:
     """
 
     try:
+
         print("\n==============================")
         print("START NODE")
         print("==============================")
@@ -86,6 +77,69 @@ def start_node(state: AgentState) -> AgentState:
         state["error"] = str(e)
         return state
 
+
+# ============================================================
+# Intent Classifier Node
+# ============================================================
+
+def intent_classifier_node(state: AgentState) -> AgentState:
+
+    print("\n==============================")
+    print("INTENT CLASSIFIER")
+    print("==============================")
+
+    message = state["user_message"]
+
+    detected_intent = intent_classifier.classify(message)
+
+    state["intent"] = detected_intent
+
+    print("Detected Intent:", detected_intent)
+
+    return state
+
+
+# ============================================================
+# Placeholder Tool
+# ============================================================
+
+def log_interaction_node(state: AgentState) -> AgentState:
+    """
+    Temporary placeholder.
+    Later this will call the real Interaction Service.
+    """
+
+    print("\n==============================")
+    print("LOG INTERACTION TOOL")
+    print("==============================")
+
+    state["tool_output"] = (
+        f"[Placeholder] Interaction logged for message: "
+        f"{state['user_message']}"
+    )
+
+    state["final_response"] = state["tool_output"]
+
+    return state
+
+
+# ============================================================
+# Intent Router
+# ============================================================
+
+def route_intent(state: AgentState):
+
+    intent = state["intent"]
+
+    print("\n==============================")
+    print("ROUTER")
+    print("==============================")
+    print("Routing Intent:", intent)
+
+    if intent == "log_interaction":
+        return "log_interaction"
+
+    return END
 
 
 # ============================================================
@@ -109,14 +163,17 @@ graph_builder.add_node(
     intent_classifier_node
 )
 
+graph_builder.add_node(
+    "log_interaction",
+    log_interaction_node
+)
+
 
 # ============================================================
 # Entry Point
 # ============================================================
 
-graph_builder.set_entry_point(
-    "start"
-)
+graph_builder.set_entry_point("start")
 
 
 # ============================================================
@@ -128,8 +185,13 @@ graph_builder.add_edge(
     "intent_classifier"
 )
 
-graph_builder.add_edge(
+graph_builder.add_conditional_edges(
     "intent_classifier",
+    route_intent
+)
+
+graph_builder.add_edge(
+    "log_interaction",
     END
 )
 
@@ -181,9 +243,7 @@ if __name__ == "__main__":
 
     }
 
-    result = graph.invoke(
-        sample_state
-    )
+    result = graph.invoke(sample_state)
 
     print("\n==============================")
     print("GRAPH RESULT")
