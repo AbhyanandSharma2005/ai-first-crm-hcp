@@ -136,7 +136,7 @@ def route_intent(state: AgentState):
     print("==============================")
     print("Routing Intent:", intent)
 
-    if intent == "log_interaction":
+    if intent == "LOG_INTERACTION":
         return "log_interaction"
 
     return END
