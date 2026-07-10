@@ -10,7 +10,7 @@ This graph will manage:
 4. Response Generation
 """
 
-from typing import TypedDict
+from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, END
 
@@ -21,20 +21,34 @@ from langgraph.graph import StateGraph, END
 
 class AgentState(TypedDict):
     """
-    Shared state across all LangGraph nodes.
+    Shared state used by every LangGraph node.
     """
 
-    # User message from frontend
+    # Original user message
     user_message: str
 
-    # Intent predicted by the agent
+    # Intent detected by the classifier
     intent: str
 
-    # Output returned by selected tool
+    # Output produced by a tool
     tool_output: str
 
-    # Final response sent back to frontend
+    # Final response returned to frontend
     final_response: str
+
+    # -------- Future fields --------
+
+    interaction_id: Optional[int]
+
+    hcp_name: Optional[str]
+
+    summary: Optional[str]
+
+    product: Optional[str]
+
+    follow_up: Optional[str]
+
+    error: Optional[str]
 
 
 # ============================================================
@@ -110,21 +124,39 @@ graph = graph_builder.compile()
 
 if __name__ == "__main__":
 
-    sample_state = {
+sample_state = {
 
-        "user_message":
-        "Hello AI",
+    "user_message":
+    "Log today's meeting with Dr Sharma.",
 
-        "intent":
-        "",
+    "intent":
+    "",
 
-        "tool_output":
-        "",
+    "tool_output":
+    "",
 
-        "final_response":
-        ""
+    "final_response":
+    "",
 
-    }
+    "interaction_id":
+    None,
+
+    "hcp_name":
+    None,
+
+    "summary":
+    None,
+
+    "product":
+    None,
+
+    "follow_up":
+    None,
+
+    "error":
+    None
+
+}
 
     result = graph.invoke(
         sample_state
