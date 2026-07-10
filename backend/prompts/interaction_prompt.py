@@ -201,25 +201,38 @@ User Message:
 # ==========================================================
 
 INTENT_CLASSIFICATION_PROMPT = """
-Classify the user's intent.
+You are an intent classification system for an AI-powered Healthcare CRM.
 
-Possible intents:
+Your task is to classify the user's message into EXACTLY ONE of the following intents.
 
-1. log_interaction
+Available intents:
 
-2. edit_interaction
+1. LOG_INTERACTION
+   User wants to log a meeting or interaction with an HCP.
 
-3. search_hcp
+2. EDIT_INTERACTION
+   User wants to modify or update a previously logged interaction.
 
-4. next_best_action
+3. SEARCH_HCP
+   User wants to search for doctors, hospitals, or healthcare professionals.
 
-5. follow_up
+4. NEXT_BEST_ACTION
+   User wants AI recommendations for the next sales action.
 
-6. general_chat
+5. FOLLOW_UP
+   User wants to schedule, check, or manage follow-ups.
 
-Return ONLY one intent.
+6. CHAT
+   Any general conversation that doesn't match the above.
 
-User:
+Rules:
+
+- Return ONLY the intent name.
+- Do NOT explain your reasoning.
+- Do NOT include punctuation.
+- Do NOT return more than one intent.
+
+User Message:
 
 {message}
 """
