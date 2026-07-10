@@ -1,46 +1,37 @@
 from services.groq_service import groq_service
 
-from prompts.interaction_prompt import SYSTEM_PROMPT
-
-
 
 def next_best_action_tool(state):
 
 
-    prompt = f"""
+    prompt=f"""
 
-You are a pharmaceutical CRM assistant.
+Review this interaction history:
 
-Based on this interaction:
-
-{state["message"]}
+{state.get('summary')}
 
 
-Suggest:
-
-1. Next action
-2. Follow up strategy
-3. Recommended communication
-
+Recommend the next best action.
 
 """
 
 
     response = groq_service.chat(
 
-        system_prompt=SYSTEM_PROMPT,
+        system_prompt=
+        "You are CRM sales assistant",
 
-        user_prompt=prompt
+        user_prompt=
+        prompt
 
     )
 
 
     return {
 
+        "tool_result":{
 
-        "tool_result":
-
-        {
+            "status":"success",
 
             "recommendation":
             response

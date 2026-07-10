@@ -20,7 +20,7 @@ from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 
 from services.intent_classifier import intent_classifier
-from tools.log_interaction_tool import log_interaction_tool
+from tools.log_interaction import log_interaction_tool
 
 
 # ============================================================

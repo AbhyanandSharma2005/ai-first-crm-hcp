@@ -24,14 +24,16 @@ def log_interaction_tool(state: dict) -> dict:
         interaction=message
     )
 
-    summary = groq_service.chat(
-        system_prompt=SYSTEM_PROMPT,
-        user_prompt=prompt
-    )
-
     db = SessionLocal()
 
     try:
+        # Generate interaction summary using Groq
+        summary = groq_service.chat(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=prompt
+        )
+
+        # Save interaction to the database
         interaction = Interaction(
             hcp_name="Unknown",
             summary=summary,

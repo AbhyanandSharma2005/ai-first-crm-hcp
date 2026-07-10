@@ -1,81 +1,44 @@
 from database import SessionLocal
-
 from models import HCP
-
 
 
 def search_hcp_tool(state):
 
-
-    keyword = state["message"]
-
-
     db = SessionLocal()
 
+    query = state["user_message"]
 
-    try:
 
-
-        results = (
-
-            db.query(HCP)
-
-            .filter(
-                HCP.specialization.ilike(
-                    "%cardio%"
-                )
+    results = (
+        db.query(HCP)
+        .filter(
+            HCP.specialization.ilike(
+                f"%{query}%"
             )
-
-            .all()
-
         )
+        .all()
+    )
 
 
+    return {
 
-        doctors = []
+        "tool_result":{
 
+            "status":"success",
 
-        for doctor in results:
-
-            doctors.append(
+            "hcp":[
 
                 {
-
-                    "name":
-                    doctor.name,
-
-
-                    "hospital":
-                    doctor.hospital,
-
-
+                    "name":hcp.name,
+                    "hospital":hcp.hospital,
                     "specialization":
-                    doctor.specialization
-
+                    hcp.specialization
                 }
 
-            )
+                for hcp in results
 
-
-
-        return {
-
-
-            "tool_result":
-
-            {
-
-                "status":
-                "success",
-
-                "hcp":
-                doctors
-
-            }
+            ]
 
         }
 
-
-    finally:
-
-        db.close()
+    }

@@ -1,19 +1,22 @@
 from database import SessionLocal
-
 from models import Interaction
 
 
-
-def edit_interaction_tool(state):
-
+def edit_interaction_tool(state: dict) -> dict:
 
     db = SessionLocal()
 
-
     try:
+
+        interaction_id = state.get(
+            "interaction_id"
+        )
 
         interaction = (
             db.query(Interaction)
+            .filter(
+                Interaction.id == interaction_id
+            )
             .first()
         )
 
@@ -21,44 +24,51 @@ def edit_interaction_tool(state):
         if not interaction:
 
             return {
-
-                "tool_result":
-
-                {
-                    "status":
-                    "failed",
-
+                "tool_result": {
+                    "status": "error",
                     "message":
-                    "No interaction found"
+                    "Interaction not found"
                 }
-
             }
 
 
-
         interaction.summary = (
-            state["message"]
+            state.get("summary")
+            or interaction.summary
         )
 
 
         db.commit()
 
+        db.refresh(interaction)
 
 
         return {
 
-            "tool_result":
+            "tool_result": {
 
-            {
+                "status": "success",
 
-                "status":
-                "success",
+                "interaction_id":
+                interaction.id,
 
-                "message":
-                "Interaction updated"
+                "summary":
+                interaction.summary
 
             }
 
+        }
+
+
+    except Exception as e:
+
+        db.rollback()
+
+        return {
+            "tool_result": {
+                "status":"error",
+                "message":str(e)
+            }
         }
 
 
