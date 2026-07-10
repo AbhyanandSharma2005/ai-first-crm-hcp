@@ -3,6 +3,9 @@ from models import Interaction
 
 
 def edit_interaction_tool(state: dict) -> dict:
+    """
+    Updates existing interaction details.
+    """
 
     db = SessionLocal()
 
@@ -11,6 +14,24 @@ def edit_interaction_tool(state: dict) -> dict:
         interaction_id = state.get(
             "interaction_id"
         )
+
+
+        if not interaction_id:
+
+            return {
+
+                "tool_result": {
+
+                    "status": "error",
+
+                    "message":
+                    "Interaction ID missing"
+
+                }
+
+            }
+
+
 
         interaction = (
             db.query(Interaction)
@@ -24,18 +45,39 @@ def edit_interaction_tool(state: dict) -> dict:
         if not interaction:
 
             return {
+
                 "tool_result": {
+
                     "status": "error",
+
                     "message":
                     "Interaction not found"
+
                 }
+
             }
 
 
-        interaction.summary = (
-            state.get("summary")
-            or interaction.summary
-        )
+
+        if state.get("summary"):
+
+            interaction.summary = (
+                state["summary"]
+            )
+
+
+        if state.get("product"):
+
+            interaction.product = (
+                state["product"]
+            )
+
+
+        if state.get("follow_up"):
+
+            interaction.follow_up = (
+                state["follow_up"]
+            )
 
 
         db.commit()
@@ -43,11 +85,13 @@ def edit_interaction_tool(state: dict) -> dict:
         db.refresh(interaction)
 
 
+
         return {
 
             "tool_result": {
 
-                "status": "success",
+                "status":
+                "success",
 
                 "interaction_id":
                 interaction.id,
@@ -60,16 +104,25 @@ def edit_interaction_tool(state: dict) -> dict:
         }
 
 
+
     except Exception as e:
 
         db.rollback()
 
         return {
+
             "tool_result": {
-                "status":"error",
-                "message":str(e)
+
+                "status":
+                "error",
+
+                "message":
+                str(e)
+
             }
+
         }
+
 
 
     finally:

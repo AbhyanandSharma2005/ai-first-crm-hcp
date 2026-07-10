@@ -15,13 +15,15 @@ Log Interaction Tool
 END
 """
 
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Any
 
 from langgraph.graph import StateGraph, END
 
 from services.intent_classifier import intent_classifier
+
 from tools.log_interaction import log_interaction_tool
 
+from tools.edit_interaction import edit_interaction_tool
 
 # ============================================================
 # Agent State
@@ -36,7 +38,7 @@ class AgentState(TypedDict):
 
     intent: str
 
-    tool_output: str
+    tool_output: dict[str, Any]
 
     final_response: str
 
@@ -170,6 +172,120 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
     return state
 
+# ============================================================
+# Edit Interaction Tool Node
+# ============================================================
+
+def edit_interaction_node(
+        state: AgentState
+) -> AgentState:
+    """
+    Executes Edit Interaction tool
+    and updates graph state.
+    """
+
+    print("\n==============================")
+    print("EDIT INTERACTION TOOL")
+    print("==============================")
+
+
+    try:
+
+        result = edit_interaction_tool(
+            state
+        )
+
+
+        tool_result = (
+            result.get(
+                "tool_result",
+                {}
+            )
+        )
+
+
+        if tool_result.get("status") == "success":
+
+
+            state["interaction_id"] = (
+                tool_result.get(
+                    "interaction_id"
+                )
+            )
+
+
+            state["summary"] = (
+                tool_result.get(
+                    "summary"
+                )
+            )
+
+
+            state["tool_output"] = result
+
+
+            state["final_response"] = (
+                "Interaction updated successfully.\n\n"
+                f"Updated Summary:\n"
+                f"{state['summary']}"
+            )
+
+
+            state["error"] = None
+
+
+
+        else:
+
+
+            error_message = (
+                tool_result.get(
+                    "message",
+                    "Unknown error occurred."
+                )
+            )
+
+
+            state["tool_output"] = result
+
+
+            state["error"] = (
+                error_message
+            )
+
+
+            state["final_response"] = (
+                "Sorry, I couldn't update "
+                "the interaction."
+            )
+
+
+    except Exception as e:
+
+
+        state["tool_output"] = {
+
+            "status":
+            "error",
+
+            "message":
+            str(e)
+
+        }
+
+
+        state["error"] = (
+            str(e)
+        )
+
+
+        state["final_response"] = (
+            "An unexpected error occurred "
+            "while updating interaction."
+        )
+
+
+    return state
 
 # ============================================================
 # Intent Router
@@ -207,14 +323,22 @@ graph_builder.add_node(
     start_node
 )
 
+
 graph_builder.add_node(
     "intent_classifier",
     intent_classifier_node
 )
 
+
 graph_builder.add_node(
     "log_interaction",
     log_interaction_node
+)
+
+
+graph_builder.add_node(
+    "edit_interaction",
+    edit_interaction_node
 )
 
 
@@ -269,7 +393,7 @@ if __name__ == "__main__":
         "",
 
         "tool_output":
-        "",
+        {},
 
         "final_response":
         "",
