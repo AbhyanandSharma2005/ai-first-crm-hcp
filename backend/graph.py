@@ -11,8 +11,11 @@ This graph will manage:
 """
 
 from typing import TypedDict, Optional
-
 from langgraph.graph import StateGraph, END
+from services.intent_classifier import intent_classifier
+
+
+
 
 
 # ============================================================
@@ -54,25 +57,35 @@ class AgentState(TypedDict):
 # ============================================================
 # Start Node
 # ============================================================
+def intent_classifier_node(state: AgentState) -> AgentState:
+    message = state["user_message"]
 
-def start_node(state: AgentState):
-    """
-    Entry point of LangGraph.
+    detected_intent = intent_classifier.classify(message)
 
-    Currently only prints state.
-
-    In Phase 7.2 it will forward
-    to the Intent Classifier.
-    """
-
-    print("\n==============================")
-    print("START NODE")
-    print("==============================")
-
-    print("Incoming State:")
-    print(state)
+    state["intent"] = detected_intent
 
     return state
+
+def start_node(state: AgentState) -> AgentState:
+    """
+    Entry point of LangGraph.
+    """
+
+    try:
+        print("\n==============================")
+        print("START NODE")
+        print("==============================")
+
+        print(f"User Message: {state['user_message']}")
+        print("Incoming State:")
+        print(state)
+
+        return state
+
+    except Exception as e:
+        state["error"] = str(e)
+        return state
+
 
 
 # ============================================================
@@ -91,6 +104,11 @@ graph_builder.add_node(
     start_node
 )
 
+graph_builder.add_node(
+    "intent_classifier",
+    intent_classifier_node
+)
+
 
 # ============================================================
 # Entry Point
@@ -107,6 +125,11 @@ graph_builder.set_entry_point(
 
 graph_builder.add_edge(
     "start",
+    "intent_classifier"
+)
+
+graph_builder.add_edge(
+    "intent_classifier",
     END
 )
 
@@ -124,39 +147,39 @@ graph = graph_builder.compile()
 
 if __name__ == "__main__":
 
-sample_state = {
+    sample_state = {
 
-    "user_message":
-    "Log today's meeting with Dr Sharma.",
+        "user_message":
+        "Log today's meeting with Dr Sharma.",
 
-    "intent":
-    "",
+        "intent":
+        "",
 
-    "tool_output":
-    "",
+        "tool_output":
+        "",
 
-    "final_response":
-    "",
+        "final_response":
+        "",
 
-    "interaction_id":
-    None,
+        "interaction_id":
+        None,
 
-    "hcp_name":
-    None,
+        "hcp_name":
+        None,
 
-    "summary":
-    None,
+        "summary":
+        None,
 
-    "product":
-    None,
+        "product":
+        None,
 
-    "follow_up":
-    None,
+        "follow_up":
+        None,
 
-    "error":
-    None
+        "error":
+        None
 
-}
+    }
 
     result = graph.invoke(
         sample_state
