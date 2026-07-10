@@ -132,10 +132,11 @@ def log_interaction_node(state: AgentState) -> AgentState:
                 "summary"
             )
 
-            state["tool_output"] = (
-                f"Interaction logged successfully "
-                f"(ID: {state['interaction_id']})"
-            )
+            state["tool_output"] = {
+                "status": "success",
+                "interaction_id": state["interaction_id"],
+                "summary": state["summary"]
+}
 
             state["final_response"] = (
                 "Interaction logged successfully.\n\n"
@@ -153,7 +154,10 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
             state["error"] = error_message
 
-            state["tool_output"] = ""
+            state["tool_output"] = {
+                "status": "error",
+                "message": error_message
+            }
 
             state["final_response"] = (
                 "Sorry, I couldn't log the interaction."
@@ -163,7 +167,10 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
         state["error"] = str(e)
 
-        state["tool_output"] = ""
+        state["tool_output"] = {
+            "status": "error",
+            "message": str(e)
+        }
 
         state["final_response"] = (
             "An unexpected error occurred while "
@@ -304,6 +311,9 @@ def route_intent(state: AgentState):
     if intent == "LOG_INTERACTION":
         return "log_interaction"
 
+    elif intent == "EDIT_INTERACTION":
+        return "edit_interaction"
+
     return END
 
 
@@ -367,6 +377,11 @@ graph_builder.add_conditional_edges(
 
 graph_builder.add_edge(
     "log_interaction",
+    END
+)
+
+graph_builder.add_edge(
+    "edit_interaction",
     END
 )
 
