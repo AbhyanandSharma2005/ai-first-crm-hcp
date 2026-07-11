@@ -458,6 +458,120 @@ def next_best_action_node(
     return state
 
 # ============================================================
+# Intent Router
+# ============================================================
+
+def route_intent(state: AgentState):
+
+    intent = state["intent"]
+
+    print("\n==============================")
+    print("ROUTER")
+    print("==============================")
+    print("Routing:", intent)
+
+    if intent == "LOG_INTERACTION":
+        return "log_interaction"
+
+    elif intent == "EDIT_INTERACTION":
+        return "edit_interaction"
+
+    elif intent == "SEARCH_HCP":
+        return "search_hcp"
+
+    elif intent == "NEXT_BEST_ACTION":
+        return "next_best_action"
+
+    return END
+
+
+# ============================================================
+# Build Graph
+# ============================================================
+
+graph_builder = StateGraph(AgentState)
+
+
+# ============================================================
+# Register Nodes
+# ============================================================
+
+graph_builder.add_node(
+    "start",
+    start_node
+)
+
+graph_builder.add_node(
+    "intent_classifier",
+    intent_classifier_node
+)
+
+graph_builder.add_node(
+    "log_interaction",
+    log_interaction_node
+)
+
+graph_builder.add_node(
+    "edit_interaction",
+    edit_interaction_node
+)
+
+graph_builder.add_node(
+    "search_hcp",
+    search_hcp_node
+)
+
+graph_builder.add_node(
+    "next_best_action",
+    next_best_action_node
+)
+
+
+# ============================================================
+# Entry Point
+# ============================================================
+
+graph_builder.set_entry_point(
+    "start"
+)
+
+
+# ============================================================
+# Graph Edges
+# ============================================================
+
+graph_builder.add_edge(
+    "start",
+    "intent_classifier"
+)
+
+graph_builder.add_conditional_edges(
+    "intent_classifier",
+    route_intent
+)
+
+graph_builder.add_edge(
+    "log_interaction",
+    END
+)
+
+graph_builder.add_edge(
+    "edit_interaction",
+    END
+)
+
+graph_builder.add_edge(
+    "search_hcp",
+    END
+)
+
+graph_builder.add_edge(
+    "next_best_action",
+    END
+)
+
+
+# ============================================================
 # Compile Graph
 # ============================================================
 
@@ -467,11 +581,16 @@ graph = graph_builder.compile()
 # ============================================================
 # Local Testing
 # ============================================================
-print("graph.py loaded")
+
+print("graph.py loaded successfully")
+
+
 if __name__ == "__main__":
 
     sample_state = {
-        "user_message": """
+
+        "user_message":
+        """
 Met Dr Sharma today.
 
 Discussed CardioX.
@@ -480,15 +599,25 @@ Doctor requested latest clinical study.
 
 Follow up on 2026-07-25.
 """,
+
         "intent": "",
+
         "tool_output": {},
+
         "final_response": "",
+
         "interaction_id": None,
+
         "hcp_name": None,
+
         "summary": None,
+
         "product": None,
+
         "follow_up": None,
-        "error": None,
+
+        "error": None
+
     }
 
     result = graph.invoke(sample_state)
@@ -496,4 +625,5 @@ Follow up on 2026-07-25.
     print("\n==============================")
     print("GRAPH RESULT")
     print("==============================")
+
     print(result)
