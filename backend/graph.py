@@ -594,13 +594,15 @@ if __name__ == "__main__":
 
         "user_message":
         """
-Met Dr Sharma today.
+# Met Dr Sharma today.
 
-Discussed CardioX.
+# Discussed CardioX.
 
-Doctor requested latest clinical study.
+# Doctor requested latest clinical study.
 
-Follow up on 2026-07-25.
+# Follow up on 2026-07-25.
+
+Find cardiologists
 """,
 
         "intent": "",
