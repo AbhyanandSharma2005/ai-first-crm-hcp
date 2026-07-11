@@ -229,17 +229,29 @@ def edit_interaction_node(
         if tool_result.get("status") == "success":
 
 
-            state["interaction_id"] = (
-                tool_result.get(
-                    "interaction_id"
-                )
+            state["interaction_id"] = tool_result.get(
+                "interaction_id",
+                state["interaction_id"]
             )
 
+            state["hcp_name"] = tool_result.get(
+                "hcp_name",
+                state["hcp_name"]
+            )
 
-            state["summary"] = (
-                tool_result.get(
-                    "summary"
-                )
+            state["product"] = tool_result.get(
+                "product",
+                state["product"]
+            )
+
+            state["follow_up"] = tool_result.get(
+                "follow_up",
+                state["follow_up"]
+            )
+
+            state["summary"] = tool_result.get(
+                "summary",
+                state["summary"]
             )
 
 
@@ -376,10 +388,7 @@ def search_hcp_node(
                     "No matching HCP found."
                 )
                 
-                state["tool_output"] = {
-                    "status": "success",
-                    "hcp": []
-                }
+                state["tool_output"] = result
 
 
         else:
@@ -441,15 +450,10 @@ def next_best_action_node(
 
         if tool_result.get("status") == "success":
 
-            state["hcp_name"] = tool_result.get(
-                "hcp_name"
-            )
-
             state["tool_output"] = result
 
-            state["final_response"] = (
-                "Next Best Action\n\n"
-                f"{tool_result.get('recommendation')}"
+            state["final_response"] = tool_result.get(
+                "recommendation"
             )
 
             state["error"] = None
