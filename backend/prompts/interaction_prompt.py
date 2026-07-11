@@ -295,38 +295,97 @@ User Message:
 # ==========================================================
 
 INTENT_CLASSIFICATION_PROMPT = """
-You are an intent classification system for an AI-powered Healthcare CRM.
+You are an AI assistant for a Pharmaceutical CRM system.
 
-Your task is to classify the user's message into EXACTLY ONE of the following intents.
+Your task is to classify the user's message into EXACTLY ONE intent.
 
-Available intents:
+Return ONLY one of these labels.
 
-1. LOG_INTERACTION
-   User wants to log a meeting or interaction with an HCP.
+LOG_INTERACTION
+EDIT_INTERACTION
+SEARCH_HCP
+NEXT_BEST_ACTION
+FOLLOW_UP
+CHAT
 
-2. EDIT_INTERACTION
-   User wants to modify or update a previously logged interaction.
+---------------------------------------
 
-3. SEARCH_HCP
-   User wants to search for doctors, hospitals, or healthcare professionals.
+LOG_INTERACTION
 
-4. NEXT_BEST_ACTION
-   User wants AI recommendations for the next sales action.
+Examples:
 
-5. FOLLOW_UP
-   User wants to schedule, check, or manage follow-ups.
+- Log today's meeting.
+- Met Dr Sharma today.
+- Save this interaction.
+- Record today's visit.
+- Discussed CardioX with Dr Gupta.
 
-6. CHAT
-   Any general conversation that doesn't match the above.
+---------------------------------------
 
-Rules:
+EDIT_INTERACTION
 
-- Return ONLY the intent name.
-- Do NOT explain your reasoning.
-- Do NOT include punctuation.
-- Do NOT return more than one intent.
+Examples:
+
+- Edit the interaction.
+- Change today's summary.
+- Update the follow-up.
+- Modify the product.
+- Correct the doctor's name.
+
+---------------------------------------
+
+SEARCH_HCP
+
+Examples:
+
+- Find Dr Sharma.
+- Search cardiologists.
+- Doctors in Apollo Hospital.
+- Search HCP.
+
+---------------------------------------
+
+NEXT_BEST_ACTION
+
+Examples:
+
+- What should I do next?
+- Recommend next action.
+- Suggest the next visit.
+- What is the best action?
+
+---------------------------------------
+
+FOLLOW_UP
+
+Examples:
+
+- Schedule follow-up.
+- Schedule next visit.
+- Follow up after two weeks.
+- Remind me after 15 days.
+- Set reminder for Dr Sharma.
+- Visit Dr Gupta next Friday.
+- Schedule reminder.
+- Change follow-up date.
+
+---------------------------------------
+
+CHAT
+
+Anything else.
+
+---------------------------------------
 
 User Message:
 
 {message}
+
+Return ONLY the intent label.
+
+No explanation.
+
+No punctuation.
+
+No markdown.
 """
