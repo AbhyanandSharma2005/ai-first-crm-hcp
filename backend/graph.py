@@ -25,6 +25,7 @@ from tools.log_interaction import log_interaction_tool
 from tools.edit_interaction import edit_interaction_tool
 from tools.search_hcp import search_hcp_tool
 from tools.next_best_action import next_best_action_tool
+from tools.followup_scheduler import follow_up_scheduler_tool
 
 
 # ============================================================
@@ -459,6 +460,99 @@ def next_best_action_node(
         )
 
     return state
+# ============================================================
+# Follow Up Scheduler Tool Node
+# ============================================================
+
+def follow_up_scheduler_node(
+        state: AgentState
+) -> AgentState:
+
+    print("\n==============================")
+    print("FOLLOW UP SCHEDULER TOOL")
+    print("==============================")
+
+    try:
+
+        result = follow_up_scheduler_tool(
+            state
+        )
+
+        tool_result = result.get(
+            "tool_result",
+            {}
+        )
+
+        if tool_result.get("status") == "success":
+
+            state["interaction_id"] = tool_result.get(
+                "interaction_id",
+                state["interaction_id"]
+            )
+
+            state["hcp_name"] = tool_result.get(
+                "hcp_name",
+                state["hcp_name"]
+            )
+
+            state["follow_up"] = tool_result.get(
+                "follow_up",
+                state["follow_up"]
+            )
+
+            state["tool_output"] = result
+
+            state["final_response"] = (
+
+                "Follow-up scheduled successfully.\n\n"
+
+                f"HCP : {state['hcp_name']}\n"
+
+                f"Follow-up Date : {state['follow_up']}"
+
+            )
+
+            state["error"] = None
+
+        else:
+
+            error_message = tool_result.get(
+
+                "message",
+
+                "Unable to schedule follow-up."
+
+            )
+
+            state["tool_output"] = result
+
+            state["error"] = error_message
+
+            state["final_response"] = error_message
+
+    except Exception as e:
+
+        state["tool_output"] = {
+
+            "tool_result": {
+
+                "status": "error",
+
+                "message": str(e)
+
+            }
+
+        }
+
+        state["error"] = str(e)
+
+        state["final_response"] = (
+
+            "Unexpected error while scheduling follow-up."
+
+        )
+
+    return state
 
 # ============================================================
 # Intent Router
@@ -484,6 +578,9 @@ def route_intent(state: AgentState):
 
     elif intent == "NEXT_BEST_ACTION":
         return "next_best_action"
+    
+    elif intent == "FOLLOW_UP":
+        return "follow_up_scheduler"
 
     return END
 
@@ -529,6 +626,13 @@ graph_builder.add_node(
     next_best_action_node
 )
 
+graph_builder.add_node(
+
+    "follow_up_scheduler",
+
+    follow_up_scheduler_node
+
+)
 
 # ============================================================
 # Entry Point
@@ -571,6 +675,14 @@ graph_builder.add_edge(
 graph_builder.add_edge(
     "next_best_action",
     END
+)
+
+graph_builder.add_edge(
+
+    "follow_up_scheduler",
+
+    END
+
 )
 
 
