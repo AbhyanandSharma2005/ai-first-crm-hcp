@@ -1,27 +1,24 @@
 from services.intent_classifier import intent_classifier
 
-
 messages = [
 
-    "Log today's meeting with Dr Sharma.",
+    "Met Dr Sharma today.",
 
-    "Update Dr Sharma interaction and add brochure discussion.",
+    "Update the follow up.",
 
-    "Find cardiologists in Apollo Hospital.",
+    "Find cardiologists.",
 
     "What should I do next for Dr Sharma?",
 
-    "Show overdue follow-ups.",
+    "Remind me after two weeks.",
 
-    "Hello, how are you?"
-
+    "Schedule next visit."
 ]
-
 
 for msg in messages:
 
-    print(
-        msg,
-        "---->",
-        intent_classifier.classify(msg)
-    )
+    print("=" * 50)
+
+    print(msg)
+
+    print(intent_classifier.classify(msg))
