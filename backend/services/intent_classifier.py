@@ -191,18 +191,24 @@ class IntentClassifier:
         # 5. FOLLOW UP
         # ====================================================
 
+        # Follow-up
         if any(word in text for word in [
-
             "follow",
             "follow-up",
+            "follow up",
             "schedule",
+            "scheduled",
             "remind",
             "reminder",
-            "due",
-            "overdue"
-
+            "visit again",
+            "next visit",
+            "next meeting",
+            "after two weeks",
+            "after 2 weeks",
+            "after one month",
+            "after 15 days",
+            "after 30 days"
         ]):
-
             return FOLLOW_UP
 
 
