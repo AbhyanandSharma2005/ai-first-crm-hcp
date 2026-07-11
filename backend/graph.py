@@ -456,3 +456,44 @@ def next_best_action_node(
         )
 
     return state
+
+# ============================================================
+# Compile Graph
+# ============================================================
+
+graph = graph_builder.compile()
+
+
+# ============================================================
+# Local Testing
+# ============================================================
+print("graph.py loaded")
+if __name__ == "__main__":
+
+    sample_state = {
+        "user_message": """
+Met Dr Sharma today.
+
+Discussed CardioX.
+
+Doctor requested latest clinical study.
+
+Follow up on 2026-07-25.
+""",
+        "intent": "",
+        "tool_output": {},
+        "final_response": "",
+        "interaction_id": None,
+        "hcp_name": None,
+        "summary": None,
+        "product": None,
+        "follow_up": None,
+        "error": None,
+    }
+
+    result = graph.invoke(sample_state)
+
+    print("\n==============================")
+    print("GRAPH RESULT")
+    print("==============================")
+    print(result)
