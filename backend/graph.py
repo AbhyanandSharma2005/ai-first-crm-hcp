@@ -419,9 +419,12 @@ def next_best_action_node(
 
             state["tool_output"] = result
 
-            state["final_response"] = tool_result.get(
-                "recommendation",
-                "No recommendation available."
+            state["final_response"] = (
+                "Next Best Action\n\n"
+                + tool_result.get(
+                    "recommendation",
+                    "No recommendation available."
+                )
             )
 
             state["error"] = None
