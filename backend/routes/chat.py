@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from agents.graph import crm_agent
+from graph import graph
 
 
 router = APIRouter(
@@ -10,54 +10,54 @@ router = APIRouter(
 )
 
 
-
 class ChatRequest(BaseModel):
-
     message: str
 
 
-
 class ChatResponse(BaseModel):
-
+    intent: str
     response: str
-
+    error: str | None = None
 
 
 @router.post(
     "/",
     response_model=ChatResponse
 )
-def chat_with_agent(
-    request: ChatRequest
-):
+def chat_with_agent(request: ChatRequest):
 
-    result = crm_agent.invoke(
+    initial_state = {
 
-        {
+        "user_message": request.message,
 
-            "message":
-            request.message,
+        "intent": "",
 
+        "tool_output": {},
 
-            "intent":
-            None,
+        "final_response": "",
 
+        "interaction_id": None,
 
-            "tool_result":
-            None,
+        "hcp_name": None,
 
+        "summary": None,
 
-            "response":
-            None
+        "product": None,
 
-        }
+        "follow_up": None,
 
-    )
-
-
-    return {
-
-        "response":
-        result["response"]
+        "error": None
 
     }
+
+    result = graph.invoke(initial_state)
+
+    return ChatResponse(
+
+        intent=result["intent"],
+
+        response=result["final_response"],
+
+        error=result["error"]
+
+    )
