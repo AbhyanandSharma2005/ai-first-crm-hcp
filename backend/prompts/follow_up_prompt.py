@@ -1,14 +1,21 @@
 FOLLOW_UP_PROMPT = """
-Extract the follow-up information from the user's message.
+You are an AI CRM assistant.
+
+Extract the HCP name and follow-up date.
 
 Return ONLY valid JSON.
 
-{
+{{
     "hcp_name": "",
-    "follow_up": "YYYY-MM-DD"
-}
+    "follow_up": ""
+}}
 
-User Message:
+Rules:
+- follow_up must be YYYY-MM-DD.
+- Do not include markdown.
+- Do not include explanations.
+
+Message:
 
 {message}
 """
