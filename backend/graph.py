@@ -602,7 +602,11 @@ if __name__ == "__main__":
 
 # Follow up on 2026-07-25.
 
-Find cardiologists
+# Find cardiologists
+
+# Update Dr Sharma interaction to include brochure discussion.
+
+What should I do next for Dr Sharma?
 """,
 
         "intent": "",
