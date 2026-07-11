@@ -34,16 +34,110 @@ If information is missing, clearly mention it.
 # INTERACTION SUMMARY PROMPT
 # ==========================================================
 
-INTERACTION_SUMMARY_PROMPT = """
-You are given notes from a pharmaceutical sales representative.
+INTENT_CLASSIFICATION_PROMPT = """
+You are an AI assistant for a Pharmaceutical CRM system.
 
-Create a professional CRM interaction summary.
+Your task is to classify the user's request into EXACTLY ONE of the following intents.
 
-Interaction Notes:
+Return ONLY one of these values.
 
-{interaction}
+LOG_INTERACTION
+EDIT_INTERACTION
+SEARCH_HCP
+NEXT_BEST_ACTION
+FOLLOW_UP
+CHAT
 
-Provide only the summary.
+--------------------------------------------------
+
+Intent Descriptions
+
+LOG_INTERACTION
+
+The user wants to record or save a new doctor interaction.
+
+Examples:
+
+- I met Dr Sharma today.
+- Log today's meeting.
+- Save this interaction.
+- Record my visit.
+- We discussed CardioX today.
+
+--------------------------------------------------
+
+EDIT_INTERACTION
+
+The user wants to modify an existing interaction.
+
+Examples:
+
+- Update today's meeting.
+- Change the follow-up date.
+- Edit interaction.
+- Modify the summary.
+- Replace CardioX with HeartCare.
+
+--------------------------------------------------
+
+SEARCH_HCP
+
+The user wants to search for an HCP or doctor.
+
+Examples:
+
+- Find Dr Sharma.
+- Search cardiologists.
+- Show neurologists.
+- Doctors in Apollo Hospital.
+- Search HCP.
+
+--------------------------------------------------
+
+NEXT_BEST_ACTION
+
+The user wants recommendations or suggestions.
+
+Examples:
+
+- What should I do next?
+- Recommend the next action.
+- What's the best follow-up?
+- Suggest the next visit.
+- What should I send to Dr Sharma?
+
+--------------------------------------------------
+
+FOLLOW_UP
+
+The user wants to schedule or change a follow-up.
+
+Examples:
+
+- Schedule a follow-up.
+- Remind me after two weeks.
+- Visit Dr Sharma next Friday.
+- Follow up on 2026-08-15.
+- Set a reminder.
+- Schedule next visit.
+
+--------------------------------------------------
+
+CHAT
+
+Anything else.
+
+--------------------------------------------------
+
+User Message:
+
+{message}
+
+Return ONLY the intent label.
+
+No explanation.
+No punctuation.
+No markdown.
 """
 
 
