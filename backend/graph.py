@@ -145,11 +145,13 @@ def log_interaction_node(state: AgentState) -> AgentState:
             )
 
             state["follow_up"] = tool_result.get(
-            "follow_up"
+                "follow_up",
+                state["follow_up"]
             )
 
             state["summary"] = tool_result.get(
-            "summary"
+                "summary",
+                state["summary"]
             )
 
             state["tool_output"] = result
@@ -183,17 +185,7 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
         state["error"] = str(e)
 
-        state["tool_output"] = {
-
-            "tool_result": {
-
-                "status": "error",
-
-                "message": str(e)
-
-    }
-
-}
+        state["tool_output"] = result
 
         state["final_response"] = (
             "An unexpected error occurred while "
@@ -293,15 +285,7 @@ def edit_interaction_node(
     except Exception as e:
 
 
-        state["tool_output"] = {
-
-            "status":
-            "error",
-
-            "message":
-            str(e)
-
-        }
+        state["tool_output"] = result
 
 
         state["error"] = (
@@ -423,10 +407,7 @@ def search_hcp_node(
             "Search failed."
         )
         
-        state["tool_output"] = {
-            "status": "error",
-            "message": str(e)
-        }
+        state["tool_output"] = result
 
 
     return state
@@ -488,13 +469,7 @@ def next_best_action_node(
 
     except Exception as e:
 
-        state["tool_output"] = {
-
-            "status": "error",
-
-            "message": str(e)
-
-        }
+        state["tool_output"] = result
 
         state["error"] = str(e)
 
@@ -640,7 +615,7 @@ if __name__ == "__main__":
         Doctor requested latest clinical study.
 
         Follow up on 2026-07-25.
-        """
+        """,
 
         "intent":
         "",
