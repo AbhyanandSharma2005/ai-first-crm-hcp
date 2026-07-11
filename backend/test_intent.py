@@ -4,21 +4,29 @@ messages = [
 
     "Met Dr Sharma today.",
 
-    "Update the follow up.",
+    "Update today's interaction.",
 
     "Find cardiologists.",
 
-    "What should I do next for Dr Sharma?",
+    "What should I do next?",
 
-    "Remind me after two weeks.",
+    "Remind me after 15 days.",
 
-    "Schedule next visit."
+    "Schedule next visit.",
+
+    "Follow up with Dr Gupta on 2026-08-10."
 ]
 
-for msg in messages:
+for message in messages:
 
-    print("=" * 50)
+    print("=" * 60)
 
-    print(msg)
+    print("Message:")
 
-    print(intent_classifier.classify(msg))
+    print(message)
+
+    print()
+
+    print("Detected Intent:")
+
+    print(intent_classifier.classify(message))
