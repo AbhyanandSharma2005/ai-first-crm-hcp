@@ -11,29 +11,16 @@ from prompts.next_best_action_prompt import (
 
 
 def next_best_action_tool(state: dict) -> dict:
-    """
-    Recommends the next best action for an HCP.
-
-    Workflow:
-    1. Extract HCP name.
-    2. Read previous interactions.
-    3. Send interaction history to Groq.
-    4. Return recommendation.
-    """
 
     db = SessionLocal()
 
     try:
 
-        message = state["user_message"]
-
         hcp_name = state.get("hcp_name")
 
-        # -------------------------------------------------
-        # Simple fallback extraction
-        # -------------------------------------------------
-
         if not hcp_name:
+
+            message = state["user_message"]
 
             words = message.split()
 
@@ -59,10 +46,6 @@ def next_best_action_tool(state: dict) -> dict:
 
             }
 
-        # -------------------------------------------------
-        # Retrieve interaction history
-        # -------------------------------------------------
-
         interactions = (
 
             db.query(Interaction)
@@ -87,7 +70,8 @@ def next_best_action_tool(state: dict) -> dict:
 
                     "status": "error",
 
-                    "message": "No previous interactions found."
+                    "message":
+                    "No previous interactions found."
 
                 }
 
@@ -95,11 +79,11 @@ def next_best_action_tool(state: dict) -> dict:
 
         history = ""
 
-        for index, interaction in enumerate(interactions, start=1):
+        for i, interaction in enumerate(interactions, start=1):
 
             history += (
 
-                f"{index}. "
+                f"{i}. "
 
                 f"{interaction.summary}\n"
 

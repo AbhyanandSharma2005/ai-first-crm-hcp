@@ -27,6 +27,8 @@ from tools.edit_interaction import edit_interaction_tool
 
 from tools.search_hcp import search_hcp_tool
 
+from tools.next_best_action import next_best_action_tool
+
 # ============================================================
 # Agent State
 # ============================================================
@@ -411,6 +413,80 @@ def search_hcp_node(
     return state
 
 # ============================================================
+# Next Best Action Tool Node
+# ============================================================
+
+def next_best_action_node(
+        state: AgentState
+) -> AgentState:
+    """
+    Executes the Next Best Action tool
+    and updates graph state.
+    """
+
+    print("\n==============================")
+    print("NEXT BEST ACTION TOOL")
+    print("==============================")
+
+    try:
+
+        result = next_best_action_tool(
+            state
+        )
+
+        tool_result = result.get(
+            "tool_result",
+            {}
+        )
+
+        if tool_result.get("status") == "success":
+
+            state["hcp_name"] = tool_result.get(
+                "hcp_name"
+            )
+
+            state["tool_output"] = result
+
+            state["final_response"] = (
+                "Next Best Action\n\n"
+                f"{tool_result.get('recommendation')}"
+            )
+
+            state["error"] = None
+
+        else:
+
+            error_message = tool_result.get(
+                "message",
+                "Unable to generate recommendation."
+            )
+
+            state["tool_output"] = result
+
+            state["error"] = error_message
+
+            state["final_response"] = error_message
+
+    except Exception as e:
+
+        state["tool_output"] = {
+
+            "status": "error",
+
+            "message": str(e)
+
+        }
+
+        state["error"] = str(e)
+
+        state["final_response"] = (
+            "An unexpected error occurred "
+            "while generating the recommendation."
+        )
+
+    return state
+
+# ============================================================
 # Intent Router
 # ============================================================
 
@@ -418,21 +494,17 @@ def route_intent(state):
 
     intent = state["intent"]
 
-
     if intent == "LOG_INTERACTION":
-
         return "log_interaction"
 
-
     elif intent == "EDIT_INTERACTION":
-
         return "edit_interaction"
 
-
     elif intent == "SEARCH_HCP":
-
         return "search_hcp"
 
+    elif intent == "NEXT_BEST_ACTION":
+        return "next_best_action"
 
     return END
 
@@ -476,6 +548,11 @@ graph_builder.add_node(
     search_hcp_node
 )
 
+graph_builder.add_node(
+    "next_best_action",
+    next_best_action_node
+)
+
 # ============================================================
 # Entry Point
 # ============================================================
@@ -514,6 +591,11 @@ graph_builder.add_edge(
     END
 )
 
+graph_builder.add_edge(
+    "next_best_action",
+    END
+)
+
 
 # ============================================================
 # Compile Graph
@@ -531,7 +613,7 @@ if __name__ == "__main__":
     sample_state = {
 
         "user_message":
-        "Find cardiologists",
+        "What should I do next for Dr Sharma?",
 
         "intent":
         "",
