@@ -25,6 +25,8 @@ from tools.log_interaction import log_interaction_tool
 
 from tools.edit_interaction import edit_interaction_tool
 
+from tools.search_hcp import search_hcp_tool
+
 # ============================================================
 # Agent State
 # ============================================================
@@ -295,24 +297,142 @@ def edit_interaction_node(
     return state
 
 # ============================================================
+# Search HCP Tool Node
+# ============================================================
+
+def search_hcp_node(
+        state: AgentState
+) -> AgentState:
+
+
+    print("\n==============================")
+    print("SEARCH HCP TOOL")
+    print("==============================")
+
+
+    try:
+
+
+        result = search_hcp_tool(
+            state
+        )
+
+
+        tool_result = (
+            result.get(
+                "tool_result",
+                {}
+            )
+        )
+
+
+        if tool_result.get(
+            "status"
+        ) == "success":
+
+
+            state["tool_output"] = result
+
+
+            doctors = (
+                tool_result.get(
+                    "hcp",
+                    []
+                )
+            )
+
+
+            if doctors:
+
+
+                response = (
+                    "Matching HCPs:\n\n"
+                )
+
+
+                for doctor in doctors:
+
+                    response += (
+                        f"Name: {doctor['name']}\n"
+                        f"Specialization: "
+                        f"{doctor['specialization']}\n"
+                        f"Hospital: "
+                        f"{doctor['hospital']}\n\n"
+                    )
+
+
+                state["final_response"] = response
+
+
+            else:
+
+
+                state["final_response"] = (
+                    "No matching HCP found."
+                )
+                
+                state["tool_output"] = {
+                    "status": "success",
+                    "hcp": []
+                }
+
+
+        else:
+
+
+            state["error"] = (
+                tool_result.get(
+                    "message"
+                )
+            )
+
+
+            state["final_response"] = (
+                "Unable to search HCP."
+            )
+
+
+    except Exception as e:
+
+
+        state["error"] = str(e)
+
+
+        state["final_response"] = (
+            "Search failed."
+        )
+        
+        state["tool_output"] = {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+    return state
+
+# ============================================================
 # Intent Router
 # ============================================================
 
-def route_intent(state: AgentState):
+def route_intent(state):
 
     intent = state["intent"]
 
-    print("\n==============================")
-    print("ROUTER")
-    print("==============================")
-
-    print("Routing Intent:", intent)
 
     if intent == "LOG_INTERACTION":
+
         return "log_interaction"
 
+
     elif intent == "EDIT_INTERACTION":
+
         return "edit_interaction"
+
+
+    elif intent == "SEARCH_HCP":
+
+        return "search_hcp"
+
 
     return END
 
@@ -351,6 +471,10 @@ graph_builder.add_node(
     edit_interaction_node
 )
 
+graph_builder.add_node(
+    "search_hcp",
+    search_hcp_node
+)
 
 # ============================================================
 # Entry Point
@@ -385,6 +509,11 @@ graph_builder.add_edge(
     END
 )
 
+graph_builder.add_edge(
+    "search_hcp",
+    END
+)
+
 
 # ============================================================
 # Compile Graph
@@ -402,7 +531,7 @@ if __name__ == "__main__":
     sample_state = {
 
         "user_message":
-        "Log today's meeting with Dr Sharma.",
+        "Find cardiologists",
 
         "intent":
         "",
