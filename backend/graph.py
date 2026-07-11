@@ -124,27 +124,42 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
         result = log_interaction_tool(state)
 
-        tool_result = result.get("tool_result", {})
+        tool_result = result.get(
+            "tool_result",
+            {}
+        )
 
         if tool_result.get("status") == "success":
 
+
             state["interaction_id"] = tool_result.get(
-                "interaction_id"
+            "interaction_id"
+            )
+
+            state["hcp_name"] = tool_result.get(
+            "hcp_name"
+            )
+
+            state["product"] = tool_result.get(
+            "product"
+            )
+
+            state["follow_up"] = tool_result.get(
+            "follow_up"
             )
 
             state["summary"] = tool_result.get(
-                "summary"
+            "summary"
             )
 
-            state["tool_output"] = {
-                "status": "success",
-                "interaction_id": state["interaction_id"],
-                "summary": state["summary"]
-}
+            state["tool_output"] = result
 
             state["final_response"] = (
-                "Interaction logged successfully.\n\n"
-                f"Summary:\n{state['summary']}"
+            "Interaction logged successfully.\n\n"
+            f"HCP: {state['hcp_name']}\n"
+            f"Product: {state['product']}\n"
+            f"Follow-up: {state['follow_up']}\n\n"
+            f"Summary:\n{state['summary']}"
             )
 
             state["error"] = None
@@ -158,10 +173,7 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
             state["error"] = error_message
 
-            state["tool_output"] = {
-                "status": "error",
-                "message": error_message
-            }
+            state["tool_output"] = result
 
             state["final_response"] = (
                 "Sorry, I couldn't log the interaction."
@@ -172,9 +184,16 @@ def log_interaction_node(state: AgentState) -> AgentState:
         state["error"] = str(e)
 
         state["tool_output"] = {
-            "status": "error",
-            "message": str(e)
-        }
+
+            "tool_result": {
+
+                "status": "error",
+
+                "message": str(e)
+
+    }
+
+}
 
         state["final_response"] = (
             "An unexpected error occurred while "
@@ -613,7 +632,15 @@ if __name__ == "__main__":
     sample_state = {
 
         "user_message":
-        "What should I do next for Dr Sharma?",
+        """
+        Met Dr Sharma today.
+
+        Discussed CardioX.
+
+        Doctor requested latest clinical study.
+
+        Follow up on 2026-07-25.
+        """
 
         "intent":
         "",
