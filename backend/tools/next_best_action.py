@@ -1,41 +1,156 @@
+from database import SessionLocal
+
+from models import Interaction
+
 from services.groq_service import groq_service
 
-
-def next_best_action_tool(state):
-
-
-    prompt=f"""
-
-Review this interaction history:
-
-{state.get('summary')}
+from prompts.next_best_action_prompt import (
+    SYSTEM_PROMPT,
+    NEXT_BEST_ACTION_PROMPT,
+)
 
 
-Recommend the next best action.
+def next_best_action_tool(state: dict) -> dict:
+    """
+    Recommends the next best action for an HCP.
 
-"""
+    Workflow:
+    1. Extract HCP name.
+    2. Read previous interactions.
+    3. Send interaction history to Groq.
+    4. Return recommendation.
+    """
 
+    db = SessionLocal()
 
-    response = groq_service.chat(
+    try:
 
-        system_prompt=
-        "You are CRM sales assistant",
+        message = state["user_message"]
 
-        user_prompt=
-        prompt
+        hcp_name = state.get("hcp_name")
 
-    )
+        # -------------------------------------------------
+        # Simple fallback extraction
+        # -------------------------------------------------
 
+        if not hcp_name:
 
-    return {
+            words = message.split()
 
-        "tool_result":{
+            if "Dr" in words:
 
-            "status":"success",
+                index = words.index("Dr")
 
-            "recommendation":
-            response
+                if index + 1 < len(words):
+
+                    hcp_name = f"Dr {words[index + 1]}"
+
+        if not hcp_name:
+
+            return {
+
+                "tool_result": {
+
+                    "status": "error",
+
+                    "message": "Unable to identify HCP."
+
+                }
+
+            }
+
+        # -------------------------------------------------
+        # Retrieve interaction history
+        # -------------------------------------------------
+
+        interactions = (
+
+            db.query(Interaction)
+
+            .filter(
+
+                Interaction.hcp_name.ilike(
+                    f"%{hcp_name}%"
+                )
+
+            )
+
+            .all()
+
+        )
+
+        if not interactions:
+
+            return {
+
+                "tool_result": {
+
+                    "status": "error",
+
+                    "message": "No previous interactions found."
+
+                }
+
+            }
+
+        history = ""
+
+        for index, interaction in enumerate(interactions, start=1):
+
+            history += (
+
+                f"{index}. "
+
+                f"{interaction.summary}\n"
+
+            )
+
+        prompt = NEXT_BEST_ACTION_PROMPT.format(
+
+            history=history
+
+        )
+
+        recommendation = groq_service.chat(
+
+            system_prompt=SYSTEM_PROMPT,
+
+            user_prompt=prompt
+
+        )
+
+        return {
+
+            "tool_result": {
+
+                "status": "success",
+
+                "hcp_name": hcp_name,
+
+                "history": history,
+
+                "recommendation": recommendation
+
+            }
 
         }
 
-    }
+    except Exception as e:
+
+        db.rollback()
+
+        return {
+
+            "tool_result": {
+
+                "status": "error",
+
+                "message": str(e)
+
+            }
+
+        }
+
+    finally:
+
+        db.close()
