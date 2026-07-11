@@ -5,18 +5,15 @@ db = SessionLocal()
 
 rows = db.query(Interaction).all()
 
+print("Total:", len(rows))
+
 for row in rows:
-
-    print(row.id)
-
-    print(row.hcp_name)
-
-    print(row.product)
-
-    print(row.summary)
-
-    print(row.follow_up)
-
-    print("-------------------------")
+    print(
+        row.id,
+        row.hcp_name,
+        row.product,
+        row.summary,
+        row.follow_up
+    )
 
 db.close()
