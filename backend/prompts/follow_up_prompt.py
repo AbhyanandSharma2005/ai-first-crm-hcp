@@ -1,14 +1,14 @@
 FOLLOW_UP_PROMPT = """
-Extract the follow-up information.
+Extract the follow-up information from the user's message.
 
-User message:
-
-{message}
-
-Return ONLY JSON.
+Return ONLY valid JSON.
 
 {
-    "hcp_name":"",
-    "follow_up":"YYYY-MM-DD"
+    "hcp_name": "",
+    "follow_up": "YYYY-MM-DD"
 }
+
+User Message:
+
+{message}
 """
