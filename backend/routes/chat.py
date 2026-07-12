@@ -61,6 +61,7 @@ def chat_with_agent(request: ChatRequest):
     if previous_state is None:
 
         state = {
+            "session_id": request.session_id,
 
             "user_message": request.message,
 
@@ -80,8 +81,11 @@ def chat_with_agent(request: ChatRequest):
 
             "follow_up": None,
 
-            "error": None
+            "error": None,
 
+            "conversation": {
+            "last_hcp": None
+            }
         }
 
     # --------------------------------------------
