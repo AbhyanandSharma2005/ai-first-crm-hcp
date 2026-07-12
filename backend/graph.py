@@ -818,7 +818,7 @@ def route_intent(state: AgentState):
     
     elif intent == "FOLLOW_UP":
         return "follow_up_scheduler"
-        
+
     elif intent == "CONVERSATION_MEMORY":
         return "conversation_memory"
 
@@ -938,6 +938,10 @@ graph_builder.add_edge(
 
 )
 
+graph_builder.add_edge(
+    "conversation_memory",
+    END
+)
 
 # ============================================================
 # Compile Graph
