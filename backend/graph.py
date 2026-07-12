@@ -29,6 +29,8 @@ from tools.followup_scheduler import follow_up_scheduler_tool
 
 from memory.conversation_memory import conversation_memory
 
+from nodes.response_builder import response_builder_node
+
 
 # ============================================================
 # Agent State
@@ -117,8 +119,9 @@ def intent_classifier_node(state: AgentState) -> AgentState:
 
 def log_interaction_node(state: AgentState) -> AgentState:
     """
-    Executes the Log Interaction tool and updates
-    the graph state with the returned values.
+    Executes the Log Interaction tool,
+    updates graph state,
+    and stores important values in Conversation Memory.
     """
 
     print("\n==============================")
@@ -136,6 +139,10 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
         if tool_result.get("status") == "success":
 
+            # -----------------------------
+            # Update State
+            # -----------------------------
+
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
                 state["interaction_id"]
@@ -145,59 +152,61 @@ def log_interaction_node(state: AgentState) -> AgentState:
                 "hcp_name",
                 state["hcp_name"]
             )
-            
-            if state["hcp_name"]:
-
-                state["conversation"]["last_hcp"] = state["hcp_name"]
 
             state["product"] = tool_result.get(
                 "product",
                 state["product"]
             )
 
-            # FIXED (Issue 1)
             state["follow_up"] = tool_result.get(
                 "follow_up",
                 state["follow_up"]
             )
 
-            # FIXED (Issue 1)
             state["summary"] = tool_result.get(
                 "summary",
                 state["summary"]
             )
-            
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_hcp",
-
-                state["hcp_name"]
-
-            )
-
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_summary",
-
-                state["summary"]
-
-            )
-
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_product",
-
-                state["product"]
-
-            )
 
             state["tool_output"] = result
+
+            state["error"] = None
+
+            # -----------------------------
+            # Save Conversation Memory
+            # -----------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                conversation_memory.save(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_summary",
+                    state["summary"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_product",
+                    state["product"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_follow_up",
+                    state["follow_up"]
+                )
+
+            # -----------------------------
+            # Final Response
+            # -----------------------------
 
             state["final_response"] = (
                 "Interaction logged successfully.\n\n"
@@ -206,8 +215,6 @@ def log_interaction_node(state: AgentState) -> AgentState:
                 f"Follow-up: {state['follow_up']}\n\n"
                 f"Summary:\n{state['summary']}"
             )
-
-            state["error"] = None
 
         else:
 
@@ -226,7 +233,6 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
     except Exception as e:
 
-        # FIXED (Issue 5)
         state["tool_output"] = {
             "tool_result": {
                 "status": "error",
@@ -237,8 +243,7 @@ def log_interaction_node(state: AgentState) -> AgentState:
         state["error"] = str(e)
 
         state["final_response"] = (
-            "An unexpected error occurred while "
-            "logging the interaction."
+            "An unexpected error occurred while logging the interaction."
         )
 
     return state
@@ -247,12 +252,11 @@ def log_interaction_node(state: AgentState) -> AgentState:
 # Edit Interaction Tool Node
 # ============================================================
 
-def edit_interaction_node(
-        state: AgentState
-) -> AgentState:
+def edit_interaction_node(state: AgentState) -> AgentState:
     """
-    Executes Edit Interaction tool
-    and updates graph state.
+    Executes Edit Interaction tool,
+    updates graph state,
+    and refreshes Conversation Memory.
     """
 
     print("\n==============================")
@@ -261,9 +265,7 @@ def edit_interaction_node(
 
     try:
 
-        result = edit_interaction_tool(
-            state
-        )
+        result = edit_interaction_tool(state)
 
         tool_result = result.get(
             "tool_result",
@@ -271,6 +273,10 @@ def edit_interaction_node(
         )
 
         if tool_result.get("status") == "success":
+
+            # -----------------------------
+            # Update State
+            # -----------------------------
 
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
@@ -297,37 +303,45 @@ def edit_interaction_node(
                 state["summary"]
             )
 
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_hcp",
-
-                state["hcp_name"]
-
-            )
-
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_summary",
-
-                state["summary"]
-
-            )
-
-            conversation_memory.save(
-
-                state["session_id"],
-
-                "last_product",
-
-                state["product"]
-
-            )            
-
             state["tool_output"] = result
+
+            state["error"] = None
+
+            # -----------------------------
+            # Update Conversation Memory
+            # -----------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                conversation_memory.save(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_summary",
+                    state["summary"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_product",
+                    state["product"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_follow_up",
+                    state["follow_up"]
+                )
+
+            # -----------------------------
+            # Final Response
+            # -----------------------------
 
             state["final_response"] = (
                 "Interaction updated successfully.\n\n"
@@ -337,8 +351,6 @@ def edit_interaction_node(
                 f"Updated Summary:\n"
                 f"{state['summary']}"
             )
-
-            state["error"] = None
 
         else:
 
@@ -352,8 +364,7 @@ def edit_interaction_node(
             state["error"] = error_message
 
             state["final_response"] = (
-                "Sorry, I couldn't update "
-                "the interaction."
+                "Sorry, I couldn't update the interaction."
             )
 
     except Exception as e:
@@ -368,12 +379,10 @@ def edit_interaction_node(
         state["error"] = str(e)
 
         state["final_response"] = (
-            "An unexpected error occurred "
-            "while updating interaction."
+            "An unexpected error occurred while updating interaction."
         )
 
     return state
-
 
 # ============================================================
 # Search HCP Tool Node
@@ -494,8 +503,9 @@ def next_best_action_node(
         state: AgentState
 ) -> AgentState:
     """
-    Executes the Next Best Action tool
-    and updates graph state.
+    Executes the Next Best Action tool,
+    updates graph state,
+    and refreshes Conversation Memory.
     """
 
     print("\n==============================")
@@ -513,13 +523,38 @@ def next_best_action_node(
             {}
         )
 
-        state["conversation"]["last_hcp"] = tool_result.get(
-            "hcp_name"
-        )
-        
         if tool_result.get("status") == "success":
 
+            # ---------------------------------
+            # Update state
+            # ---------------------------------
+
+            state["hcp_name"] = tool_result.get(
+                "hcp_name",
+                state["hcp_name"]
+            )
+
             state["tool_output"] = result
+
+            state["error"] = None
+
+            # ---------------------------------
+            # Save Conversation Memory
+            # ---------------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                conversation_memory.save(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+            # ---------------------------------
+            # Final Response
+            # ---------------------------------
 
             state["final_response"] = (
                 "Next Best Action\n\n"
@@ -528,8 +563,6 @@ def next_best_action_node(
                     "No recommendation available."
                 )
             )
-
-            state["error"] = None
 
         else:
 
@@ -568,6 +601,11 @@ def next_best_action_node(
 def follow_up_scheduler_node(
         state: AgentState
 ) -> AgentState:
+    """
+    Executes the Follow-Up Scheduler tool,
+    updates graph state,
+    and refreshes Conversation Memory.
+    """
 
     print("\n==============================")
     print("FOLLOW UP SCHEDULER TOOL")
@@ -586,6 +624,10 @@ def follow_up_scheduler_node(
 
         if tool_result.get("status") == "success":
 
+            # ---------------------------------
+            # Update State
+            # ---------------------------------
+
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
                 state["interaction_id"]
@@ -600,33 +642,46 @@ def follow_up_scheduler_node(
                 "follow_up",
                 state["follow_up"]
             )
-            
-            state["conversation"]["last_hcp"] = tool_result.get(
-                "hcp_name"
-            )
 
             state["tool_output"] = result
 
-            state["final_response"] = (
-
-                "Follow-up scheduled successfully.\n\n"
-
-                f"HCP : {state['hcp_name']}\n"
-
-                f"Follow-up Date : {state['follow_up']}"
-
-            )
-
             state["error"] = None
+
+            # ---------------------------------
+            # Save Conversation Memory
+            # ---------------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                conversation_memory.save(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+                conversation_memory.save(
+                    session_id,
+                    "last_follow_up",
+                    state["follow_up"]
+                )
+
+            # ---------------------------------
+            # Final Response
+            # ---------------------------------
+
+            state["final_response"] = (
+                "Follow-up scheduled successfully.\n\n"
+                f"HCP: {state['hcp_name']}\n"
+                f"Follow-up Date: {state['follow_up']}"
+            )
 
         else:
 
             error_message = tool_result.get(
-
                 "message",
-
                 "Unable to schedule follow-up."
-
             )
 
             state["tool_output"] = result
@@ -638,23 +693,16 @@ def follow_up_scheduler_node(
     except Exception as e:
 
         state["tool_output"] = {
-
             "tool_result": {
-
                 "status": "error",
-
                 "message": str(e)
-
             }
-
         }
 
         state["error"] = str(e)
 
         state["final_response"] = (
-
             "Unexpected error while scheduling follow-up."
-
         )
 
     return state
@@ -732,6 +780,11 @@ graph_builder.add_node(
 )
 
 graph_builder.add_node(
+    "response_builder",
+    response_builder_node
+)
+
+graph_builder.add_node(
 
     "follow_up_scheduler",
 
@@ -774,7 +827,7 @@ graph_builder.add_edge(
 
 graph_builder.add_edge(
     "search_hcp",
-    END
+    "response_builder"
 )
 
 graph_builder.add_edge(
