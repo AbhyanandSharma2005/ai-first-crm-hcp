@@ -50,18 +50,29 @@ def follow_up_scheduler_tool(state: dict) -> dict:
         print("===================================\n")
 
         data = parse_llm_json(response)
+        
+        session_id = state.get("session_id")
 
         hcp_name = data.get(
             "hcp_name",
             ""
         ).strip()
 
-        if not hcp_name:
+        print("LLM extracted HCP:", hcp_name)
+
+        if not hcp_name and session_id:
+
+            print("Trying session memory...")
 
             hcp_name = session_memory.get_value(
-                state["session_id"],
+                session_id,
                 "last_hcp"
             )
+            
+            if hcp_name:
+                hcp_name = hcp_name.strip()
+
+            print("Memory HCP:", hcp_name)
 
         follow_up_str = data.get("follow_up", "").strip()
 
