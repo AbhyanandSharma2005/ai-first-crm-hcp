@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from backend.agents import state
 from database import SessionLocal
 from models import Interaction
 
@@ -8,6 +9,9 @@ from services.json_parser import parse_llm_json
 
 from prompts.follow_up_prompt import FOLLOW_UP_PROMPT
 from prompts.interaction_prompt import SYSTEM_PROMPT
+
+from services.session_memory import session_memory
+
 
 
 def follow_up_scheduler_tool(state: dict) -> dict:
@@ -47,16 +51,15 @@ def follow_up_scheduler_tool(state: dict) -> dict:
 
         data = parse_llm_json(response)
 
-        hcp_name = data.get("hcp_name", "").strip()
-        
+        hcp_name = data.get(
+            "hcp_name",
+            ""
+        ).strip()
+
         if not hcp_name:
 
-            conversation = state.get(
-                "conversation",
-                {}
-            )
-
-            hcp_name = conversation.get(
+            hcp_name = session_memory.get_value(
+                state["session_id"],
                 "last_hcp"
             )
 

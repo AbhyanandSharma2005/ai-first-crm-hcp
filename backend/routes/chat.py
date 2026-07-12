@@ -46,65 +46,120 @@ class ChatResponse(BaseModel):
 )
 def chat_with_agent(request: ChatRequest):
 
-    # --------------------------------------------
-    # Load previous conversation
-    # --------------------------------------------
+    # --------------------------------------------------------
+    # Load previous AgentState for this session
+    # --------------------------------------------------------
 
-    previous_state = session_memory.get(
-        request.session_id
-    )
+    state = session_memory.get(request.session_id)
 
-    # --------------------------------------------
-    # First message in this session or existing conversation
-    # --------------------------------------------
+    # --------------------------------------------------------
+    # First message of this session
+    # --------------------------------------------------------
 
-    if previous_state is None:
-
-        memory = session_memory.get(request.session_id)
-
-        if memory is None:
-            memory = {}
+    if state is None:
 
         state = {
+
             "session_id": request.session_id,
+
             "user_message": request.message,
+
             "intent": "",
+
             "tool_output": {},
+
             "final_response": "",
+
             "interaction_id": None,
-            "hcp_name": memory.get("last_hcp"),
-            "summary": memory.get("last_summary"),
-            "product": memory.get("last_product"),
-            "follow_up": memory.get("last_follow_up"),
+
+            "hcp_name": session_memory.get_value(
+                request.session_id,
+                "last_hcp"
+            ),
+
+            "summary": session_memory.get_value(
+                request.session_id,
+                "last_summary"
+            ),
+
+            "product": session_memory.get_value(
+                request.session_id,
+                "last_product"
+            ),
+
+            "follow_up": session_memory.get_value(
+                request.session_id,
+                "last_follow_up"
+            ),
+
             "error": None
+
         }
 
+    # --------------------------------------------------------
+    # Existing conversation
+    # --------------------------------------------------------
+
     else:
-        state = previous_state
+
+        state["session_id"] = request.session_id
+
         state["user_message"] = request.message
-        # Reset values generated per request
+
         state["tool_output"] = {}
+
         state["final_response"] = ""
+
         state["error"] = None
 
-    # --------------------------------------------
-    # Execute LangGraph
-    # --------------------------------------------
+        # Refresh important values from memory
+        state["hcp_name"] = session_memory.get_value(
+            request.session_id,
+            "last_hcp"
+        )
 
+        state["summary"] = session_memory.get_value(
+            request.session_id,
+            "last_summary"
+        )
+
+        state["product"] = session_memory.get_value(
+            request.session_id,
+            "last_product"
+        )
+
+        state["follow_up"] = session_memory.get_value(
+            request.session_id,
+            "last_follow_up"
+        )
+
+    # --------------------------------------------------------
+    # Execute LangGraph
+    # --------------------------------------------------------
+    print("\n========== MEMORY ==========")
+    print(
+        session_memory.get_value(
+            request.session_id,
+            "last_hcp"
+        )
+    )
+
+    print("============================")
+    
     result = graph.invoke(state)
 
-    # --------------------------------------------
-    # Save updated conversation
-    # --------------------------------------------
+    # --------------------------------------------------------
+    # Save latest AgentState
+    # --------------------------------------------------------
 
     session_memory.save(
         request.session_id,
         result
     )
 
-    # --------------------------------------------
-    # Return API response
-    # --------------------------------------------
+    # --------------------------------------------------------
+    # Return Response
+    # --------------------------------------------------------
 
     return ChatResponse(
 

@@ -411,9 +411,7 @@ def search_hcp_node(
 
     try:
 
-        result = search_hcp_tool(
-            state
-        )
+        result = search_hcp_tool(state)
 
         tool_result = result.get(
             "tool_result",
@@ -428,45 +426,43 @@ def search_hcp_node(
                 "hcp",
                 []
             )
-            
-            if doctors:
+
+            # ------------------------------------------
+            # Save conversation memory
+            # ------------------------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
 
                 session_memory.set_value(
-                    state["session_id"],
-                    "last_hcp",
-                    doctors[0]["name"]
+                    session_id,
+                    "last_search",
+                    doctors
                 )
 
-    # -----------------------------------------
-    # Save search results into conversation memory
-    # -----------------------------------------
-            conversation_memory.save(
-                state["session_id"],
-                "last_search",
-                doctors
-            )
+                if doctors:
+
+                    session_memory.set_value(
+                        session_id,
+                        "last_hcp",
+                        doctors[0]["name"]
+                    )
+
+            # ------------------------------------------
+            # Build Response
+            # ------------------------------------------
 
             if doctors:
 
-            # Save first doctor as the active HCP
-                conversation_memory.save(
-                    state["session_id"],
-                    "last_hcp",
-                    doctors[0]["name"]
-                )
-
-                response = (
-                    "Matching HCPs:\n\n"
-                )
+                response = "Matching HCPs:\n\n"
 
                 for doctor in doctors:
 
                     response += (
                         f"Name: {doctor['name']}\n"
-                        f"Specialization: "
-                        f"{doctor['specialization']}\n"
-                        f"Hospital: "
-                        f"{doctor['hospital']}\n\n"
+                        f"Specialization: {doctor['specialization']}\n"
+                        f"Hospital: {doctor['hospital']}\n\n"
                     )
 
                 state["final_response"] = response
@@ -509,7 +505,6 @@ def search_hcp_node(
 
     return state
 
-
 # ============================================================
 # Next Best Action Tool Node
 # ============================================================
@@ -518,9 +513,8 @@ def next_best_action_node(
         state: AgentState
 ) -> AgentState:
     """
-    Executes the Next Best Action tool,
-    updates graph state,
-    and refreshes Conversation Memory.
+    Executes the Next Best Action tool
+    and updates Session Memory.
     """
 
     print("\n==============================")
@@ -529,9 +523,7 @@ def next_best_action_node(
 
     try:
 
-        result = next_best_action_tool(
-            state
-        )
+        result = next_best_action_tool(state)
 
         tool_result = result.get(
             "tool_result",
@@ -545,11 +537,27 @@ def next_best_action_node(
                 state["hcp_name"]
             )
 
-            session_memory.set_value(
-                state["session_id"],
-                "last_hcp",
-                state["hcp_name"]
-            )
+            # ------------------------------------------
+            # Save Conversation Memory
+            # ------------------------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                session_memory.set_value(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+                session_memory.set_value(
+                    session_id,
+                    "last_recommendation",
+                    tool_result.get(
+                        "recommendation"
+                    )
+                )
 
             state["tool_output"] = result
 
@@ -562,32 +570,6 @@ def next_best_action_node(
             )
 
             state["error"] = None
-
-            # ---------------------------------
-            # Save Conversation Memory
-            # ---------------------------------
-
-            session_id = state.get("session_id")
-
-            if session_id:
-
-                session_memory.save(
-                    session_id,
-                    "last_hcp",
-                    state["hcp_name"]
-                )
-
-            # ---------------------------------
-            # Final Response
-            # ---------------------------------
-
-            state["final_response"] = (
-                "Next Best Action\n\n"
-                + tool_result.get(
-                    "recommendation",
-                    "No recommendation available."
-                )
-            )
 
         else:
 
@@ -629,7 +611,7 @@ def follow_up_scheduler_node(
     """
     Executes the Follow-Up Scheduler tool,
     updates graph state,
-    and refreshes Conversation Memory.
+    and stores follow-up information in Session Memory.
     """
 
     print("\n==============================")
@@ -649,6 +631,10 @@ def follow_up_scheduler_node(
 
         if tool_result.get("status") == "success":
 
+            # --------------------------------------------------
+            # Update Agent State
+            # --------------------------------------------------
+
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
                 state["interaction_id"]
@@ -662,27 +648,41 @@ def follow_up_scheduler_node(
             state["follow_up"] = tool_result.get(
                 "follow_up",
                 state["follow_up"]
-            ) 
-
-            session_memory.set_value(
-                state["session_id"],
-                "last_hcp",
-                state["hcp_name"]
             )
 
             state["tool_output"] = result
 
-            state["final_response"] = (
-                "Follow-up scheduled successfully.\n\n"
-                f"HCP: {state['hcp_name']}\n"
-                f"Follow-up Date: {state['follow_up']}"
-            )
-
             state["error"] = None
 
-            # ---------------------------------
+            # --------------------------------------------------
+            # Update Session Memory
+            # --------------------------------------------------
+
+            session_id = state.get("session_id")
+
+            if session_id:
+
+                session_memory.set_value(
+                    session_id,
+                    "last_hcp",
+                    state["hcp_name"]
+                )
+
+                session_memory.set_value(
+                    session_id,
+                    "last_follow_up",
+                    state["follow_up"]
+                )
+
+                session_memory.set_value(
+                    session_id,
+                    "last_interaction_id",
+                    state["interaction_id"]
+                )
+
+            # --------------------------------------------------
             # Final Response
-            # ---------------------------------
+            # --------------------------------------------------
 
             state["final_response"] = (
                 "Follow-up scheduled successfully.\n\n"
@@ -719,7 +719,7 @@ def follow_up_scheduler_node(
         )
 
     return state
-
+    
 # ============================================================
 # Intent Router
 # ============================================================
