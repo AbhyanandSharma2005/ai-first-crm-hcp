@@ -726,6 +726,72 @@ def follow_up_scheduler_node(
     return state
 
 # ============================================================
+# Conversation Memory Tool Node
+# ============================================================
+
+def conversation_memory_node(
+        state: AgentState
+) -> AgentState:
+
+    print("\n==============================")
+    print("CONVERSATION MEMORY TOOL")
+    print("==============================")
+
+    try:
+
+        result = conversation_memory_tool(state)
+
+        tool_result = result.get(
+            "tool_result",
+            {}
+        )
+
+        if tool_result.get("status") == "success":
+
+            state["tool_output"] = result
+
+            state["final_response"] = tool_result.get(
+                "answer",
+                "No information found."
+            )
+
+            state["error"] = None
+
+        else:
+
+            state["tool_output"] = result
+
+            state["error"] = tool_result.get(
+                "message"
+            )
+
+            state["final_response"] = tool_result.get(
+                "message"
+            )
+
+    except Exception as e:
+
+        state["tool_output"] = {
+
+            "tool_result": {
+
+                "status": "error",
+
+                "message": str(e)
+
+            }
+
+        }
+
+        state["error"] = str(e)
+
+        state["final_response"] = (
+            "Conversation memory failed."
+        )
+
+    return state
+
+# ============================================================
 # Intent Router
 # ============================================================
 
@@ -807,6 +873,14 @@ graph_builder.add_node(
     "follow_up_scheduler",
 
     follow_up_scheduler_node
+
+)
+
+graph_builder.add_node(
+
+    "conversation_memory",
+
+    conversation_memory_node
 
 )
 
