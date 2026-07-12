@@ -48,6 +48,15 @@ def follow_up_scheduler_tool(state: dict) -> dict:
         print("\n========== GROQ RESPONSE ==========")
         print(response)
         print("===================================\n")
+        print("\n===== READING MEMORY =====")
+        print("Session:", state["session_id"])
+        print(
+            session_memory.get_value(
+                state["session_id"],
+                "last_hcp"
+            )
+        )
+        print("==========================\n")
 
         data = parse_llm_json(response)
         

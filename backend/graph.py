@@ -29,7 +29,6 @@ from tools.search_hcp import search_hcp_tool
 from tools.next_best_action import next_best_action_tool
 from tools.followup_scheduler import follow_up_scheduler_tool
 
-from memory.conversation_memory import conversation_memory
 
 from nodes.response_builder import response_builder_node
 
@@ -85,7 +84,7 @@ def start_node(state: AgentState) -> AgentState:
 
     except Exception as e:
         state["error"] = str(e)
-        conversation = conversation_memory.get_all(
+        conversation = session_memory.get_all(
             state["session_id"]
         )
 
@@ -448,6 +447,11 @@ def search_hcp_node(
                         "last_hcp",
                         doctors[0]["name"]
                     )
+                    
+                    print("\n===== SAVING MEMORY =====")
+                    print("Session:", session_id)
+                    print("Saving:", doctors[0]["name"])
+                    print("=========================\n")
 
             # ------------------------------------------
             # Build Response
@@ -719,7 +723,7 @@ def follow_up_scheduler_node(
         )
 
     return state
-    
+
 # ============================================================
 # Intent Router
 # ============================================================

@@ -46,8 +46,8 @@ class SessionMemory:
 
     def set_value(
         self,
-        session_id: str,
-        key: str,
+        session_id,
+        key,
         value
     ):
 
@@ -56,13 +56,21 @@ class SessionMemory:
             self.values[session_id] = {}
 
         self.values[session_id][key] = deepcopy(value)
+        
+        print("\nMEMORY AFTER SAVE")
+        
+        print(self.values)
 
     def get_value(
         self,
-        session_id: str,
-        key: str
+        session_id,
+        key
     ):
+        
+        print("\nMEMORY WHEN READING")
 
+        print(self.values)
+        
         if session_id not in self.values:
 
             return None
