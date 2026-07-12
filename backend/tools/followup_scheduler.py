@@ -48,6 +48,12 @@ def follow_up_scheduler_tool(state: dict) -> dict:
         data = parse_llm_json(response)
 
         hcp_name = data.get("hcp_name", "").strip()
+        
+        if not hcp_name:
+
+            hcp_name = state["conversation"].get(
+                "last_hcp"
+            )
 
         follow_up_str = data.get("follow_up", "").strip()
 

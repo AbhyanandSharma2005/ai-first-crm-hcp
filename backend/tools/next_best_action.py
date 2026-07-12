@@ -17,6 +17,12 @@ def next_best_action_tool(state: dict) -> dict:
     try:
 
         hcp_name = state.get("hcp_name")
+        
+        if not hcp_name:
+
+            hcp_name = state["conversation"].get(
+                "last_hcp"
+            )
 
         if not hcp_name:
 

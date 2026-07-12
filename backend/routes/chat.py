@@ -3,6 +3,8 @@ from pydantic import BaseModel
 
 from graph import graph
 
+from services.session_memory import session_memory
+
 
 router = APIRouter(
     prefix="/chat",
@@ -10,15 +12,33 @@ router = APIRouter(
 )
 
 
+# ============================================================
+# Request Model
+# ============================================================
+
 class ChatRequest(BaseModel):
+
+    session_id: str
+
     message: str
 
 
+# ============================================================
+# Response Model
+# ============================================================
+
 class ChatResponse(BaseModel):
+
     intent: str
+
     response: str
+
     error: str | None = None
 
+
+# ============================================================
+# Chat Endpoint
+# ============================================================
 
 @router.post(
     "/",
@@ -26,31 +46,79 @@ class ChatResponse(BaseModel):
 )
 def chat_with_agent(request: ChatRequest):
 
-    initial_state = {
+    # --------------------------------------------
+    # Load previous conversation
+    # --------------------------------------------
 
-        "user_message": request.message,
+    previous_state = session_memory.get(
+        request.session_id
+    )
 
-        "intent": "",
+    # --------------------------------------------
+    # First message in this session
+    # --------------------------------------------
 
-        "tool_output": {},
+    if previous_state is None:
 
-        "final_response": "",
+        state = {
 
-        "interaction_id": None,
+            "user_message": request.message,
 
-        "hcp_name": None,
+            "intent": "",
 
-        "summary": None,
+            "tool_output": {},
 
-        "product": None,
+            "final_response": "",
 
-        "follow_up": None,
+            "interaction_id": None,
 
-        "error": None
+            "hcp_name": None,
 
-    }
+            "summary": None,
 
-    result = graph.invoke(initial_state)
+            "product": None,
+
+            "follow_up": None,
+
+            "error": None
+
+        }
+
+    # --------------------------------------------
+    # Existing conversation
+    # --------------------------------------------
+
+    else:
+
+        state = previous_state
+
+        state["user_message"] = request.message
+
+        # Reset values generated per request
+        state["tool_output"] = {}
+
+        state["final_response"] = ""
+
+        state["error"] = None
+
+    # --------------------------------------------
+    # Execute LangGraph
+    # --------------------------------------------
+
+    result = graph.invoke(state)
+
+    # --------------------------------------------
+    # Save updated conversation
+    # --------------------------------------------
+
+    session_memory.save(
+        request.session_id,
+        result
+    )
+
+    # --------------------------------------------
+    # Return API response
+    # --------------------------------------------
 
     return ChatResponse(
 
