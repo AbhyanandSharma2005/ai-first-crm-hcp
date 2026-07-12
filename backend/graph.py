@@ -818,6 +818,9 @@ def route_intent(state: AgentState):
     
     elif intent == "FOLLOW_UP":
         return "follow_up_scheduler"
+        
+    elif intent == "CONVERSATION_MEMORY":
+        return "conversation_memory"
 
     return END
 
