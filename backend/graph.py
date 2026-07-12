@@ -145,6 +145,10 @@ def log_interaction_node(state: AgentState) -> AgentState:
                 "hcp_name",
                 state["hcp_name"]
             )
+            
+            if state["hcp_name"]:
+
+                state["conversation"]["last_hcp"] = state["hcp_name"]
 
             state["product"] = tool_result.get(
                 "product",
@@ -402,6 +406,12 @@ def search_hcp_node(
                 "hcp",
                 []
             )
+            
+            if doctors:
+
+                state["conversation"]["last_hcp"] = doctors[0]["name"]
+
+                state["hcp_name"] = doctors[0]["name"]
 
     # -----------------------------------------
     # Save search results into conversation memory
@@ -503,6 +513,10 @@ def next_best_action_node(
             {}
         )
 
+        state["conversation"]["last_hcp"] = tool_result.get(
+            "hcp_name"
+        )
+        
         if tool_result.get("status") == "success":
 
             state["tool_output"] = result
@@ -585,6 +599,10 @@ def follow_up_scheduler_node(
             state["follow_up"] = tool_result.get(
                 "follow_up",
                 state["follow_up"]
+            )
+            
+            state["conversation"]["last_hcp"] = tool_result.get(
+                "hcp_name"
             )
 
             state["tool_output"] = result
