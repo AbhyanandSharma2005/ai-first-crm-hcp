@@ -27,6 +27,8 @@ from tools.search_hcp import search_hcp_tool
 from tools.next_best_action import next_best_action_tool
 from tools.followup_scheduler import follow_up_scheduler_tool
 
+from memory.conversation_memory import conversation_memory
+
 
 # ============================================================
 # Agent State
@@ -36,6 +38,9 @@ class AgentState(TypedDict):
     """
     Shared state used by every LangGraph node.
     """
+    session_id: str
+
+    conversation: dict[str, Any]
 
     user_message: str
     intent: str
@@ -76,6 +81,12 @@ def start_node(state: AgentState) -> AgentState:
 
     except Exception as e:
         state["error"] = str(e)
+        conversation = conversation_memory.get_all(
+            state["session_id"]
+        )
+
+        state["conversation"] = conversation
+
         return state
 
 
@@ -150,6 +161,36 @@ def log_interaction_node(state: AgentState) -> AgentState:
             state["summary"] = tool_result.get(
                 "summary",
                 state["summary"]
+            )
+            
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_hcp",
+
+                state["hcp_name"]
+
+            )
+
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_summary",
+
+                state["summary"]
+
+            )
+
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_product",
+
+                state["product"]
+
             )
 
             state["tool_output"] = result
@@ -252,6 +293,36 @@ def edit_interaction_node(
                 state["summary"]
             )
 
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_hcp",
+
+                state["hcp_name"]
+
+            )
+
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_summary",
+
+                state["summary"]
+
+            )
+
+            conversation_memory.save(
+
+                state["session_id"],
+
+                "last_product",
+
+                state["product"]
+
+            )            
+
             state["tool_output"] = result
 
             state["final_response"] = (
@@ -332,7 +403,23 @@ def search_hcp_node(
                 []
             )
 
+    # -----------------------------------------
+    # Save search results into conversation memory
+    # -----------------------------------------
+            conversation_memory.save(
+                state["session_id"],
+                "last_search",
+                doctors
+            )
+
             if doctors:
+
+            # Save first doctor as the active HCP
+                conversation_memory.save(
+                    state["session_id"],
+                    "last_hcp",
+                    doctors[0]["name"]
+                )
 
                 response = (
                     "Matching HCPs:\n\n"
