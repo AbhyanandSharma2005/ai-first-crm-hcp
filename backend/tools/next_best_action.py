@@ -20,7 +20,12 @@ def next_best_action_tool(state: dict) -> dict:
         
         if not hcp_name:
 
-            hcp_name = state["conversation"].get(
+            conversation = state.get(
+                "conversation",
+                {}
+            )
+
+            hcp_name = conversation.get(
                 "last_hcp"
             )
 

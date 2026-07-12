@@ -94,7 +94,9 @@ def search_hcp_tool(state: dict) -> dict:
 
                 "status": "success",
 
-                "hcp": doctors
+                "hcp": doctors,
+
+                "last_hcp": doctors[0]["name"] if doctors else None
 
             }
 
