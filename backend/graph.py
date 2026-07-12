@@ -17,7 +17,9 @@ END
 
 from typing import TypedDict, Optional, Any
 
+from services.session_memory import session_memory
 from langgraph.graph import StateGraph, END
+
 
 from services.intent_classifier import intent_classifier
 
@@ -121,7 +123,7 @@ def log_interaction_node(state: AgentState) -> AgentState:
     """
     Executes the Log Interaction tool,
     updates graph state,
-    and stores important values in Conversation Memory.
+    and stores important values in Session Memory.
     """
 
     print("\n==============================")
@@ -139,9 +141,9 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
         if tool_result.get("status") == "success":
 
-            # -----------------------------
-            # Update State
-            # -----------------------------
+            # --------------------------------------------------
+            # Update Agent State
+            # --------------------------------------------------
 
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
@@ -172,41 +174,47 @@ def log_interaction_node(state: AgentState) -> AgentState:
 
             state["error"] = None
 
-            # -----------------------------
+            # --------------------------------------------------
             # Save Conversation Memory
-            # -----------------------------
+            # --------------------------------------------------
 
             session_id = state.get("session_id")
 
             if session_id:
 
-                conversation_memory.save(
+                session_memory.set_value(
                     session_id,
                     "last_hcp",
                     state["hcp_name"]
                 )
 
-                conversation_memory.save(
-                    session_id,
-                    "last_summary",
-                    state["summary"]
-                )
-
-                conversation_memory.save(
+                session_memory.set_value(
                     session_id,
                     "last_product",
                     state["product"]
                 )
 
-                conversation_memory.save(
+                session_memory.set_value(
+                    session_id,
+                    "last_summary",
+                    state["summary"]
+                )
+
+                session_memory.set_value(
                     session_id,
                     "last_follow_up",
                     state["follow_up"]
                 )
 
-            # -----------------------------
+                session_memory.set_value(
+                    session_id,
+                    "last_interaction_id",
+                    state["interaction_id"]
+                )
+
+            # --------------------------------------------------
             # Final Response
-            # -----------------------------
+            # --------------------------------------------------
 
             state["final_response"] = (
                 "Interaction logged successfully.\n\n"
@@ -256,7 +264,7 @@ def edit_interaction_node(state: AgentState) -> AgentState:
     """
     Executes Edit Interaction tool,
     updates graph state,
-    and refreshes Conversation Memory.
+    and refreshes Session Memory.
     """
 
     print("\n==============================")
@@ -274,9 +282,9 @@ def edit_interaction_node(state: AgentState) -> AgentState:
 
         if tool_result.get("status") == "success":
 
-            # -----------------------------
-            # Update State
-            # -----------------------------
+            # --------------------------------------------------
+            # Update Agent State
+            # --------------------------------------------------
 
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
@@ -307,49 +315,54 @@ def edit_interaction_node(state: AgentState) -> AgentState:
 
             state["error"] = None
 
-            # -----------------------------
-            # Update Conversation Memory
-            # -----------------------------
+            # --------------------------------------------------
+            # Update Session Memory
+            # --------------------------------------------------
 
             session_id = state.get("session_id")
 
             if session_id:
 
-                conversation_memory.save(
+                session_memory.set_value(
                     session_id,
                     "last_hcp",
                     state["hcp_name"]
                 )
 
-                conversation_memory.save(
-                    session_id,
-                    "last_summary",
-                    state["summary"]
-                )
-
-                conversation_memory.save(
+                session_memory.set_value(
                     session_id,
                     "last_product",
                     state["product"]
                 )
 
-                conversation_memory.save(
+                session_memory.set_value(
+                    session_id,
+                    "last_summary",
+                    state["summary"]
+                )
+
+                session_memory.set_value(
                     session_id,
                     "last_follow_up",
                     state["follow_up"]
                 )
 
-            # -----------------------------
+                session_memory.set_value(
+                    session_id,
+                    "last_interaction_id",
+                    state["interaction_id"]
+                )
+
+            # --------------------------------------------------
             # Final Response
-            # -----------------------------
+            # --------------------------------------------------
 
             state["final_response"] = (
                 "Interaction updated successfully.\n\n"
                 f"HCP: {state['hcp_name']}\n"
                 f"Product: {state['product']}\n"
                 f"Follow-up: {state['follow_up']}\n\n"
-                f"Updated Summary:\n"
-                f"{state['summary']}"
+                f"Updated Summary:\n{state['summary']}"
             )
 
         else:
@@ -418,9 +431,11 @@ def search_hcp_node(
             
             if doctors:
 
-                state["conversation"]["last_hcp"] = doctors[0]["name"]
-
-                state["hcp_name"] = doctors[0]["name"]
+                session_memory.set_value(
+                    state["session_id"],
+                    "last_hcp",
+                    doctors[0]["name"]
+                )
 
     # -----------------------------------------
     # Save search results into conversation memory
@@ -525,16 +540,26 @@ def next_best_action_node(
 
         if tool_result.get("status") == "success":
 
-            # ---------------------------------
-            # Update state
-            # ---------------------------------
-
             state["hcp_name"] = tool_result.get(
                 "hcp_name",
                 state["hcp_name"]
             )
 
+            session_memory.set_value(
+                state["session_id"],
+                "last_hcp",
+                state["hcp_name"]
+            )
+
             state["tool_output"] = result
+
+            state["final_response"] = (
+                "Next Best Action\n\n"
+                + tool_result.get(
+                    "recommendation",
+                    "No recommendation available."
+                )
+            )
 
             state["error"] = None
 
@@ -546,7 +571,7 @@ def next_best_action_node(
 
             if session_id:
 
-                conversation_memory.save(
+                session_memory.save(
                     session_id,
                     "last_hcp",
                     state["hcp_name"]
@@ -624,10 +649,6 @@ def follow_up_scheduler_node(
 
         if tool_result.get("status") == "success":
 
-            # ---------------------------------
-            # Update State
-            # ---------------------------------
-
             state["interaction_id"] = tool_result.get(
                 "interaction_id",
                 state["interaction_id"]
@@ -641,31 +662,23 @@ def follow_up_scheduler_node(
             state["follow_up"] = tool_result.get(
                 "follow_up",
                 state["follow_up"]
+            ) 
+
+            session_memory.set_value(
+                state["session_id"],
+                "last_hcp",
+                state["hcp_name"]
             )
 
             state["tool_output"] = result
 
+            state["final_response"] = (
+                "Follow-up scheduled successfully.\n\n"
+                f"HCP: {state['hcp_name']}\n"
+                f"Follow-up Date: {state['follow_up']}"
+            )
+
             state["error"] = None
-
-            # ---------------------------------
-            # Save Conversation Memory
-            # ---------------------------------
-
-            session_id = state.get("session_id")
-
-            if session_id:
-
-                conversation_memory.save(
-                    session_id,
-                    "last_hcp",
-                    state["hcp_name"]
-                )
-
-                conversation_memory.save(
-                    session_id,
-                    "last_follow_up",
-                    state["follow_up"]
-                )
 
             # ---------------------------------
             # Final Response

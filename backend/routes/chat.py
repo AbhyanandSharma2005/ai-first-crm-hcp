@@ -55,54 +55,36 @@ def chat_with_agent(request: ChatRequest):
     )
 
     # --------------------------------------------
-    # First message in this session
+    # First message in this session or existing conversation
     # --------------------------------------------
 
     if previous_state is None:
 
+        memory = session_memory.get(request.session_id)
+
+        if memory is None:
+            memory = {}
+
         state = {
             "session_id": request.session_id,
-
             "user_message": request.message,
-
             "intent": "",
-
             "tool_output": {},
-
             "final_response": "",
-
             "interaction_id": None,
-
-            "hcp_name": None,
-
-            "summary": None,
-
-            "product": None,
-
-            "follow_up": None,
-
-            "error": None,
-
-            "conversation": {
-            "last_hcp": None
-            }
+            "hcp_name": memory.get("last_hcp"),
+            "summary": memory.get("last_summary"),
+            "product": memory.get("last_product"),
+            "follow_up": memory.get("last_follow_up"),
+            "error": None
         }
 
-    # --------------------------------------------
-    # Existing conversation
-    # --------------------------------------------
-
     else:
-
         state = previous_state
-
         state["user_message"] = request.message
-
         # Reset values generated per request
         state["tool_output"] = {}
-
         state["final_response"] = ""
-
         state["error"] = None
 
     # --------------------------------------------
