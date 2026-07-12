@@ -34,6 +34,8 @@ NEXT_BEST_ACTION = "NEXT_BEST_ACTION"
 
 FOLLOW_UP = "FOLLOW_UP"
 
+CONVERSATION_MEMORY = "CONVERSATION_MEMORY"
+
 
 # ==========================================
 # General Chat
@@ -57,6 +59,8 @@ SUPPORTED_INTENTS = [
     NEXT_BEST_ACTION,
 
     FOLLOW_UP,
+    
+    CONVERSATION_MEMORY,
 
     CHAT
 

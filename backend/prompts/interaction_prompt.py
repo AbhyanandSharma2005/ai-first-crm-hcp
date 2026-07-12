@@ -34,35 +34,39 @@ If information is missing, clearly mention it.
 # INTERACTION SUMMARY PROMPT
 # ==========================================================
 
+# ==========================================================
+# INTENT CLASSIFICATION PROMPT
+# ==========================================================
+
 INTENT_CLASSIFICATION_PROMPT = """
 You are an AI assistant for a Pharmaceutical CRM system.
 
-Your task is to classify the user's request into EXACTLY ONE of the following intents.
+Your task is to classify the user's message into EXACTLY ONE intent.
 
-Return ONLY one of these values.
+Return ONLY one of these labels.
 
 LOG_INTERACTION
 EDIT_INTERACTION
 SEARCH_HCP
 NEXT_BEST_ACTION
 FOLLOW_UP
+CONVERSATION_MEMORY
 CHAT
 
 --------------------------------------------------
 
-Intent Descriptions
-
 LOG_INTERACTION
 
-The user wants to record or save a new doctor interaction.
+The user wants to record or save a new interaction.
 
 Examples:
 
-- I met Dr Sharma today.
+- Met Dr Sharma today.
 - Log today's meeting.
 - Save this interaction.
-- Record my visit.
-- We discussed CardioX today.
+- Record today's visit.
+- Discussed CardioX with Dr Gupta.
+- I met Dr Mehta yesterday.
 
 --------------------------------------------------
 
@@ -72,17 +76,18 @@ The user wants to modify an existing interaction.
 
 Examples:
 
-- Update today's meeting.
+- Edit the interaction.
+- Update today's summary.
 - Change the follow-up date.
-- Edit interaction.
-- Modify the summary.
+- Modify the product.
 - Replace CardioX with HeartCare.
+- Correct the doctor's name.
 
 --------------------------------------------------
 
 SEARCH_HCP
 
-The user wants to search for an HCP or doctor.
+The user wants to search for doctors or HCPs.
 
 Examples:
 
@@ -91,41 +96,73 @@ Examples:
 - Show neurologists.
 - Doctors in Apollo Hospital.
 - Search HCP.
+- List doctors in AIIMS.
 
 --------------------------------------------------
 
 NEXT_BEST_ACTION
 
-The user wants recommendations or suggestions.
+The user wants a recommendation.
 
 Examples:
 
 - What should I do next?
-- Recommend the next action.
-- What's the best follow-up?
+- Recommend next action.
 - Suggest the next visit.
+- What is the best action?
 - What should I send to Dr Sharma?
 
 --------------------------------------------------
 
 FOLLOW_UP
 
-The user wants to schedule or change a follow-up.
+The user wants to create or update a follow-up.
 
 Examples:
 
-- Schedule a follow-up.
-- Remind me after two weeks.
-- Visit Dr Sharma next Friday.
-- Follow up on 2026-08-15.
-- Set a reminder.
+- Schedule follow-up.
 - Schedule next visit.
+- Follow up after two weeks.
+- Remind me after 15 days.
+- Set reminder for Dr Sharma.
+- Visit Dr Gupta next Friday.
+- Change follow-up date.
+- Schedule it for next month.
+
+--------------------------------------------------
+
+CONVERSATION_MEMORY
+
+The user is asking about something already discussed in the conversation.
+
+Examples:
+
+- Which product did we discuss?
+- What product was discussed?
+- Summarize the last meeting.
+- What was the meeting summary?
+- When is the follow-up?
+- What follow-up did we schedule?
+- What did you recommend?
+- What was your recommendation?
+- Which doctor were we discussing?
+- Who was the last HCP?
+- What hospital does he work at?
 
 --------------------------------------------------
 
 CHAT
 
-Anything else.
+Anything that does not belong to the above categories.
+
+Examples:
+
+- Hello
+- Hi
+- Thank you
+- Good morning
+- Who are you?
+- Tell me a joke.
 
 --------------------------------------------------
 
@@ -289,103 +326,3 @@ User Message:
 {message}
 """
 
-
-# ==========================================================
-# INTENT CLASSIFICATION PROMPT
-# ==========================================================
-
-INTENT_CLASSIFICATION_PROMPT = """
-You are an AI assistant for a Pharmaceutical CRM system.
-
-Your task is to classify the user's message into EXACTLY ONE intent.
-
-Return ONLY one of these labels.
-
-LOG_INTERACTION
-EDIT_INTERACTION
-SEARCH_HCP
-NEXT_BEST_ACTION
-FOLLOW_UP
-CHAT
-
----------------------------------------
-
-LOG_INTERACTION
-
-Examples:
-
-- Log today's meeting.
-- Met Dr Sharma today.
-- Save this interaction.
-- Record today's visit.
-- Discussed CardioX with Dr Gupta.
-
----------------------------------------
-
-EDIT_INTERACTION
-
-Examples:
-
-- Edit the interaction.
-- Change today's summary.
-- Update the follow-up.
-- Modify the product.
-- Correct the doctor's name.
-
----------------------------------------
-
-SEARCH_HCP
-
-Examples:
-
-- Find Dr Sharma.
-- Search cardiologists.
-- Doctors in Apollo Hospital.
-- Search HCP.
-
----------------------------------------
-
-NEXT_BEST_ACTION
-
-Examples:
-
-- What should I do next?
-- Recommend next action.
-- Suggest the next visit.
-- What is the best action?
-
----------------------------------------
-
-FOLLOW_UP
-
-Examples:
-
-- Schedule follow-up.
-- Schedule next visit.
-- Follow up after two weeks.
-- Remind me after 15 days.
-- Set reminder for Dr Sharma.
-- Visit Dr Gupta next Friday.
-- Schedule reminder.
-- Change follow-up date.
-
----------------------------------------
-
-CHAT
-
-Anything else.
-
----------------------------------------
-
-User Message:
-
-{message}
-
-Return ONLY the intent label.
-
-No explanation.
-
-No punctuation.
-
-No markdown.
-"""

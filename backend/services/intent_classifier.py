@@ -10,6 +10,7 @@ from constants.intents import (
     SEARCH_HCP,
     NEXT_BEST_ACTION,
     FOLLOW_UP,
+    CONVERSATION_MEMORY,
     CHAT,
     SUPPORTED_INTENTS,
 )
@@ -96,8 +97,8 @@ class IntentClassifier:
 
 
     def _fallback_classifier(
-            self,
-            message: str
+        self,
+        message: str
     ) -> str:
         """
         Rule based fallback classifier.
@@ -105,12 +106,47 @@ class IntentClassifier:
 
         text = message.lower()
 
+    # ====================================================
+    # 1. CONVERSATION MEMORY
+    # ====================================================
 
+        if any(word in text for word in [
 
-        # ====================================================
-        # 1. EDIT INTERACTION
-        # Highest priority
-        # ====================================================
+            "which product",
+            "what product",
+            "product did we discuss",
+            "last product",
+
+            "summary",
+            "summarize",
+            "last meeting",
+            "meeting summary",
+
+            "follow-up date",
+            "follow up date",
+            "when is the follow",
+            "when is the follow-up",
+            "last follow-up",
+
+            "recommendation",
+            "what did you recommend",
+            "last recommendation",
+
+            "last doctor",
+            "last hcp",
+            "which doctor",
+            "who did we discuss",
+
+            "previous interaction",
+            "last interaction"
+
+        ]):
+
+            return CONVERSATION_MEMORY
+
+    # ====================================================
+    # 2. EDIT INTERACTION
+    # ====================================================
 
         if any(word in text for word in [
 
@@ -125,11 +161,9 @@ class IntentClassifier:
 
             return EDIT_INTERACTION
 
-
-
-        # ====================================================
-        # 2. LOG INTERACTION
-        # ====================================================
+    # ====================================================
+    # 3. LOG INTERACTION
+    # ====================================================
 
         if any(word in text for word in [
 
@@ -139,17 +173,16 @@ class IntentClassifier:
             "visited",
             "met",
             "meeting",
-            "interaction"
+            "interaction",
+            "discussed"
 
         ]):
 
             return LOG_INTERACTION
 
-
-
-        # ====================================================
-        # 3. SEARCH HCP
-        # ====================================================
+    # ====================================================
+    # 4. SEARCH HCP
+    # ====================================================
 
         if any(word in text for word in [
 
@@ -166,11 +199,9 @@ class IntentClassifier:
 
             return SEARCH_HCP
 
-
-
-        # ====================================================
-        # 4. NEXT BEST ACTION
-        # ====================================================
+    # ====================================================
+    # 5. NEXT BEST ACTION
+    # ====================================================
 
         if any(word in text for word in [
 
@@ -179,20 +210,19 @@ class IntentClassifier:
             "recommendation",
             "suggest",
             "action",
-            "should i do"
+            "should i do",
+            "best action"
 
         ]):
 
             return NEXT_BEST_ACTION
 
+    # ====================================================
+    # 6. FOLLOW UP
+    # ====================================================
 
-
-        # ====================================================
-        # 5. FOLLOW UP
-        # ====================================================
-
-        # Follow-up
         if any(word in text for word in [
+
             "follow",
             "follow-up",
             "follow up",
@@ -208,17 +238,16 @@ class IntentClassifier:
             "after one month",
             "after 15 days",
             "after 30 days"
+
         ]):
+
             return FOLLOW_UP
 
+    # ====================================================
+    # 7. CHAT
+    # ====================================================
 
-
-        # ====================================================
-        # 6. CHAT
-        # ====================================================
-
-        return CHAT
-
+            return CHAT
 
 
 # Singleton instance
