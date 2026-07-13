@@ -1,14 +1,15 @@
 from pathlib import Path
 
-from rag.loader import document_loader
-from rag.splitter import document_splitter
-from rag.vector_store import vector_store
-
-
-INDEX_FILE = "rag/faiss.index"
+from rag.vector_store import (
+    vector_store,
+    INDEX_FILE,
+)
 
 
 def initialize_rag():
+    """
+    Initialize the FAISS index on application startup.
+    """
 
     if Path(INDEX_FILE).exists():
 
@@ -18,14 +19,8 @@ def initialize_rag():
 
     print("Creating RAG index...")
 
-    documents = document_loader.load_documents(
-        "rag/documents"
-    )
+    vector_store.build()
 
-    chunks = document_splitter.split_documents(
-        documents
-    )
-
-    vector_store.build(chunks)
+    vector_store.save()
 
     print("RAG index created successfully.")
