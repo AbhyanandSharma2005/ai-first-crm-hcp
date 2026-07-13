@@ -1,16 +1,9 @@
-from services.conversation_memory import conversation_memory
+from services.session_memory import session_memory
 
 
 def conversation_memory_tool(state: dict) -> dict:
     """
     Returns information stored in conversation memory.
-
-    Supported questions:
-    - Which product did we discuss?
-    - Summarize the last meeting.
-    - When is the follow-up?
-    - What should I do next?
-    - Who is the last HCP?
     """
 
     session_id = state.get("session_id")
@@ -25,38 +18,38 @@ def conversation_memory_tool(state: dict) -> dict:
 
     text = state["user_message"].lower()
 
-    # ----------------------------
-    # Read memory
-    # ----------------------------
+    # ----------------------------------------
+    # Read Conversation Memory
+    # ----------------------------------------
 
-    last_hcp = conversation_memory.get(
+    last_hcp = session_memory.get_value(
         session_id,
         "last_hcp"
     )
 
-    last_product = conversation_memory.get(
+    last_product = session_memory.get_value(
         session_id,
         "last_product"
     )
 
-    last_summary = conversation_memory.get(
+    last_summary = session_memory.get_value(
         session_id,
         "last_summary"
     )
 
-    last_follow_up = conversation_memory.get(
+    last_follow_up = session_memory.get_value(
         session_id,
         "last_follow_up"
     )
 
-    last_recommendation = conversation_memory.get(
+    last_recommendation = session_memory.get_value(
         session_id,
         "last_recommendation"
     )
 
-    # ----------------------------
+    # ----------------------------------------
     # Product
-    # ----------------------------
+    # ----------------------------------------
 
     if any(word in text for word in [
         "product",
@@ -67,11 +60,11 @@ def conversation_memory_tool(state: dict) -> dict:
         if last_product:
             answer = f"The last product discussed was {last_product}."
         else:
-            answer = "No product is available in conversation memory."
+            answer = "No product found in conversation memory."
 
-    # ----------------------------
+    # ----------------------------------------
     # Summary
-    # ----------------------------
+    # ----------------------------------------
 
     elif any(word in text for word in [
         "summary",
@@ -84,9 +77,9 @@ def conversation_memory_tool(state: dict) -> dict:
         else:
             answer = "No meeting summary found."
 
-    # ----------------------------
+    # ----------------------------------------
     # Follow-up
-    # ----------------------------
+    # ----------------------------------------
 
     elif any(word in text for word in [
         "follow",
@@ -103,9 +96,9 @@ def conversation_memory_tool(state: dict) -> dict:
         else:
             answer = "No follow-up has been scheduled."
 
-    # ----------------------------
+    # ----------------------------------------
     # Recommendation
-    # ----------------------------
+    # ----------------------------------------
 
     elif any(word in text for word in [
         "recommendation",
@@ -119,9 +112,9 @@ def conversation_memory_tool(state: dict) -> dict:
         else:
             answer = "No recommendation available."
 
-    # ----------------------------
-    # HCP
-    # ----------------------------
+    # ----------------------------------------
+    # Last HCP
+    # ----------------------------------------
 
     else:
 
@@ -131,13 +124,8 @@ def conversation_memory_tool(state: dict) -> dict:
             answer = "No conversation memory found."
 
     return {
-
         "tool_result": {
-
             "status": "success",
-
             "answer": answer
-
         }
-
     }
