@@ -156,6 +156,9 @@ def chat_with_agent(request: ChatRequest):
     # --------------------------------------------------------
     # Save latest AgentState
     # --------------------------------------------------------
+    print("\n========== FINAL GRAPH RESULT BEFORE MEMORY SAVE ==========")
+    print(result)
+    print("==========================================================")
 
     session_memory.save(
         request.session_id,

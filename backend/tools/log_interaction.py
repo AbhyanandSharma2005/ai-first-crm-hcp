@@ -56,6 +56,10 @@ def log_interaction_tool(state: dict) -> dict:
         # ---------------------------------------
 
         data = parse_llm_json(response)
+        
+        print("\n========== PARSED DATA ==========")
+        print(data)
+        print("=================================")
 
         hcp_name = data.get(
             "hcp_name",
@@ -99,6 +103,12 @@ def log_interaction_tool(state: dict) -> dict:
         # ---------------------------------------
         # Save Interaction
         # ---------------------------------------
+        print("\n========== BEFORE DATABASE SAVE ==========")
+        print("hcp_name:", hcp_name)
+        print("product:", product)
+        print("summary:", summary)
+        print("follow_up:", follow_up)
+        print("==========================================")
 
         interaction = Interaction(
 
