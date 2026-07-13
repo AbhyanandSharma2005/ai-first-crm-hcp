@@ -1,109 +1,204 @@
+from datetime import datetime
+
 from database import SessionLocal
 from models import Interaction
+
+from services.groq_service import groq_service
+from services.json_parser import parse_llm_json
+
+from prompts.interaction_prompt import (
+    SYSTEM_PROMPT,
+    EDIT_INTERACTION_PROMPT,
+)
+
+from services.session_memory import session_memory
 
 
 def edit_interaction_tool(state: dict) -> dict:
     """
-    Updates existing interaction details.
+    Edits the latest interaction of an HCP.
+
+    Flow:
+        User Message
+            ↓
+        Get HCP from LLM or Session Memory
+            ↓
+        Find latest interaction
+            ↓
+        Ask Groq for updated fields
+            ↓
+        Update database
+            ↓
+        Return updated interaction
     """
 
     db = SessionLocal()
 
     try:
 
-        interaction_id = state.get(
-            "interaction_id"
-        )
+        session_id = state.get("session_id")
+        message = state["user_message"]
 
+        # ---------------------------------------------------
+        # Get HCP from state/session memory
+        # ---------------------------------------------------
 
-        if not interaction_id:
+        hcp_name = state.get("hcp_name")
 
+        if not hcp_name and session_id:
+            hcp_name = session_memory.get_value(
+                session_id,
+                "last_hcp"
+            )
+
+        if not hcp_name:
             return {
-
                 "tool_result": {
-
                     "status": "error",
-
-                    "message":
-                    "Interaction ID missing"
-
+                    "message": "No HCP selected."
                 }
-
             }
 
-
+        # ---------------------------------------------------
+        # Fetch latest interaction
+        # ---------------------------------------------------
 
         interaction = (
             db.query(Interaction)
             .filter(
-                Interaction.id == interaction_id
+                Interaction.hcp_name.ilike(f"%{hcp_name}%")
+            )
+            .order_by(
+                Interaction.id.desc()
             )
             .first()
         )
 
-
-        if not interaction:
-
+        if interaction is None:
             return {
-
                 "tool_result": {
-
                     "status": "error",
-
-                    "message":
-                    "Interaction not found"
-
+                    "message": f"No interaction found for {hcp_name}."
                 }
-
             }
 
+        # ---------------------------------------------------
+        # Build prompt
+        # ---------------------------------------------------
 
+        old_interaction = f"""
+HCP Name: {interaction.hcp_name}
+Product: {interaction.product}
+Summary: {interaction.summary}
+Follow-up: {interaction.follow_up}
+"""
 
-        if state.get("summary"):
+        prompt = EDIT_INTERACTION_PROMPT.format(
+            old_interaction=old_interaction,
+            edit_request=message
+        )
 
-            interaction.summary = (
-                state["summary"]
-            )
+        # ---------------------------------------------------
+        # Ask Groq
+        # ---------------------------------------------------
 
+        response = groq_service.chat(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=prompt
+        )
 
-        if state.get("product"):
+        print("\n========== GROQ RESPONSE ==========")
+        print(response)
+        print("===================================\n")
 
-            interaction.product = (
-                state["product"]
-            )
+        data = parse_llm_json(response)
 
+        # ---------------------------------------------------
+        # Update HCP
+        # ---------------------------------------------------
 
-        if state.get("follow_up"):
+        interaction.hcp_name = data.get(
+            "hcp_name",
+            interaction.hcp_name
+        )
 
-            interaction.follow_up = (
-                state["follow_up"]
-            )
+        # ---------------------------------------------------
+        # Update Product
+        # ---------------------------------------------------
 
+        interaction.product = data.get(
+            "product",
+            interaction.product
+        )
+
+        # ---------------------------------------------------
+        # Update Summary
+        # ---------------------------------------------------
+
+        interaction.summary = data.get(
+            "summary",
+            interaction.summary
+        )
+
+        # ---------------------------------------------------
+        # Update Follow-up
+        # ---------------------------------------------------
+
+        follow_up = interaction.follow_up
+
+        follow_up_str = data.get(
+            "follow_up"
+        )
+
+        if follow_up_str:
+
+            try:
+
+                follow_up = datetime.strptime(
+                    follow_up_str,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+                pass
+
+        interaction.follow_up = follow_up
+
+        # ---------------------------------------------------
+        # Save
+        # ---------------------------------------------------
 
         db.commit()
 
         db.refresh(interaction)
 
-
+        # ---------------------------------------------------
+        # Return
+        # ---------------------------------------------------
 
         return {
 
             "tool_result": {
 
-                "status":
-                "success",
+                "status": "success",
 
-                "interaction_id":
-                interaction.id,
+                "interaction_id": interaction.id,
 
-                "summary":
-                interaction.summary
+                "hcp_name": interaction.hcp_name,
+
+                "product": interaction.product,
+
+                "summary": interaction.summary,
+
+                "follow_up": (
+                    interaction.follow_up.isoformat()
+                    if interaction.follow_up
+                    else None
+                )
 
             }
 
         }
-
-
 
     except Exception as e:
 
@@ -113,17 +208,13 @@ def edit_interaction_tool(state: dict) -> dict:
 
             "tool_result": {
 
-                "status":
-                "error",
+                "status": "error",
 
-                "message":
-                str(e)
+                "message": str(e)
 
             }
 
         }
-
-
 
     finally:
 

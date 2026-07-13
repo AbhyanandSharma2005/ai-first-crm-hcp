@@ -1,30 +1,36 @@
 from datetime import datetime
 
 from services.groq_service import groq_service
-
-from prompts.interaction_extraction_prompt import (
-    SYSTEM_PROMPT,
-    INTERACTION_EXTRACTION_PROMPT,
-)
-
 from services.json_parser import parse_llm_json
 
-from database import SessionLocal
+from prompts.interaction_prompt import (
+    SYSTEM_PROMPT,
+    ENTITY_EXTRACTION_PROMPT,
+)
 
+from database import SessionLocal
 from models import Interaction
 
 
 def log_interaction_tool(state: dict) -> dict:
     """
-    Logs an interaction by:
-    1. Extracting structured information using Groq.
-    2. Saving the interaction to PostgreSQL.
-    3. Returning the created interaction details.
+    Logs a new interaction.
+
+    Flow:
+        User Message
+              ↓
+        Groq extracts structured JSON
+              ↓
+        Parse JSON
+              ↓
+        Save Interaction to Database
+              ↓
+        Return structured response
     """
 
     message = state["user_message"]
 
-    prompt = INTERACTION_EXTRACTION_PROMPT.format(
+    prompt = ENTITY_EXTRACTION_PROMPT.format(
         interaction=message
     )
 
@@ -32,32 +38,50 @@ def log_interaction_tool(state: dict) -> dict:
 
     try:
 
-        # -----------------------------------------
-        # Generate structured JSON using Groq
-        # -----------------------------------------
+        # ---------------------------------------
+        # Call Groq
+        # ---------------------------------------
 
         response = groq_service.chat(
             system_prompt=SYSTEM_PROMPT,
             user_prompt=prompt
         )
-        
+
         print("\n========== GROQ RESPONSE ==========")
         print(response)
         print("===================================\n")
 
-        # -----------------------------------------
-        # Parse JSON returned by Groq
-        # -----------------------------------------
+        # ---------------------------------------
+        # Parse JSON
+        # ---------------------------------------
 
         data = parse_llm_json(response)
 
-        # -----------------------------------------
-        # Convert follow-up date
-        # -----------------------------------------
+        hcp_name = data.get(
+            "hcp_name",
+            ""
+        ).strip()
+
+        product = data.get(
+            "product",
+            ""
+        ).strip()
+
+        summary = data.get(
+            "summary",
+            ""
+        ).strip()
+
+        follow_up_str = data.get(
+            "follow_up",
+            ""
+        ).strip()
+
+        # ---------------------------------------
+        # Convert Follow-up Date
+        # ---------------------------------------
 
         follow_up = None
-
-        follow_up_str = data.get("follow_up")
 
         if follow_up_str:
 
@@ -72,26 +96,17 @@ def log_interaction_tool(state: dict) -> dict:
 
                 follow_up = None
 
-        # -----------------------------------------
-        # Save interaction
-        # -----------------------------------------
+        # ---------------------------------------
+        # Save Interaction
+        # ---------------------------------------
 
         interaction = Interaction(
 
-            hcp_name=data.get(
-                "hcp_name",
-                "Unknown"
-            ),
+            hcp_name=hcp_name if hcp_name else "Unknown",
 
-            product=data.get(
-                "product",
-                "Unknown"
-            ),
+            product=product if product else "Unknown",
 
-            summary=data.get(
-                "summary",
-                ""
-            ),
+            summary=summary,
 
             follow_up=follow_up
 
@@ -103,9 +118,9 @@ def log_interaction_tool(state: dict) -> dict:
 
         db.refresh(interaction)
 
-        # -----------------------------------------
-        # Return tool result
-        # -----------------------------------------
+        # ---------------------------------------
+        # Return Complete Tool Result
+        # ---------------------------------------
 
         return {
 
