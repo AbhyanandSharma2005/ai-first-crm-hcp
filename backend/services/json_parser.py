@@ -10,16 +10,23 @@ def parse_llm_json(response: str) -> dict:
 
         response = response.strip()
 
-        if response.startswith("```json"):
-            response = response.replace("```json", "")
+        # Remove markdown code fences
+        if "```" in response:
 
-        if response.endswith("```"):
-            response = response[:-3]
-
-        response = response.strip()
+            response = (
+                response
+                .replace("```json", "")
+                .replace("```", "")
+                .strip()
+            )
 
         return json.loads(response)
 
-    except Exception:
+    except Exception as e:
+
+        print("\nJSON PARSE ERROR")
+        print(e)
+        print("RAW RESPONSE:")
+        print(response)
 
         return {}
