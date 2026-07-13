@@ -2,33 +2,23 @@ from datetime import datetime
 
 from database import SessionLocal
 from models import Interaction
-from agents.state import AgentState
 
 from services.groq_service import groq_service
 from services.json_parser import parse_llm_json
 from services.session_memory import session_memory
 
-from prompts.follow_up_prompt import FOLLOW_UP_PROMPT
-from prompts.interaction_prompt import SYSTEM_PROMPT
-
-
-
+from prompts.interaction_prompt import (
+    SYSTEM_PROMPT,
+    FOLLOW_UP_PROMPT,
+)
 
 
 def follow_up_scheduler_tool(state: dict) -> dict:
     """
-    Schedules or updates a follow-up for an HCP.
+    Schedule or update a follow-up.
 
-    Flow:
-    User Message
-        ↓
-    Groq extracts HCP + follow-up date
-        ↓
-    Parse JSON
-        ↓
-    Update latest interaction in DB
-        ↓
-    Return response
+    If the user doesn't mention the HCP name,
+    the last HCP stored in Session Memory is used.
     """
 
     message = state["user_message"]
@@ -49,19 +39,14 @@ def follow_up_scheduler_tool(state: dict) -> dict:
         print("\n========== GROQ RESPONSE ==========")
         print(response)
         print("===================================\n")
-        print("\n===== READING MEMORY =====")
-        print("Session:", state["session_id"])
-        print(
-            session_memory.get_value(
-                state["session_id"],
-                "last_hcp"
-            )
-        )
-        print("==========================\n")
 
         data = parse_llm_json(response)
-        
+
         session_id = state.get("session_id")
+
+        # ----------------------------------------------------
+        # Extract HCP
+        # ----------------------------------------------------
 
         hcp_name = data.get(
             "hcp_name",
@@ -72,21 +57,29 @@ def follow_up_scheduler_tool(state: dict) -> dict:
 
         if not hcp_name and session_id:
 
-            print("Trying session memory...")
+            print("Using Session Memory...")
 
             hcp_name = session_memory.get_value(
                 session_id,
                 "last_hcp"
             )
-            
+
             if hcp_name:
                 hcp_name = hcp_name.strip()
 
-            print("Memory HCP:", hcp_name)
+        print("Final HCP:", hcp_name)
 
-        follow_up_str = data.get("follow_up", "").strip()
+        # ----------------------------------------------------
+        # Extract Follow-up Date
+        # ----------------------------------------------------
+
+        follow_up_str = data.get(
+            "follow_up",
+            ""
+        ).strip()
 
         if not hcp_name:
+
             return {
                 "tool_result": {
                     "status": "error",
@@ -95,6 +88,7 @@ def follow_up_scheduler_tool(state: dict) -> dict:
             }
 
         if not follow_up_str:
+
             return {
                 "tool_result": {
                     "status": "error",
@@ -118,10 +112,16 @@ def follow_up_scheduler_tool(state: dict) -> dict:
                 }
             }
 
+        # ----------------------------------------------------
+        # Find Latest Interaction
+        # ----------------------------------------------------
+
         interaction = (
             db.query(Interaction)
             .filter(
-                Interaction.hcp_name.ilike(f"%{hcp_name}%")
+                Interaction.hcp_name.ilike(
+                    f"%{hcp_name}%"
+                )
             )
             .order_by(
                 Interaction.id.desc()
@@ -138,11 +138,37 @@ def follow_up_scheduler_tool(state: dict) -> dict:
                 }
             }
 
+        # ----------------------------------------------------
+        # Update Database
+        # ----------------------------------------------------
+
         interaction.follow_up = follow_up_date
 
         db.commit()
 
         db.refresh(interaction)
+
+        # ----------------------------------------------------
+        # Update Session Memory
+        # ----------------------------------------------------
+
+        if session_id:
+
+            session_memory.set_value(
+                session_id,
+                "last_hcp",
+                interaction.hcp_name
+            )
+
+            session_memory.set_value(
+                session_id,
+                "last_follow_up",
+                str(interaction.follow_up)
+            )
+
+        # ----------------------------------------------------
+        # Return Success
+        # ----------------------------------------------------
 
         return {
 
@@ -154,7 +180,9 @@ def follow_up_scheduler_tool(state: dict) -> dict:
 
                 "hcp_name": interaction.hcp_name,
 
-                "follow_up": str(interaction.follow_up)
+                "follow_up": str(
+                    interaction.follow_up
+                )
 
             }
 
