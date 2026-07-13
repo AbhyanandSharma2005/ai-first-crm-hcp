@@ -4,7 +4,7 @@ from models import Interaction
 from services.groq_service import groq_service
 from services.session_memory import session_memory
 
-from prompts.next_best_action_prompt import (
+from prompts.interaction_prompt import (
     SYSTEM_PROMPT,
     NEXT_BEST_ACTION_PROMPT,
 )

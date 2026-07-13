@@ -1,4 +1,4 @@
-from agents.graph import crm_agent
+from backend.agents.old_graph import crm_agent
 
 
 

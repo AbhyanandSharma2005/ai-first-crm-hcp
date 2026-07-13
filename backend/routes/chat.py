@@ -91,6 +91,11 @@ def chat_with_agent(request: ChatRequest):
                 request.session_id,
                 "last_follow_up"
             ),
+            
+            "recommendation": session_memory.get_value(
+                request.session_id,
+                "last_recommendation"
+            ),
 
             "error": None
 

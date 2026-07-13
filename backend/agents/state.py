@@ -52,6 +52,8 @@ class AgentState(TypedDict):
     product: Optional[str]
 
     follow_up: Optional[str]
+    
+    recommendation: Optional[str]
 
     # -------------------------------------------------
     # Error

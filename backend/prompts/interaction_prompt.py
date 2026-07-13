@@ -152,14 +152,14 @@ Interaction
 
 Return ONLY valid JSON.
 
-{
+{{
     "hcp_name":"",
     "hospital":"",
     "specialization":"",
     "product":"",
     "summary":"",
     "follow_up":"YYYY-MM-DD"
-}
+}}
 """
 
 
@@ -176,14 +176,14 @@ Interaction
 
 {interaction}
 
-{
+{{
     "hcp_name":"",
     "hospital":"",
     "specialization":"",
     "product":"",
     "summary":"",
     "follow_up":"YYYY-MM-DD"
-}
+}}
 """
 
 
@@ -204,12 +204,12 @@ User Request
 
 Return ONLY JSON.
 
-{
+{{
     "hcp_name":"",
     "product":"",
     "summary":"",
     "follow_up":"YYYY-MM-DD"
-}
+}}
 """
 
 
@@ -226,11 +226,11 @@ User Request
 
 Return ONLY JSON.
 
-{
+{{
     "hcp_name":"",
     "hospital":"",
     "specialization":""
-}
+}}
 """
 
 
@@ -270,10 +270,10 @@ User Message
 
 Return ONLY JSON.
 
-{
+{{
     "hcp_name":"",
     "follow_up":"YYYY-MM-DD"
-}
+}}
 """
 
 

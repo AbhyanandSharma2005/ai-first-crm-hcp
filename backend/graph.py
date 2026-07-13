@@ -29,6 +29,11 @@ from tools.search_hcp import search_hcp_tool
 from tools.next_best_action import next_best_action_tool
 from tools.followup_scheduler import follow_up_scheduler_tool
 from services.session_memory import session_memory
+from tools.conversation_memory_tool import conversation_memory_tool
+print(
+    "conversation_memory_tool loaded:",
+    conversation_memory_tool
+)
 
 from nodes.response_builder import response_builder_node
 
