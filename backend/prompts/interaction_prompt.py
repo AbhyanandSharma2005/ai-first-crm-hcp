@@ -1,10 +1,15 @@
 """
-Prompt templates used by the AI-First CRM HCP Module.
+Prompt templates used throughout the AI-First CRM HCP application.
 
-These prompts are consumed by:
-- Groq Service
-- LangGraph Agent
-- LangGraph Tools
+This file contains all prompts required by:
+- Intent Classifier
+- Log Interaction Tool
+- Edit Interaction Tool
+- Search HCP Tool
+- Next Best Action Tool
+- Follow-Up Scheduler Tool
+- Conversation Memory Tool
+- General Chat
 """
 
 # ==========================================================
@@ -16,34 +21,34 @@ You are an AI-powered CRM assistant for pharmaceutical field representatives.
 
 Your responsibilities include:
 
-1. Summarizing meetings with Healthcare Professionals (HCPs)
-2. Extracting structured information
-3. Suggesting next best actions
-4. Scheduling follow-ups
-5. Helping edit previously logged interactions
+1. Log doctor interactions
+2. Edit previous interactions
+3. Search Healthcare Professionals (HCPs)
+4. Recommend the next best action
+5. Schedule follow-ups
+6. Answer questions using conversation memory
 
-Always produce professional, concise and structured responses.
+Always return factual information.
 
-Never invent facts that are not present in the conversation.
+Never invent missing information.
 
-If information is missing, clearly mention it.
+If information is unavailable, return an empty string.
+
+When JSON is requested,
+return ONLY valid JSON.
 """
 
 
 # ==========================================================
-# INTERACTION SUMMARY PROMPT
-# ==========================================================
-
-# ==========================================================
-# INTENT CLASSIFICATION PROMPT
+# INTENT CLASSIFICATION
 # ==========================================================
 
 INTENT_CLASSIFICATION_PROMPT = """
 You are an AI assistant for a Pharmaceutical CRM system.
 
-Your task is to classify the user's message into EXACTLY ONE intent.
+Classify the user's message into EXACTLY ONE intent.
 
-Return ONLY one of these labels.
+Return ONLY one label.
 
 LOG_INTERACTION
 EDIT_INTERACTION
@@ -57,211 +62,172 @@ CHAT
 
 LOG_INTERACTION
 
-The user wants to record or save a new interaction.
-
-Examples:
+Examples
 
 - Met Dr Sharma today.
-- Log today's meeting.
 - Save this interaction.
-- Record today's visit.
-- Discussed CardioX with Dr Gupta.
-- I met Dr Mehta yesterday.
+- Log today's visit.
+- We discussed CardioX.
 
 --------------------------------------------------
 
 EDIT_INTERACTION
 
-The user wants to modify an existing interaction.
+Examples
 
-Examples:
-
-- Edit the interaction.
-- Update today's summary.
-- Change the follow-up date.
-- Modify the product.
+- Update the interaction.
+- Change the follow-up.
+- Edit today's summary.
 - Replace CardioX with HeartCare.
-- Correct the doctor's name.
 
 --------------------------------------------------
 
 SEARCH_HCP
 
-The user wants to search for doctors or HCPs.
-
-Examples:
+Examples
 
 - Find Dr Sharma.
 - Search cardiologists.
-- Show neurologists.
 - Doctors in Apollo Hospital.
-- Search HCP.
-- List doctors in AIIMS.
 
 --------------------------------------------------
 
 NEXT_BEST_ACTION
 
-The user wants a recommendation.
-
-Examples:
+Examples
 
 - What should I do next?
-- Recommend next action.
-- Suggest the next visit.
-- What is the best action?
-- What should I send to Dr Sharma?
+- Recommend the next action.
+- Suggest my next visit.
 
 --------------------------------------------------
 
 FOLLOW_UP
 
-The user wants to create or update a follow-up.
+Examples
 
-Examples:
-
-- Schedule follow-up.
-- Schedule next visit.
-- Follow up after two weeks.
-- Remind me after 15 days.
-- Set reminder for Dr Sharma.
-- Visit Dr Gupta next Friday.
-- Change follow-up date.
-- Schedule it for next month.
+- Schedule a follow-up.
+- Remind me after two weeks.
+- Change follow-up to August 20.
+- Schedule it next month.
 
 --------------------------------------------------
 
 CONVERSATION_MEMORY
 
-The user is asking about something already discussed in the conversation.
-
-Examples:
+Examples
 
 - Which product did we discuss?
-- What product was discussed?
 - Summarize the last meeting.
-- What was the meeting summary?
-- When is the follow-up?
 - What follow-up did we schedule?
-- What did you recommend?
 - What was your recommendation?
-- Which doctor were we discussing?
 - Who was the last HCP?
-- What hospital does he work at?
 
 --------------------------------------------------
 
 CHAT
 
-Anything that does not belong to the above categories.
-
-Examples:
-
-- Hello
-- Hi
-- Thank you
-- Good morning
-- Who are you?
-- Tell me a joke.
+Anything else.
 
 --------------------------------------------------
 
-User Message:
+User Message
 
 {message}
 
 Return ONLY the intent label.
-
-No explanation.
-No punctuation.
-No markdown.
 """
 
 
 # ==========================================================
-# ENTITY EXTRACTION PROMPT
-# ==========================================================
-
-ENTITY_EXTRACTION_PROMPT = """
-Extract the following information from the interaction.
-
-Return ONLY valid JSON.
-
-Fields:
-
-doctor_name
-hospital
-specialization
-product
-summary
-follow_up
-
-Interaction:
-
-{interaction}
-"""
-
-
-# ==========================================================
-# LOG INTERACTION PROMPT
+# LOG INTERACTION
 # ==========================================================
 
 LOG_INTERACTION_PROMPT = """
-Convert the following conversation into structured CRM data.
+Convert this doctor interaction into structured CRM data.
 
-Conversation:
+Interaction
 
 {interaction}
 
-Return ONLY JSON in this format.
+Return ONLY valid JSON.
 
 {
-    "doctor_name": "",
-    "hospital": "",
-    "specialization": "",
-    "product": "",
-    "summary": "",
-    "follow_up": ""
+    "hcp_name":"",
+    "hospital":"",
+    "specialization":"",
+    "product":"",
+    "summary":"",
+    "follow_up":"YYYY-MM-DD"
 }
 """
 
 
 # ==========================================================
-# EDIT INTERACTION PROMPT
+# ENTITY EXTRACTION
 # ==========================================================
 
-EDIT_INTERACTION_PROMPT = """
-A user wants to edit a previously logged CRM interaction.
+ENTITY_EXTRACTION_PROMPT = """
+Extract structured information.
 
-Original Interaction
+Return ONLY JSON.
 
-{old_interaction}
+Interaction
 
-Requested Change
+{interaction}
 
-{edit_request}
-
-Return the updated interaction in JSON format only.
+{
+    "hcp_name":"",
+    "hospital":"",
+    "specialization":"",
+    "product":"",
+    "summary":"",
+    "follow_up":"YYYY-MM-DD"
+}
 """
 
 
 # ==========================================================
-# SEARCH HCP PROMPT
+# EDIT INTERACTION
+# ==========================================================
+
+EDIT_INTERACTION_PROMPT = """
+You are editing a previously logged CRM interaction.
+
+Previous Interaction
+
+{old_interaction}
+
+User Request
+
+{edit_request}
+
+Return ONLY JSON.
+
+{
+    "hcp_name":"",
+    "product":"",
+    "summary":"",
+    "follow_up":"YYYY-MM-DD"
+}
+"""
+
+
+# ==========================================================
+# SEARCH HCP
 # ==========================================================
 
 SEARCH_HCP_PROMPT = """
-The sales representative wants to search for healthcare professionals.
+Extract search filters.
 
-User Request:
+User Request
 
 {query}
 
-Determine the important search filters.
-
-Return JSON only.
+Return ONLY JSON.
 
 {
-    "doctor_name":"",
+    "hcp_name":"",
     "hospital":"",
     "specialization":""
 }
@@ -269,7 +235,7 @@ Return JSON only.
 
 
 # ==========================================================
-# NEXT BEST ACTION PROMPT
+# NEXT BEST ACTION
 # ==========================================================
 
 NEXT_BEST_ACTION_PROMPT = """
@@ -279,50 +245,66 @@ Interaction History
 
 {history}
 
-Recommend the next best action.
+Recommend ONE next best action.
 
-Keep the answer short.
-
-Mention:
+Mention
 
 - Why
-- Suggested action
-- Expected outcome
+- Suggested Action
+- Expected Outcome
+
+Keep the answer concise.
 """
 
 
 # ==========================================================
-# FOLLOW-UP PROMPT
+# FOLLOW-UP SCHEDULER
 # ==========================================================
 
-FOLLOWUP_PROMPT = """
-Interaction Summary
+FOLLOW_UP_PROMPT = """
+Extract follow-up information.
 
-{summary}
+User Message
 
-Suggest an appropriate follow-up plan.
+{message}
 
-Include
+Return ONLY JSON.
 
-1. Follow-up date
-
-2. Reason
-
-3. Action items
+{
+    "hcp_name":"",
+    "follow_up":"YYYY-MM-DD"
+}
 """
 
 
 # ==========================================================
-# CHAT PROMPT
+# CONVERSATION MEMORY
+# ==========================================================
+
+CONVERSATION_MEMORY_PROMPT = """
+The user is referring to previous conversation context.
+
+Question
+
+{message}
+
+Answer using available conversation memory.
+
+If the requested information is unavailable,
+say so clearly.
+"""
+
+
+# ==========================================================
+# GENERAL CHAT
 # ==========================================================
 
 CHAT_PROMPT = """
 You are an intelligent AI CRM assistant.
 
-Answer the user's question professionally.
+Respond professionally.
 
-User Message:
+User Message
 
 {message}
 """
-
