@@ -56,6 +56,7 @@ SEARCH_HCP
 NEXT_BEST_ACTION
 FOLLOW_UP
 CONVERSATION_MEMORY
+DOCUMENT_QA
 CHAT
 
 --------------------------------------------------
@@ -122,6 +123,22 @@ Examples
 - What follow-up did we schedule?
 - What was your recommendation?
 - Who was the last HCP?
+
+--------------------------------------------------
+
+DOCUMENT_QA
+
+Examples
+
+What is the dosage of CardioX?
+
+Show the latest CardioX clinical study.
+
+What are the side effects of CardioX?
+
+Summarize the HeartCare brochure.
+
+What does the hypertension guideline recommend?
 
 --------------------------------------------------
 
