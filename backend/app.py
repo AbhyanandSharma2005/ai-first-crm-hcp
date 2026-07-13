@@ -4,13 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes import interaction, chat
 
+from rag.startup import initialize_rag
+
 
 
 app = FastAPI(
     title="AI First CRM HCP API"
 )
 
+@app.on_event("startup")
+def startup():
 
+    initialize_rag()
 
 app.add_middleware(
 
