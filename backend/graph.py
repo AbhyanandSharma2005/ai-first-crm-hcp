@@ -36,6 +36,7 @@ print(
 )
 
 from nodes.response_builder import response_builder_node
+from tools.rag_tool import rag_tool
 
 
 # ============================================================
@@ -795,6 +796,35 @@ def conversation_memory_node(
 
     return state
 
+def rag_node(state: AgentState) -> AgentState:
+
+    print()
+    print("==============================")
+    print("RAG TOOL")
+    print("==============================")
+
+    try:
+
+        result = rag_tool(state)
+
+        tool_result = result["tool_result"]
+
+        state["tool_output"] = result
+
+        state["final_response"] = tool_result["answer"]
+
+        state["error"] = None
+
+    except Exception as e:
+
+        state["error"] = str(e)
+
+        state["final_response"] = (
+            "Unable to answer from documents."
+        )
+
+    return state
+
 # ============================================================
 # Intent Router
 # ============================================================
@@ -825,7 +855,9 @@ def route_intent(state: AgentState):
 
     elif intent == "CONVERSATION_MEMORY":
         return "conversation_memory"
-
+    
+    elif intent == "DOCUMENT_QA":
+         return "rag"
     return END
 
 
@@ -891,6 +923,14 @@ graph_builder.add_node(
 
 )
 
+graph_builder.add_node(
+
+    "rag",
+
+    rag_node
+
+)
+
 # ============================================================
 # Entry Point
 # ============================================================
@@ -946,6 +986,12 @@ graph_builder.add_edge(
     "conversation_memory",
     END
 )
+
+graph_builder.add_edge(
+    "rag",
+    END
+)
+
 
 # ============================================================
 # Compile Graph
