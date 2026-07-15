@@ -903,11 +903,6 @@ graph_builder.add_node(
 )
 
 graph_builder.add_node(
-    "response_builder",
-    response_builder_node
-)
-
-graph_builder.add_node(
 
     "follow_up_scheduler",
 
@@ -929,6 +924,11 @@ graph_builder.add_node(
 
     rag_node
 
+)
+
+graph_builder.add_node(
+    "response_builder",
+    response_builder_node
 )
 
 # ============================================================
