@@ -24,27 +24,26 @@ class RAGPipeline:
 
                 "sources": [],
 
-                "answer": (
-                    "I could not find that information "
-                    "in the documents."
-                )
+                "scores": [],
+
+                "answer":
+                    "I could not find that information in the documents."
 
             }
 
         context = [
-
             item["content"]
-
             for item in results
-
         ]
 
         sources = [
-
             item["source"]
-
             for item in results
+        ]
 
+        scores = [
+            item["distance"]
+            for item in results
         ]
 
         answer = rag_generator.generate(
@@ -59,6 +58,8 @@ class RAGPipeline:
             "context": context,
 
             "sources": sources,
+
+            "scores": scores,
 
             "answer": answer
 

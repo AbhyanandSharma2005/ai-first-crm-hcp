@@ -12,11 +12,8 @@ class Retriever:
 
         self.loaded = False
 
+        # Lower L2 distance = better match
         self.distance_threshold = 1.20
-
-    # --------------------------------------------------
-    # Load FAISS
-    # --------------------------------------------------
 
     def load(self):
 
@@ -25,10 +22,6 @@ class Retriever:
             self.vector_store.load()
 
             self.loaded = True
-
-    # --------------------------------------------------
-    # Search
-    # --------------------------------------------------
 
     def search(
         self,
@@ -71,10 +64,10 @@ class Retriever:
 
                 "source": document.metadata.get(
                     "source",
-                    "Unknown Document"
+                    "Unknown"
                 ).split("\\")[-1].split("/")[-1],
 
-                "distance": float(distance)
+                "distance": round(float(distance), 4)
 
             })
 
@@ -82,15 +75,18 @@ class Retriever:
 
         if not results:
 
-            print("No matching documents found.")
+            print("No relevant documents found.")
 
         else:
 
             for item in results:
 
-                print(f"Distance : {item['distance']:.4f}")
-                print(f"Source   : {item['source']}")
-                print()
+                print(
+                    f"{item['source']} "
+                    f"(distance={item['distance']})"
+                )
+
+        print("===============================\n")
 
         return results
 

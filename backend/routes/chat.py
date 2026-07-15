@@ -34,6 +34,8 @@ class ChatResponse(BaseModel):
     response: str
 
     sources: list[str] = []
+    
+    scores: list[float] = []
 
     error: str | None = None
 
@@ -195,6 +197,8 @@ def chat_with_agent(request: ChatRequest):
         response=result["final_response"],
 
         sources=result.get("sources", []),
+        
+        scores=result.get("scores", []),
 
         error=result["error"]
 
