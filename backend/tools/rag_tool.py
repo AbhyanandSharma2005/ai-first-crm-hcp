@@ -20,7 +20,9 @@ def rag_tool(state: dict) -> dict:
 
             "context": result["context"],
 
-            "answer": result["answer"]
+            "answer": result["answer"],
+            
+            "sources": result["sources"]
 
         }
 
