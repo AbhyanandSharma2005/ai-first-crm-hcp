@@ -1,52 +1,25 @@
 """
 constants/intents.py
 
-Defines all supported intents used by the LangGraph agent.
+All supported intents for the AI-First CRM HCP Agent.
 """
-
-
-# ==========================================
-# Interaction Management
-# ==========================================
 
 LOG_INTERACTION = "LOG_INTERACTION"
 
 EDIT_INTERACTION = "EDIT_INTERACTION"
 
-
-# ==========================================
-# HCP Search
-# ==========================================
-
 SEARCH_HCP = "SEARCH_HCP"
 
-
-# ==========================================
-# AI Recommendation
-# ==========================================
-
 NEXT_BEST_ACTION = "NEXT_BEST_ACTION"
-
-
-# ==========================================
-# Follow-up
-# ==========================================
 
 FOLLOW_UP = "FOLLOW_UP"
 
 CONVERSATION_MEMORY = "CONVERSATION_MEMORY"
 
-
-# ==========================================
-# General Chat
-# ==========================================
+DOCUMENT_QA = "DOCUMENT_QA"
 
 CHAT = "CHAT"
 
-
-# ==========================================
-# List of Supported Intents
-# ==========================================
 
 SUPPORTED_INTENTS = [
 
@@ -59,8 +32,10 @@ SUPPORTED_INTENTS = [
     NEXT_BEST_ACTION,
 
     FOLLOW_UP,
-    
+
     CONVERSATION_MEMORY,
+
+    DOCUMENT_QA,
 
     CHAT
 

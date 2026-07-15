@@ -11,6 +11,7 @@ from constants.intents import (
     NEXT_BEST_ACTION,
     FOLLOW_UP,
     CONVERSATION_MEMORY,
+    DOCUMENT_QA,
     CHAT,
     SUPPORTED_INTENTS,
 )
@@ -28,22 +29,24 @@ class IntentClassifier:
     """
 
     def __init__(self):
+
         self.supported_intents = SUPPORTED_INTENTS
 
-
-    def classify(self, message: str) -> str:
+    def classify(
+        self,
+        message: str
+    ) -> str:
         """
         Returns one of the supported intent labels.
         """
 
         if not message or not message.strip():
-            return CHAT
 
+            return CHAT
 
         prompt = INTENT_CLASSIFICATION_PROMPT.format(
             message=message
         )
-
 
         try:
 
@@ -53,11 +56,8 @@ class IntentClassifier:
                 max_tokens=20
             )
 
-
             intent = response.strip().upper()
 
-
-            # Clean LLM response
             intent = (
                 intent
                 .replace(".", "")
@@ -66,49 +66,39 @@ class IntentClassifier:
                 .replace("'", "")
             )
 
-
-            # Remove extra text
             intent = intent.split("\n")[0].strip()
 
-
-
             if intent in self.supported_intents:
+
                 return intent
-
-
 
             return self._fallback_classifier(
                 message
             )
 
-
         except Exception as e:
-
 
             print(
                 f"Intent Classification Error: {e}"
             )
 
-
             return self._fallback_classifier(
                 message
             )
-
-
 
     def _fallback_classifier(
         self,
         message: str
     ) -> str:
         """
-        Rule based fallback classifier.
+        Rule-based fallback classifier.
         """
 
         text = message.lower()
 
-    # ====================================================
-    # 1. CONVERSATION MEMORY
-    # ====================================================
+        # ====================================================
+        # CONVERSATION MEMORY
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -144,9 +134,9 @@ class IntentClassifier:
 
             return CONVERSATION_MEMORY
 
-    # ====================================================
-    # 2. EDIT INTERACTION
-    # ====================================================
+        # ====================================================
+        # EDIT INTERACTION
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -161,9 +151,9 @@ class IntentClassifier:
 
             return EDIT_INTERACTION
 
-    # ====================================================
-    # 3. LOG INTERACTION
-    # ====================================================
+        # ====================================================
+        # LOG INTERACTION
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -180,9 +170,35 @@ class IntentClassifier:
 
             return LOG_INTERACTION
 
-    # ====================================================
-    # 4. SEARCH HCP
-    # ====================================================
+        # ====================================================
+        # DOCUMENT QA
+        # ====================================================
+
+        if any(word in text for word in [
+
+            "clinical study",
+            "study",
+            "brochure",
+            "guideline",
+            "guidelines",
+            "document",
+            "pdf",
+            "cardiox",
+            "heartcare",
+            "neuroplus",
+            "dosage",
+            "side effects",
+            "indication",
+            "what does",
+            "tell me about"
+
+        ]):
+
+            return DOCUMENT_QA
+
+        # ====================================================
+        # SEARCH HCP
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -199,9 +215,9 @@ class IntentClassifier:
 
             return SEARCH_HCP
 
-    # ====================================================
-    # 5. NEXT BEST ACTION
-    # ====================================================
+        # ====================================================
+        # NEXT BEST ACTION
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -217,9 +233,9 @@ class IntentClassifier:
 
             return NEXT_BEST_ACTION
 
-    # ====================================================
-    # 6. FOLLOW UP
-    # ====================================================
+        # ====================================================
+        # FOLLOW UP
+        # ====================================================
 
         if any(word in text for word in [
 
@@ -243,13 +259,11 @@ class IntentClassifier:
 
             return FOLLOW_UP
 
-    # ====================================================
-    # 7. CHAT
-    # ====================================================
+        # ====================================================
+        # DEFAULT
+        # ====================================================
 
-            return CHAT
+        return CHAT
 
-
-# Singleton instance
 
 intent_classifier = IntentClassifier()
