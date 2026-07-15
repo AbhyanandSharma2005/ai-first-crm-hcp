@@ -32,6 +32,8 @@ class ChatResponse(BaseModel):
     intent: str
 
     response: str
+    
+    rewritten_query: str = ""
 
     sources: list[str] = []
     
@@ -195,6 +197,8 @@ def chat_with_agent(request: ChatRequest):
         intent=result["intent"],
 
         response=result["final_response"],
+        
+        rewritten_query=result.get("rewritten_query", ""),
 
         sources=result.get("sources", []),
         

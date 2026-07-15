@@ -1,5 +1,6 @@
 from rag.retriever import retriever
 from rag.generator import rag_generator
+from rag.query_rewriter import query_rewriter
 
 
 class RAGPipeline:
@@ -9,16 +10,44 @@ class RAGPipeline:
         question
     ):
 
+        # ---------------------------------------------
+        # Rewrite the user query
+        # ---------------------------------------------
+        try:
+
+            rewritten_query = query_rewriter.rewrite(
+                question
+            )
+
+            if (
+                rewritten_query is None
+                or not rewritten_query.strip()
+            ):
+
+                rewritten_query = question
+
+        except Exception:
+
+            rewritten_query = question
+
+        # ---------------------------------------------
+        # Retrieve documents
+        # ---------------------------------------------
         results = retriever.search(
-            question,
+            rewritten_query,
             k=3
         )
 
+        # ---------------------------------------------
+        # No documents found
+        # ---------------------------------------------
         if not results:
 
             return {
 
                 "question": question,
+
+                "rewritten_query": rewritten_query,
 
                 "context": [],
 
@@ -31,14 +60,23 @@ class RAGPipeline:
 
             }
 
+        # ---------------------------------------------
+        # Extract context
+        # ---------------------------------------------
         context = [
+
             item["content"]
+
             for item in results
+
         ]
 
         sources = [
+
             item["source"]
+
             for item in results
+
         ]
 
         scores = []
@@ -47,24 +85,36 @@ class RAGPipeline:
 
             if "distance" in item:
 
-                scores.append(item["distance"])
+                scores.append(
+                    item["distance"]
+                )
 
             elif "score" in item:
 
-                scores.append(item["score"])
+                scores.append(
+                    item["score"]
+                )
 
             else:
 
                 scores.append(None)
 
+        # ---------------------------------------------
+        # Generate final answer
+        # ---------------------------------------------
         answer = rag_generator.generate(
             question,
             context
         )
 
+        # ---------------------------------------------
+        # Return complete result
+        # ---------------------------------------------
         return {
 
             "question": question,
+
+            "rewritten_query": rewritten_query,
 
             "context": context,
 

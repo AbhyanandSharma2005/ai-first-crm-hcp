@@ -53,6 +53,8 @@ class AgentState(TypedDict):
 
     user_message: str
     intent: str
+    
+    rewritten_query: str
 
     tool_output: dict[str, Any]
 
@@ -816,6 +818,8 @@ def rag_node(state: AgentState) -> AgentState:
         result = rag_tool(state)
 
         tool_result = result["tool_result"]
+        
+        state["rewritten_query"] = tool_result["rewritten_query"]
 
         state["tool_output"] = result
         

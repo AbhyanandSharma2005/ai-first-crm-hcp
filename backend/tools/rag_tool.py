@@ -2,6 +2,10 @@ from rag.pipeline import rag_pipeline
 
 
 def rag_tool(state: dict):
+    """
+    Executes the RAG pipeline and returns the result
+    in a format compatible with the LangGraph agent.
+    """
 
     question = state["user_message"]
 
@@ -15,6 +19,11 @@ def rag_tool(state: dict):
 
             "question": result.get(
                 "question",
+                question
+            ),
+
+            "rewritten_query": result.get(
+                "rewritten_query",
                 question
             ),
 
