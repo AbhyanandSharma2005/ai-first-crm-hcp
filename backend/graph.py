@@ -61,9 +61,13 @@ class AgentState(TypedDict):
     sources: list[str]
 
     interaction_id: Optional[int]
+    
     hcp_name: Optional[str]
+    
     summary: Optional[str]
+    
     product: Optional[str]
+    
     follow_up: Optional[str]
 
     error: Optional[str]

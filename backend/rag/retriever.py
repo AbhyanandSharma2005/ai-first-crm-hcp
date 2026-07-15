@@ -12,7 +12,6 @@ class Retriever:
 
         self.loaded = False
 
-        # Maximum acceptable L2 distance
         self.distance_threshold = 1.20
 
     # --------------------------------------------------
@@ -50,20 +49,6 @@ class Retriever:
             query_vector,
             k
         )
-        
-        print("\n========== RETRIEVAL ==========")
-
-        for item in results:
-
-            print(
-                f"Distance: {item['distance']:.4f}"
-            )
-
-            print(
-                f"Source: {item['source']}"
-            )
-
-            print("===============================\n")
 
         results = []
 
@@ -75,7 +60,6 @@ class Retriever:
             if index == -1:
                 continue
 
-            # Ignore weak matches
             if distance > self.distance_threshold:
                 continue
 
@@ -88,25 +72,25 @@ class Retriever:
                 "source": document.metadata.get(
                     "source",
                     "Unknown Document"
-                ),
+                ).split("\\")[-1].split("/")[-1],
 
                 "distance": float(distance)
 
             })
-        
+
         print("\n========== RETRIEVAL ==========")
 
-        for item in results:
+        if not results:
 
-            print(
-                f"Distance: {item['distance']:.4f}"
-            )
+            print("No matching documents found.")
 
-            print(
-                f"Source: {item['source']}"
-            )
+        else:
 
-            print("===============================\n")
+            for item in results:
+
+                print(f"Distance : {item['distance']:.4f}")
+                print(f"Source   : {item['source']}")
+                print()
 
         return results
 

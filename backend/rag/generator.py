@@ -16,7 +16,8 @@ class RAGGenerator:
         if not context:
 
             return (
-                "I could not find that information in the documents."
+                "I could not find that information."
+                "in the documents."
             )
 
         # -----------------------------------------
