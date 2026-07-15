@@ -111,14 +111,15 @@ class Retriever:
 
             merged[item["content"]] = item
 
-        # Add BM25 results
         for item in keyword:
 
-            merged[item["content"]] = item
+            if item["content"] in merged:
 
-        # -------------------------------
-        # Debug Logs
-        # -------------------------------
+                merged[item["content"]]["score"] = item["score"]
+
+            else:
+
+                merged[item["content"]] = item
 
         print()
 

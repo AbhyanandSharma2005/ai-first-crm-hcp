@@ -829,11 +829,17 @@ def rag_node(state: AgentState) -> AgentState:
 
     except Exception as e:
 
+        import traceback
+
+        print("\n========== RAG ERROR ==========")
+
+        traceback.print_exc()
+
+        print("===============================\n")
+
         state["error"] = str(e)
 
-        state["final_response"] = (
-            "Unable to answer from documents."
-        )
+        state["final_response"] = str(e)
 
     return state
 
