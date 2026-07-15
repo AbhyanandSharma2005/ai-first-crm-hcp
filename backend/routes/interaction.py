@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -50,9 +52,15 @@ class APIResponse(BaseModel):
 
 @router.post(
     "/",
+    status_code=HTTPStatus.CREATED,
     response_model=APIResponse,
     summary="Create Interaction",
-    description="Create and store a new HCP interaction."
+    description="Create and store a new HCP interaction.",
+    responses={
+        201: {"description": "Interaction created successfully"},
+        400: {"description": "Invalid request"},
+        500: {"description": "Internal server error"}
+    }
 )
 def create_interaction(
     interaction: InteractionCreate,
@@ -116,7 +124,11 @@ def create_interaction(
     "/",
     response_model=APIResponse,
     summary="Get All Interactions",
-    description="Retrieve all stored HCP interactions."
+    description="Retrieve all stored HCP interactions.",
+    responses={
+        200: {"description": "Interactions retrieved successfully"},
+        500: {"description": "Internal server error"}
+    }
 )
 def get_interactions(
     db: Session = Depends(get_db)
@@ -124,9 +136,17 @@ def get_interactions(
 
     try:
 
-        interactions = db.query(
-            Interaction
-        ).all()
+        interactions = (
+
+            db.query(Interaction)
+
+            .order_by(
+                Interaction.id.desc()
+            )
+
+            .all()
+
+        )
 
         return APIResponse(
 
@@ -134,7 +154,7 @@ def get_interactions(
 
             message="Interactions retrieved successfully.",
 
-            data=interactions,
+            data=interactions if interactions else [],
 
             error=None
 
@@ -148,7 +168,7 @@ def get_interactions(
 
             message="Failed to retrieve interactions.",
 
-            data=None,
+            data=[],
 
             error=str(e)
 
