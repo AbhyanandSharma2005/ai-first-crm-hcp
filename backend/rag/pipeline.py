@@ -1,6 +1,7 @@
 from rag.retriever import retriever
 from rag.generator import rag_generator
 from rag.query_rewriter import query_rewriter
+from rag.reranker import reranker
 
 
 class RAGPipeline:
@@ -35,12 +36,22 @@ class RAGPipeline:
         # ---------------------------------------------
         results = retriever.search(
             rewritten_query,
-            k=3
+            k=10
         )
 
         # ---------------------------------------------
         # No documents found
         # ---------------------------------------------
+        results = reranker.rerank(
+
+            question,
+
+            results,
+
+            top_k=3
+
+        )
+        
         if not results:
 
             return {

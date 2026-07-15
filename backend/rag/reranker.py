@@ -75,6 +75,18 @@ No explanation.
         if not chosen:
 
             return documents[:top_k]
+        
+        print()
+
+        print("========== RERANKER ==========")
+
+        print("Selected Documents:")
+
+        for doc in chosen[:top_k]:
+
+            print(doc["source"])
+
+        print("==============================")
 
         return chosen[:top_k]
 
