@@ -14,14 +14,37 @@ class RAGPipeline:
             k=3
         )
 
+        if not results:
+
+            return {
+
+                "question": question,
+
+                "context": [],
+
+                "sources": [],
+
+                "answer": (
+                    "I could not find that information "
+                    "in the documents."
+                )
+
+            }
+
         context = [
+
             item["content"]
+
             for item in results
+
         ]
 
         sources = [
+
             item["source"]
+
             for item in results
+
         ]
 
         answer = rag_generator.generate(
