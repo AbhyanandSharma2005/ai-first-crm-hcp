@@ -9,70 +9,75 @@ class RAGGenerator:
         context
     ):
 
+        # -----------------------------------------
+        # No relevant context found
+        # -----------------------------------------
+
         if not context:
 
             return (
-
-                "I couldn't find any relevant information "
-
-                "in the knowledge base."
-
+                "I could not find that information in the documents."
             )
 
-        context_text = ""
+        # -----------------------------------------
+        # Combine retrieved chunks
+        # -----------------------------------------
 
-        for item in context:
+        context_text = "\n\n".join(context)
 
-            context_text += (
-
-                f"Document: {item['source']}\n"
-
-                f"Page: {item['page']}\n\n"
-
-                f"{item['content']}\n\n"
-
-                "---------------------------------\n\n"
-
-            )
+        # -----------------------------------------
+        # Strong hallucination guard
+        # -----------------------------------------
 
         system_prompt = """
-You are an expert pharmaceutical CRM assistant.
+You are an expert Pharmaceutical CRM assistant.
 
-Answer ONLY using the supplied context.
+IMPORTANT RULES:
 
-Never use outside knowledge.
+1. Answer ONLY from the supplied document context.
 
-If the answer is not present in the supplied context,
-reply exactly:
+2. NEVER use outside knowledge.
 
-'I could not find that information in the documents.'
+3. NEVER guess.
 
-Always answer professionally.
+4. NEVER invent numbers, studies,
+   dosages, products or conclusions.
 
-Never invent facts.
+5. If the answer is not completely supported
+   by the context, respond exactly:
+
+"I could not find that information in the documents."
+
+6. Keep the answer concise and factual.
+
+7. If multiple document chunks mention
+   the answer, combine them naturally.
+
+8. Do not mention that you are an AI.
 """
 
         user_prompt = f"""
-Context
+DOCUMENT CONTEXT
 
 {context_text}
 
------------------------------------------
+----------------------------------------
 
-Question
+QUESTION
 
 {question}
 
-Answer:
+----------------------------------------
+
+ANSWER ONLY USING THE DOCUMENTS.
 """
 
-        return groq_service.chat(
-
+        response = groq_service.chat(
             system_prompt=system_prompt,
-
             user_prompt=user_prompt
-
         )
+
+        return response.strip()
 
 
 rag_generator = RAGGenerator()

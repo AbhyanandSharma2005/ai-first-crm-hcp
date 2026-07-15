@@ -9,31 +9,25 @@ class RAGPipeline:
         question
     ):
 
-        context = retriever.search(
+        results = retriever.search(
             question,
             k=3
         )
+
+        context = [
+            item["content"]
+            for item in results
+        ]
+
+        sources = [
+            item["source"]
+            for item in results
+        ]
 
         answer = rag_generator.generate(
             question,
             context
         )
-
-        sources = []
-
-        for item in context:
-
-            sources.append(
-
-                {
-
-                    "source": item["source"],
-
-                    "page": item["page"]
-
-                }
-
-            )
 
         return {
 
@@ -41,9 +35,9 @@ class RAGPipeline:
 
             "context": context,
 
-            "answer": answer,
+            "sources": sources,
 
-            "sources": sources
+            "answer": answer
 
         }
 
