@@ -19,10 +19,32 @@ class RAGPipeline:
             context
         )
 
+        sources = []
+
+        for item in context:
+
+            sources.append(
+
+                {
+
+                    "source": item["source"],
+
+                    "page": item["page"]
+
+                }
+
+            )
+
         return {
+
             "question": question,
+
             "context": context,
-            "answer": answer
+
+            "answer": answer,
+
+            "sources": sources
+
         }
 
 

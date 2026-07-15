@@ -1,65 +1,54 @@
-import numpy as np
-
-from rag.vector_store import vector_store
-from rag.embeddings import embed_query
+from services.groq_service import groq_service
 
 
-class Retriever:
+class RAGGenerator:
 
-    def __init__(self):
-
-        self.vector_store = vector_store
-
-        self.loaded = False
-
-    # --------------------------------------------------
-    # Load FAISS once
-    # --------------------------------------------------
-
-    def load(self):
-
-        if not self.loaded:
-
-            self.vector_store.load()
-
-            self.loaded = True
-
-    # --------------------------------------------------
-    # Search
-    # --------------------------------------------------
-
-    def search(
+    def generate(
         self,
-        query,
-        k=3
+        question,
+        context
     ):
 
-        self.load()
+        if not context:
 
-        query_vector = embed_query(query)
-
-        query_vector = np.array(
-            [query_vector],
-            dtype=np.float32
-        )
-
-        distances, indices = self.vector_store.index.search(
-            query_vector,
-            k
-        )
-
-        context = []
-
-        for index in indices[0]:
-
-            if index == -1:
-                continue
-
-            context.append(
-                self.vector_store.chunks[index].page_content
+            return (
+                "I couldn't find any relevant information "
+                "in the knowledge base."
             )
 
-        return context
+        context_text = "\n\n".join(context)
+
+        system_prompt = """
+You are an expert pharmaceutical CRM assistant.
+
+Answer ONLY using the supplied context.
+
+If the answer is not present in the context,
+say:
+
+'I could not find that information in the documents.'
+
+Do not invent facts.
+"""
+
+        user_prompt = f"""
+Context
+
+{context_text}
+
+----------------------------
+
+Question
+
+{question}
+
+Answer:
+"""
+
+        return groq_service.chat(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt
+        )
 
 
-retriever = Retriever()
+rag_generator = RAGGenerator()
