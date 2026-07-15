@@ -1,8 +1,7 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from graph import graph
-
 from services.session_memory import session_memory
 
 
@@ -18,26 +17,47 @@ router = APIRouter(
 
 class ChatRequest(BaseModel):
 
-    session_id: str
+    session_id: str = Field(
+        min_length=1,
+        max_length=100,
+        description="Unique session identifier"
+    )
 
-    message: str
+    message: str = Field(
+        min_length=1,
+        max_length=4000,
+        description="User message"
+    )
 
 
 # ============================================================
-# Response Model
+# Response Data Model
 # ============================================================
 
-class ChatResponse(BaseModel):
+class ChatData(BaseModel):
 
     intent: str
 
     response: str
-    
+
     rewritten_query: str = ""
 
     sources: list[str] = []
-    
-    scores: list[float] = []
+
+    scores: list[float | None] = []
+
+
+# ============================================================
+# Standard API Response
+# ============================================================
+
+class ChatResponse(BaseModel):
+
+    success: bool
+
+    message: str
+
+    data: ChatData | None
 
     error: str | None = None
 
@@ -48,18 +68,38 @@ class ChatResponse(BaseModel):
 
 @router.post(
     "/",
-    response_model=ChatResponse
+    response_model=ChatResponse,
+    summary="Chat with AI CRM Agent",
+    description="""
+Interact with the AI CRM assistant.
+
+The assistant automatically:
+
+• Detects user intent
+
+• Executes LangGraph tools
+
+• Uses Conversation Memory
+
+• Retrieves documents using RAG
+
+• Returns cited answers
+
+• Generates grounded responses
+"""
 )
 def chat_with_agent(request: ChatRequest):
 
     # --------------------------------------------------------
-    # Load previous AgentState for this session
+    # Load previous AgentState
     # --------------------------------------------------------
 
-    state = session_memory.get(request.session_id)
+    state = session_memory.get(
+        request.session_id
+    )
 
     # --------------------------------------------------------
-    # First message of this session
+    # First message
     # --------------------------------------------------------
 
     if state is None:
@@ -78,7 +118,11 @@ def chat_with_agent(request: ChatRequest):
 
             "final_response": "",
 
+            "rewritten_query": "",
+
             "sources": [],
+
+            "scores": [],
 
             "interaction_id": None,
 
@@ -112,7 +156,7 @@ def chat_with_agent(request: ChatRequest):
         }
 
     # --------------------------------------------------------
-    # Existing conversation
+    # Existing Session
     # --------------------------------------------------------
 
     else:
@@ -125,11 +169,13 @@ def chat_with_agent(request: ChatRequest):
 
         state["final_response"] = ""
 
+        state["rewritten_query"] = ""
+
         state["sources"] = []
 
-        state["error"] = None
+        state["scores"] = []
 
-        # Refresh important values from memory
+        state["error"] = None
 
         state["hcp_name"] = session_memory.get_value(
             request.session_id,
@@ -163,47 +209,90 @@ def chat_with_agent(request: ChatRequest):
     print("\n========== MEMORY ==========")
 
     print(
+
         session_memory.get_value(
+
             request.session_id,
+
             "last_hcp"
+
         )
+
     )
 
     print("============================")
 
-    result = graph.invoke(state)
-
-    # --------------------------------------------------------
-    # Save latest AgentState
-    # --------------------------------------------------------
-
-    print("\n========== FINAL GRAPH RESULT BEFORE MEMORY SAVE ==========")
-
-    print(result)
-
-    print("==========================================================")
-
-    session_memory.save(
-        request.session_id,
-        result
+    result = graph.invoke(
+        state
     )
 
     # --------------------------------------------------------
-    # Return Response
+    # Save Updated State
+    # --------------------------------------------------------
+
+    print("\n========== FINAL GRAPH RESULT ==========")
+
+    print(result)
+
+    print("========================================")
+
+    session_memory.save(
+
+        request.session_id,
+
+        result
+
+    )
+
+    # --------------------------------------------------------
+    # Standard API Response
     # --------------------------------------------------------
 
     return ChatResponse(
 
-        intent=result["intent"],
+        success=result.get("error") is None,
 
-        response=result["final_response"],
-        
-        rewritten_query=result.get("rewritten_query", ""),
+        message=(
 
-        sources=result.get("sources", []),
-        
-        scores=result.get("scores", []),
+            "Request completed successfully."
 
-        error=result["error"]
+            if result.get("error") is None
+
+            else "Request failed."
+
+        ),
+
+        data=ChatData(
+
+            intent=result.get(
+                "intent",
+                ""
+            ),
+
+            response=result.get(
+                "final_response",
+                ""
+            ),
+
+            rewritten_query=result.get(
+                "rewritten_query",
+                ""
+            ),
+
+            sources=result.get(
+                "sources",
+                []
+            ),
+
+            scores=result.get(
+                "scores",
+                []
+            )
+
+        ),
+
+        error=result.get(
+            "error"
+        )
 
     )

@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
-
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import get_db
-
 from models import Interaction
-
 from schemas import InteractionCreate
 
 
@@ -15,45 +13,143 @@ router = APIRouter(
 )
 
 
+# ============================================================
+# Response Models
+# ============================================================
 
-@router.post("/")
+class InteractionResponseData(BaseModel):
+
+    id: int
+
+    hcp_name: str
+
+    summary: str
+
+    product: str
+
+    follow_up: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class APIResponse(BaseModel):
+
+    success: bool
+
+    message: str
+
+    data: InteractionResponseData | list[InteractionResponseData] | None
+
+    error: str | None = None
+
+
+# ============================================================
+# Create Interaction
+# ============================================================
+
+@router.post(
+    "/",
+    response_model=APIResponse,
+    summary="Create Interaction",
+    description="Create and store a new HCP interaction."
+)
 def create_interaction(
     interaction: InteractionCreate,
     db: Session = Depends(get_db)
 ):
 
-    new_interaction = Interaction(
+    try:
 
-        hcp_name=interaction.hcp_name,
+        new_interaction = Interaction(
 
-        summary=interaction.summary,
+            hcp_name=interaction.hcp_name,
 
-        product=interaction.product,
+            summary=interaction.summary,
 
-        follow_up=interaction.follow_up
+            product=interaction.product,
 
-    )
+            follow_up=interaction.follow_up
+
+        )
+
+        db.add(new_interaction)
+
+        db.commit()
+
+        db.refresh(new_interaction)
+
+        return APIResponse(
+
+            success=True,
+
+            message="Interaction created successfully.",
+
+            data=new_interaction,
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        db.rollback()
+
+        return APIResponse(
+
+            success=False,
+
+            message="Failed to create interaction.",
+
+            data=None,
+
+            error=str(e)
+
+        )
 
 
-    db.add(new_interaction)
+# ============================================================
+# Get All Interactions
+# ============================================================
 
-    db.commit()
-
-    db.refresh(new_interaction)
-
-
-    return new_interaction
-
-
-
-@router.get("/")
+@router.get(
+    "/",
+    response_model=APIResponse,
+    summary="Get All Interactions",
+    description="Retrieve all stored HCP interactions."
+)
 def get_interactions(
     db: Session = Depends(get_db)
 ):
 
-    interactions = db.query(
-        Interaction
-    ).all()
+    try:
 
+        interactions = db.query(
+            Interaction
+        ).all()
 
-    return interactions
+        return APIResponse(
+
+            success=True,
+
+            message="Interactions retrieved successfully.",
+
+            data=interactions,
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        return APIResponse(
+
+            success=False,
+
+            message="Failed to retrieve interactions.",
+
+            data=None,
+
+            error=str(e)
+
+        )
