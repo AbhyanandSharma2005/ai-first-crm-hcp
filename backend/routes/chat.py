@@ -33,6 +33,8 @@ class ChatResponse(BaseModel):
 
     response: str
 
+    sources: list[str] = []
+
     error: str | None = None
 
 
@@ -62,6 +64,8 @@ def chat_with_agent(request: ChatRequest):
 
             "session_id": request.session_id,
 
+            "conversation": {},
+
             "user_message": request.message,
 
             "intent": "",
@@ -69,6 +73,8 @@ def chat_with_agent(request: ChatRequest):
             "tool_output": {},
 
             "final_response": "",
+
+            "sources": [],
 
             "interaction_id": None,
 
@@ -91,7 +97,7 @@ def chat_with_agent(request: ChatRequest):
                 request.session_id,
                 "last_follow_up"
             ),
-            
+
             "recommendation": session_memory.get_value(
                 request.session_id,
                 "last_recommendation"
@@ -115,9 +121,12 @@ def chat_with_agent(request: ChatRequest):
 
         state["final_response"] = ""
 
+        state["sources"] = []
+
         state["error"] = None
 
         # Refresh important values from memory
+
         state["hcp_name"] = session_memory.get_value(
             request.session_id,
             "last_hcp"
@@ -138,10 +147,17 @@ def chat_with_agent(request: ChatRequest):
             "last_follow_up"
         )
 
+        state["recommendation"] = session_memory.get_value(
+            request.session_id,
+            "last_recommendation"
+        )
+
     # --------------------------------------------------------
     # Execute LangGraph
     # --------------------------------------------------------
+
     print("\n========== MEMORY ==========")
+
     print(
         session_memory.get_value(
             request.session_id,
@@ -150,14 +166,17 @@ def chat_with_agent(request: ChatRequest):
     )
 
     print("============================")
-    
+
     result = graph.invoke(state)
 
     # --------------------------------------------------------
     # Save latest AgentState
     # --------------------------------------------------------
+
     print("\n========== FINAL GRAPH RESULT BEFORE MEMORY SAVE ==========")
+
     print(result)
+
     print("==========================================================")
 
     session_memory.save(
@@ -174,6 +193,8 @@ def chat_with_agent(request: ChatRequest):
         intent=result["intent"],
 
         response=result["final_response"],
+
+        sources=result.get("sources", []),
 
         error=result["error"]
 

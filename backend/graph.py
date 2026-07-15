@@ -57,6 +57,8 @@ class AgentState(TypedDict):
     tool_output: dict[str, Any]
 
     final_response: str
+    
+    sources: list[str]
 
     interaction_id: Optional[int]
     hcp_name: Optional[str]
@@ -810,6 +812,8 @@ def rag_node(state: AgentState) -> AgentState:
         tool_result = result["tool_result"]
 
         state["tool_output"] = result
+        
+        state["sources"] = tool_result["sources"]
 
         state["final_response"] = tool_result["answer"]
 
