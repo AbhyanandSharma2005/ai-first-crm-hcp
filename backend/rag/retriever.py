@@ -12,8 +12,11 @@ class Retriever:
 
         self.loaded = False
 
+        # Maximum acceptable L2 distance
+        self.distance_threshold = 1.20
+
     # --------------------------------------------------
-    # Load FAISS index
+    # Load FAISS
     # --------------------------------------------------
 
     def load(self):
@@ -47,12 +50,33 @@ class Retriever:
             query_vector,
             k
         )
+        
+        print("\n========== RETRIEVAL ==========")
+
+        for item in results:
+
+            print(
+                f"Distance: {item['distance']:.4f}"
+            )
+
+            print(
+                f"Source: {item['source']}"
+            )
+
+            print("===============================\n")
 
         results = []
 
-        for index in indices[0]:
+        for distance, index in zip(
+            distances[0],
+            indices[0]
+        ):
 
             if index == -1:
+                continue
+
+            # Ignore weak matches
+            if distance > self.distance_threshold:
                 continue
 
             document = self.vector_store.chunks[index]
@@ -64,9 +88,25 @@ class Retriever:
                 "source": document.metadata.get(
                     "source",
                     "Unknown Document"
-                )
+                ),
+
+                "distance": float(distance)
 
             })
+        
+        print("\n========== RETRIEVAL ==========")
+
+        for item in results:
+
+            print(
+                f"Distance: {item['distance']:.4f}"
+            )
+
+            print(
+                f"Source: {item['source']}"
+            )
+
+            print("===============================\n")
 
         return results
 
