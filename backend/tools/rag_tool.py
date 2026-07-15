@@ -3,7 +3,7 @@ from rag.pipeline import rag_pipeline
 
 def rag_tool(state: dict) -> dict:
     """
-    Execute the RAG pipeline for document-based questions.
+    Answer document questions using RAG.
     """
 
     question = state["user_message"]
@@ -20,9 +20,9 @@ def rag_tool(state: dict) -> dict:
 
             "context": result["context"],
 
-            "answer": result["answer"],
-            
-            "sources": result["sources"]
+            "sources": result["sources"],
+
+            "answer": result["answer"]
 
         }
 
