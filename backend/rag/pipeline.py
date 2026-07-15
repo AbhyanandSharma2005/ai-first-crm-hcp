@@ -41,10 +41,21 @@ class RAGPipeline:
             for item in results
         ]
 
-        scores = [
-            item["distance"]
-            for item in results
-        ]
+        scores = []
+
+        for item in results:
+
+            if "distance" in item:
+
+                scores.append(item["distance"])
+
+            elif "score" in item:
+
+                scores.append(item["score"])
+
+            else:
+
+                scores.append(None)
 
         answer = rag_generator.generate(
             question,

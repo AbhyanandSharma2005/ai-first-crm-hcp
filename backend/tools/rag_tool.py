@@ -13,15 +13,30 @@ def rag_tool(state: dict):
 
             "status": "success",
 
-            "question": result["question"],
+            "question": result.get(
+                "question",
+                question
+            ),
 
-            "context": result["context"],
+            "context": result.get(
+                "context",
+                []
+            ),
 
-            "sources": result["sources"],
+            "sources": result.get(
+                "sources",
+                []
+            ),
 
-            "scores": result["scores"],
+            "scores": result.get(
+                "scores",
+                []
+            ),
 
-            "answer": result["answer"]
+            "answer": result.get(
+                "answer",
+                "Unable to answer from documents."
+            )
 
         }
 

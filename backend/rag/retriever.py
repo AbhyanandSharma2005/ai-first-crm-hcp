@@ -2,6 +2,7 @@ import numpy as np
 
 from rag.vector_store import vector_store
 from rag.embeddings import embed_query
+from rag.bm25 import bm25_retriever
 
 
 class Retriever:
@@ -12,8 +13,11 @@ class Retriever:
 
         self.loaded = False
 
-        # Lower L2 distance = better match
-        self.distance_threshold = 1.20
+        self.distance_threshold = 1.2
+
+    # --------------------------------------------------
+    # Load FAISS
+    # --------------------------------------------------
 
     def load(self):
 
@@ -23,7 +27,11 @@ class Retriever:
 
             self.loaded = True
 
-    def search(
+    # --------------------------------------------------
+    # Semantic Search (FAISS)
+    # --------------------------------------------------
+
+    def semantic_search(
         self,
         query,
         k=3
@@ -60,35 +68,100 @@ class Retriever:
 
             results.append({
 
-                "content": document.page_content,
+                "content":
+                document.page_content,
 
-                "source": document.metadata.get(
+                "source":
+                document.metadata.get(
                     "source",
                     "Unknown"
-                ).split("\\")[-1].split("/")[-1],
+                ),
 
-                "distance": round(float(distance), 4)
+                "distance":
+                float(distance)
 
             })
 
-        print("\n========== RETRIEVAL ==========")
+        return results
 
-        if not results:
+    # --------------------------------------------------
+    # Hybrid Search (FAISS + BM25)
+    # --------------------------------------------------
 
-            print("No relevant documents found.")
+    def search(
+        self,
+        query,
+        k=3
+    ):
 
-        else:
+        semantic = self.semantic_search(
+            query,
+            k
+        )
 
-            for item in results:
+        keyword = bm25_retriever.search(
+            query,
+            k
+        )
+
+        merged = {}
+
+        # Add semantic results first
+        for item in semantic:
+
+            merged[item["content"]] = item
+
+        # Add BM25 results
+        for item in keyword:
+
+            merged[item["content"]] = item
+
+        # -------------------------------
+        # Debug Logs
+        # -------------------------------
+
+        print()
+
+        print("========== HYBRID SEARCH ==========")
+
+        print(f"Query: {query}")
+
+        print()
+
+        for i, item in enumerate(
+            merged.values(),
+            start=1
+        ):
+
+            print(f"Result {i}")
+
+            print(
+                f"Source : {item['source']}"
+            )
+
+            if "distance" in item:
 
                 print(
-                    f"{item['source']} "
-                    f"(distance={item['distance']})"
+                    f"Distance : {item['distance']:.4f}"
                 )
 
-        print("===============================\n")
+            if "score" in item:
 
-        return results
+                print(
+                    f"BM25 Score : {item['score']:.4f}"
+                )
+
+            print(
+                f"Content Preview : {item['content'][:120]}..."
+            )
+
+            print("----------------------------------")
+
+        print("===================================")
+
+        return list(
+            merged.values()
+        )
 
 
 retriever = Retriever()

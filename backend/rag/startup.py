@@ -2,25 +2,30 @@ from pathlib import Path
 
 from rag.vector_store import (
     vector_store,
-    INDEX_FILE,
+    INDEX_FILE
 )
+
+from rag.bm25 import bm25_retriever
 
 
 def initialize_rag():
-    """
-    Initialize the FAISS index on application startup.
-    """
 
     if Path(INDEX_FILE).exists():
 
         print("RAG index already exists.")
 
-        return
+        vector_store.load()
 
-    print("Creating RAG index...")
+    else:
 
-    vector_store.build()
+        print("Creating RAG index...")
 
-    vector_store.save()
+        vector_store.build()
 
-    print("RAG index created successfully.")
+        vector_store.save()
+
+        print("RAG index created.")
+
+    bm25_retriever.build()
+
+    print("BM25 initialized.")
