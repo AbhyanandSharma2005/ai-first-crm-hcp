@@ -15,6 +15,44 @@ from utils.exception_handler import (
 )
 
 
+# ==========================================================
+# Swagger Tag Metadata
+# ==========================================================
+
+tags_metadata = [
+
+    {
+        "name": "AI Chat",
+        "description": "AI-powered CRM assistant with LangGraph, RAG and Document Question Answering."
+    },
+
+    {
+        "name": "Interaction",
+        "description": "Create and retrieve Healthcare Professional interactions."
+    },
+
+    {
+        "name": "Edit Interaction",
+        "description": "Update existing interactions."
+    },
+
+    {
+        "name": "HCP",
+        "description": "Search Healthcare Professionals."
+    },
+
+    {
+        "name": "System",
+        "description": "Health, version and API information."
+    }
+
+]
+
+
+# ==========================================================
+# FastAPI Application
+# ==========================================================
+
 app = FastAPI(
 
     title="AI First CRM HCP API",
@@ -22,9 +60,7 @@ app = FastAPI(
     version="1.0.0",
 
     description="""
-AI-powered CRM backend for Healthcare Professionals. ,
-
-    openapi_tags=tags_metadata
+AI-powered CRM backend for Healthcare Professionals.
 
 ## Features
 
@@ -44,32 +80,28 @@ AI-powered CRM backend for Healthcare Professionals. ,
 - Groq
 - PostgreSQL
 - FAISS
-"""
+""",
+
+    openapi_tags=tags_metadata,
+
+    contact={
+        "name": "AI First CRM Team",
+        "email": "support@example.com"
+    },
+
+    license_info={
+        "name": "MIT"
+    },
+
+    servers=[
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Development Server"
+        }
+    ]
+
 )
 
-tags_metadata = [
-
-    {
-        "name": "AI Chat",
-        "description": "Interact with the AI CRM Assistant."
-    },
-
-    {
-        "name": "Interaction",
-        "description": "Manage HCP interactions."
-    },
-
-    {
-        "name": "Edit Interaction",
-        "description": "Modify existing interactions."
-    },
-
-    {
-        "name": "HCP",
-        "description": "Search Healthcare Professionals."
-    }
-
-]
 
 # ==========================================================
 # Exception Handlers
@@ -138,18 +170,98 @@ app.include_router(hcp.router)
 # Root Endpoint
 # ==========================================================
 
-@app.get("/")
+@app.get(
+
+    "/",
+
+    summary="API Information",
+
+    description="Returns API status and documentation link.",
+
+    tags=["System"]
+
+)
 def home():
 
     return {
 
         "success": True,
 
-        "message": "AI CRM Backend Running",
+        "message": "AI First CRM Backend Running",
 
         "data": {
 
-            "service": "AI First CRM HCP API",
+            "version": "1.0.0",
+
+            "status": "Healthy",
+
+            "documentation": "/docs"
+
+        },
+
+        "error": None
+
+    }
+
+
+# ==========================================================
+# Health Check
+# ==========================================================
+
+@app.get(
+
+    "/health",
+
+    summary="Health Check",
+
+    description="Returns the health status of the backend.",
+
+    tags=["System"]
+
+)
+def health():
+
+    return {
+
+        "success": True,
+
+        "message": "Server is healthy.",
+
+        "data": {
+
+            "status": "UP"
+
+        },
+
+        "error": None
+
+    }
+
+
+# ==========================================================
+# Version
+# ==========================================================
+
+@app.get(
+
+    "/version",
+
+    summary="API Version",
+
+    description="Returns the current API version.",
+
+    tags=["System"]
+
+)
+def version():
+
+    return {
+
+        "success": True,
+
+        "message": "Version fetched successfully.",
+
+        "data": {
 
             "version": "1.0.0"
 
