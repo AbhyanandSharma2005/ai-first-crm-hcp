@@ -23,9 +23,15 @@ class Retriever:
 
         if not self.loaded:
 
+            print("\n========== LOADING VECTOR STORE ==========")
+
             self.vector_store.load()
 
             self.loaded = True
+
+            print("Vector Store Loaded")
+
+            print("==========================================")
 
     # --------------------------------------------------
     # Semantic Search (FAISS)
@@ -82,6 +88,10 @@ class Retriever:
 
             })
 
+        print()
+
+        print(f"Semantic Results : {len(results)}")
+
         return results
 
     # --------------------------------------------------
@@ -94,10 +104,30 @@ class Retriever:
         k=3
     ):
 
+        print("\n==========================================")
+        print("HYBRID SEARCH STARTED")
+        print("Retriever Object :", id(self))
+        print("BM25 Object      :", id(bm25_retriever))
+        print("==========================================")
+
         semantic = self.semantic_search(
             query,
             k
         )
+
+        # ----------------------------------------------
+        # Ensure BM25 is initialized
+        # ----------------------------------------------
+
+        if bm25_retriever.bm25 is None:
+
+            print()
+
+            print("BM25 NOT INITIALIZED")
+
+            print("Building BM25 Automatically...")
+
+            bm25_retriever.build()
 
         keyword = bm25_retriever.search(
             query,
@@ -107,9 +137,12 @@ class Retriever:
         merged = {}
 
         # Add semantic results first
+
         for item in semantic:
 
             merged[item["content"]] = item
+
+        # Merge BM25 results
 
         for item in keyword:
 
@@ -123,9 +156,9 @@ class Retriever:
 
         print()
 
-        print("========== HYBRID SEARCH ==========")
+        print("========== HYBRID SEARCH RESULTS ==========")
 
-        print(f"Query: {query}")
+        print(f"Query : {query}")
 
         print()
 
@@ -153,12 +186,12 @@ class Retriever:
                 )
 
             print(
-                f"Content Preview : {item['content'][:120]}..."
+                f"Content : {item['content'][:120]}..."
             )
 
-            print("----------------------------------")
+            print("------------------------------------------")
 
-        print("===================================")
+        print("===========================================")
 
         return list(
             merged.values()
