@@ -15,15 +15,7 @@ def send(message):
 
     assert response.status_code == 200
 
-    body = response.json()
-
-    print("\n======================================")
-    print("MESSAGE :", message)
-    print("INTENT  :", body["data"]["intent"])
-    print("RESPONSE:", body["data"]["response"])
-    print("======================================\n")
-
-    return body
+    return response.json()
 
 
 # --------------------------------------------------------
@@ -32,9 +24,12 @@ def send(message):
 
 def test_search_hcp():
 
-    body = send("Find Dr Sharma")
+    body = send(
+        "Find Dr Sharma"
+    )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "SEARCH_HCP"
 
 
@@ -49,6 +44,7 @@ def test_log_interaction():
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "LOG_INTERACTION"
 
 
@@ -59,10 +55,11 @@ def test_log_interaction():
 def test_edit_interaction():
 
     body = send(
-        "Update the previous interaction to include brochure discussion."
+        "Update Dr Sharma interaction to include brochure discussion."
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "EDIT_INTERACTION"
 
 
@@ -77,20 +74,22 @@ def test_next_best_action():
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "NEXT_BEST_ACTION"
 
 
 # --------------------------------------------------------
-# CONVERSATION MEMORY
+# MEMORY
 # --------------------------------------------------------
 
 def test_conversation_memory():
 
     body = send(
-        "What product did we discuss?"
+        "What did we discuss last time?"
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "CONVERSATION_MEMORY"
 
 
@@ -105,6 +104,7 @@ def test_document_qa():
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "DOCUMENT_QA"
 
 
@@ -115,8 +115,9 @@ def test_document_qa():
 def test_follow_up():
 
     body = send(
-        "Schedule a follow up after two weeks."
+        "Schedule follow up after two weeks."
     )
 
     assert body["success"] is True
+
     assert body["data"]["intent"] == "FOLLOW_UP"
