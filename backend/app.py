@@ -13,7 +13,10 @@ from utils.exception_handler import (
     generic_exception_handler,
     validation_exception_handler
 )
+
 from utils.logger import logger
+from middleware.logging import LoggingMiddleware
+
 
 # ==========================================================
 # Swagger Tag Metadata
@@ -130,7 +133,7 @@ app.add_exception_handler(
 
 @app.on_event("startup")
 def startup():
-    
+
     logger.info("Initializing RAG...")
 
     initialize_rag()
@@ -156,6 +159,11 @@ app.add_middleware(
 
 )
 
+# Request Logging Middleware
+app.add_middleware(
+    LoggingMiddleware
+)
+
 
 # ==========================================================
 # Routers
@@ -168,7 +176,6 @@ app.include_router(chat.router)
 app.include_router(edit.router)
 
 app.include_router(hcp.router)
-
 
 # ==========================================================
 # Root Endpoint
@@ -195,6 +202,8 @@ def home():
 
         "data": {
 
+            "service": "AI First CRM HCP API",
+
             "version": "1.0.0",
 
             "status": "Healthy",
@@ -218,18 +227,20 @@ def home():
 
     summary="Health Check",
 
-    description="Returns the health status of the backend.",
+    description="Returns the current health status of the backend.",
 
     tags=["System"]
 
 )
 def health():
 
+    logger.info("Health endpoint accessed.")
+
     return {
 
         "success": True,
 
-        "message": "Server is healthy.",
+        "message": "Application is healthy.",
 
         "data": {
 
@@ -243,29 +254,77 @@ def health():
 
 
 # ==========================================================
-# Version
+# Version Information
 # ==========================================================
 
 @app.get(
 
     "/version",
 
-    summary="API Version",
+    summary="Application Version",
 
-    description="Returns the current API version.",
+    description="Returns application version and runtime information.",
 
     tags=["System"]
 
 )
 def version():
 
+    logger.info("Version endpoint accessed.")
+
     return {
 
         "success": True,
 
-        "message": "Version fetched successfully.",
+        "message": "Version information.",
 
         "data": {
+
+            "version": "1.0.0",
+
+            "framework": "FastAPI",
+
+            "python": "3.13"
+
+        },
+
+        "error": None
+
+    }
+
+
+# ==========================================================
+# Metrics
+# ==========================================================
+
+@app.get(
+
+    "/metrics",
+
+    summary="Application Metrics",
+
+    description="Returns basic application runtime metrics.",
+
+    tags=["System"]
+
+)
+def metrics():
+
+    logger.info("Metrics endpoint accessed.")
+
+    return {
+
+        "success": True,
+
+        "message": "Application metrics.",
+
+        "data": {
+
+            "status": "Running",
+
+            "environment": "Development",
+
+            "api": "AI First CRM HCP API",
 
             "version": "1.0.0"
 
