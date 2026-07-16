@@ -22,9 +22,11 @@ app = FastAPI(
     version="1.0.0",
 
     description="""
-AI-powered CRM backend for Healthcare Professionals.
+AI-powered CRM backend for Healthcare Professionals. ,
 
-Features
+    openapi_tags=tags_metadata
+
+## Features
 
 - Log Interaction
 - Edit Interaction
@@ -34,9 +36,40 @@ Features
 - Conversation Memory
 - Retrieval-Augmented Generation (RAG)
 - Document Question Answering
+
+## AI Stack
+
+- FastAPI
+- LangGraph
+- Groq
+- PostgreSQL
+- FAISS
 """
 )
 
+tags_metadata = [
+
+    {
+        "name": "AI Chat",
+        "description": "Interact with the AI CRM Assistant."
+    },
+
+    {
+        "name": "Interaction",
+        "description": "Manage HCP interactions."
+    },
+
+    {
+        "name": "Edit Interaction",
+        "description": "Modify existing interactions."
+    },
+
+    {
+        "name": "HCP",
+        "description": "Search Healthcare Professionals."
+    }
+
+]
 
 # ==========================================================
 # Exception Handlers
