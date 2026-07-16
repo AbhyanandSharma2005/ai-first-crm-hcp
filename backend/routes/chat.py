@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from graph import graph
 from services.session_memory import session_memory
-
+from schemas import APIResponse
 
 router = APIRouter(
     prefix="/chat",
@@ -18,48 +18,57 @@ router = APIRouter(
 class ChatRequest(BaseModel):
 
     session_id: str = Field(
+        ...,
         min_length=1,
         max_length=100,
         description="Unique session identifier"
     )
 
     message: str = Field(
+        ...,
         min_length=1,
         max_length=4000,
         description="User message"
     )
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "session_id": "abc123",
+                "message": "What does the CardioX clinical study say?"
+            }
+        }
+    )
+
 
 # ============================================================
-# Response Data Model
+# Response Data
 # ============================================================
 
 class ChatData(BaseModel):
 
-    intent: str
+    intent: str = Field(
+        description="Detected intent"
+    )
 
-    response: str
+    response: str = Field(
+        description="Assistant response"
+    )
 
-    rewritten_query: str = ""
+    rewritten_query: str = Field(
+        default="",
+        description="Query after rewriting"
+    )
 
-    sources: list[str] = []
+    sources: list[str] = Field(
+        default_factory=list,
+        description="Retrieved document sources"
+    )
 
-    scores: list[float | None] = []
-
-
-# ============================================================
-# Standard API Response
-# ============================================================
-
-class ChatResponse(BaseModel):
-
-    success: bool
-
-    message: str
-
-    data: ChatData | None
-
-    error: str | None = None
+    scores: list[float | None] = Field(
+        default_factory=list,
+        description="Similarity scores"
+    )
 
 
 # ============================================================
@@ -68,30 +77,82 @@ class ChatResponse(BaseModel):
 
 @router.post(
     "/",
-    response_model=ChatResponse,
-    summary="Chat with AI CRM Agent",
+    response_model=APIResponse[ChatData],
+    summary="Chat with AI CRM Assistant",
     description="""
 Interact with the AI CRM assistant.
 
-The assistant automatically:
+Supported capabilities:
 
-• Detects user intent
+• Intent Detection
 
-• Executes LangGraph tools
+• Log Interaction
 
-• Uses Conversation Memory
+• Edit Interaction
 
-• Retrieves documents using RAG
+• Search HCP
 
-• Returns cited answers
+• Next Best Action
 
-• Generates grounded responses
-"""
+• Follow-up Scheduling
+
+• Conversation Memory
+
+• Retrieval-Augmented Generation (RAG)
+
+• Document Question Answering
+
+• Citation Support
+""",
+    responses={
+        200: {
+            "description": "Request completed successfully"
+        },
+        400: {
+            "description": "Invalid request"
+        },
+        422: {
+            "description": "Validation error"
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    }
 )
 def chat_with_agent(request: ChatRequest):
 
     # --------------------------------------------------------
-    # Load previous AgentState
+    # Empty message validation
+    # --------------------------------------------------------
+
+    if not request.message.strip():
+
+        return APIResponse[ChatData](
+
+            success=False,
+
+            message="Message cannot be empty.",
+
+            data=ChatData(
+
+                intent="CHAT",
+
+                response="Please enter a message.",
+
+                rewritten_query="",
+
+                sources=[],
+
+                scores=[]
+
+            ),
+
+            error="Empty message"
+
+        )
+
+    # --------------------------------------------------------
+    # Load previous session
     # --------------------------------------------------------
 
     state = session_memory.get(
@@ -206,28 +267,37 @@ def chat_with_agent(request: ChatRequest):
     # Execute LangGraph
     # --------------------------------------------------------
 
-    print("\n========== MEMORY ==========")
+    try:
 
-    print(
+        print("\n========== MEMORY ==========")
 
-        session_memory.get_value(
+        print(
+            session_memory.get_value(
+                request.session_id,
+                "last_hcp"
+            )
+        )
 
-            request.session_id,
+        print("============================")
 
-            "last_hcp"
+        result = graph.invoke(state)
+
+    except Exception as e:
+
+        return APIResponse[ChatData](
+
+            success=False,
+
+            message="Request failed.",
+
+            data=None,
+
+            error=str(e)
 
         )
 
-    )
-
-    print("============================")
-
-    result = graph.invoke(
-        state
-    )
-
     # --------------------------------------------------------
-    # Save Updated State
+    # Save latest session
     # --------------------------------------------------------
 
     print("\n========== FINAL GRAPH RESULT ==========")
@@ -248,7 +318,7 @@ def chat_with_agent(request: ChatRequest):
     # Standard API Response
     # --------------------------------------------------------
 
-    return ChatResponse(
+    return APIResponse[ChatData](
 
         success=result.get("error") is None,
 
