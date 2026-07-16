@@ -23,6 +23,7 @@ router = APIRouter(
 
 @router.post(
     "/",
+    operation_id="createInteraction",
     status_code=HTTPStatus.CREATED,
     response_model=APIResponse[InteractionResponse],
     summary="Create Interaction",
@@ -98,6 +99,7 @@ def create_interaction(
 
 @router.get(
     "/",
+    operation_id="getAllInteractions",
     response_model=APIResponse[list[InteractionResponse]],
     summary="Get All Interactions",
     description="Retrieve all stored HCP interactions.",
