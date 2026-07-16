@@ -15,12 +15,20 @@ def send(message):
 
     assert response.status_code == 200
 
-    return response.json()
+    body = response.json()
+
+    print("\n======================================")
+    print("MESSAGE :", message)
+    print("INTENT  :", body["data"]["intent"])
+    print("RESPONSE:", body["data"]["response"])
+    print("======================================\n")
+
+    return body
 
 
-# --------------------------------------------------
-# SEARCH_HCP
-# --------------------------------------------------
+# --------------------------------------------------------
+# SEARCH HCP
+# --------------------------------------------------------
 
 def test_search_hcp():
 
@@ -30,37 +38,37 @@ def test_search_hcp():
     assert body["data"]["intent"] == "SEARCH_HCP"
 
 
-# --------------------------------------------------
-# LOG_INTERACTION
-# --------------------------------------------------
+# --------------------------------------------------------
+# LOG INTERACTION
+# --------------------------------------------------------
 
 def test_log_interaction():
 
     body = send(
-        "Met Dr Sharma today. Discussed CardioX. Follow up next week."
+        "Met Dr Sharma today. Discussed CardioX."
     )
 
     assert body["success"] is True
     assert body["data"]["intent"] == "LOG_INTERACTION"
 
 
-# --------------------------------------------------
-# EDIT_INTERACTION
-# --------------------------------------------------
+# --------------------------------------------------------
+# EDIT INTERACTION
+# --------------------------------------------------------
 
 def test_edit_interaction():
 
     body = send(
-        "Update Dr Sharma interaction to include brochure discussion."
+        "Update the previous interaction to include brochure discussion."
     )
 
     assert body["success"] is True
     assert body["data"]["intent"] == "EDIT_INTERACTION"
 
 
-# --------------------------------------------------
-# NEXT_BEST_ACTION
-# --------------------------------------------------
+# --------------------------------------------------------
+# NEXT BEST ACTION
+# --------------------------------------------------------
 
 def test_next_best_action():
 
@@ -72,23 +80,23 @@ def test_next_best_action():
     assert body["data"]["intent"] == "NEXT_BEST_ACTION"
 
 
-# --------------------------------------------------
-# CONVERSATION_MEMORY
-# --------------------------------------------------
+# --------------------------------------------------------
+# CONVERSATION MEMORY
+# --------------------------------------------------------
 
 def test_conversation_memory():
 
     body = send(
-        "What did we discuss with Dr Sharma?"
+        "What product did we discuss?"
     )
 
     assert body["success"] is True
     assert body["data"]["intent"] == "CONVERSATION_MEMORY"
 
 
-# --------------------------------------------------
-# DOCUMENT_QA
-# --------------------------------------------------
+# --------------------------------------------------------
+# DOCUMENT QA
+# --------------------------------------------------------
 
 def test_document_qa():
 
@@ -100,14 +108,14 @@ def test_document_qa():
     assert body["data"]["intent"] == "DOCUMENT_QA"
 
 
-# --------------------------------------------------
-# FOLLOW_UP
-# --------------------------------------------------
+# --------------------------------------------------------
+# FOLLOW UP
+# --------------------------------------------------------
 
 def test_follow_up():
 
     body = send(
-        "Schedule a follow up with Dr Sharma next Monday."
+        "Schedule a follow up after two weeks."
     )
 
     assert body["success"] is True
