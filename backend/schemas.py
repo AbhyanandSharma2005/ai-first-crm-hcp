@@ -1,7 +1,7 @@
 from datetime import date
-from typing import Optional, Generic, TypeVar
+from typing import Generic, Optional, TypeVar
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ==========================================================
@@ -9,6 +9,20 @@ from pydantic import BaseModel, Field, ConfigDict
 # ==========================================================
 
 T = TypeVar("T")
+
+
+class APIResponse(BaseModel, Generic[T]):
+    """
+    Standard response returned by every API endpoint.
+    """
+
+    success: bool
+
+    message: str
+
+    data: Optional[T] = None
+
+    error: Optional[str] = None
 
 
 # ==========================================================
@@ -39,7 +53,16 @@ class HCPBase(BaseModel):
 
 
 class HCPCreate(HCPBase):
-    pass
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "Dr Sharma",
+                "specialization": "Cardiology",
+                "hospital": "Apollo Hospital"
+            }
+        }
+    )
 
 
 class HCPResponse(HCPBase):
@@ -86,32 +109,37 @@ class InteractionBase(BaseModel):
 
 
 class InteractionCreate(InteractionBase):
-    """
-    Used while creating a new interaction.
-    """
-    pass
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "hcp_name": "Dr Sharma",
+                "summary": "Discussed CardioX efficacy study",
+                "product": "CardioX",
+                "follow_up": "2026-08-15"
+            }
+        }
+    )
 
 
 class InteractionUpdate(BaseModel):
 
-    hcp_name: Optional[str] = Field(
-        default=None,
-        description="Updated HCP name"
-    )
+    hcp_name: Optional[str] = None
 
-    summary: Optional[str] = Field(
-        default=None,
-        description="Updated summary"
-    )
+    summary: Optional[str] = None
 
-    product: Optional[str] = Field(
-        default=None,
-        description="Updated product"
-    )
+    product: Optional[str] = None
 
-    follow_up: Optional[date] = Field(
-        default=None,
-        description="Updated follow-up date"
+    follow_up: Optional[date] = None
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "summary": "Doctor requested latest clinical study.",
+                "product": "CardioX",
+                "follow_up": "2026-08-20"
+            }
+        }
     )
 
 
@@ -122,7 +150,6 @@ class InteractionResponse(InteractionBase):
     model_config = ConfigDict(
         from_attributes=True
     )
-
 
 # ==========================================================
 # CHAT SCHEMAS
@@ -145,7 +172,10 @@ class ChatResponse(BaseModel):
 
     response: str = Field(
         ...,
-        description="AI generated response"
+        description="AI generated response",
+        examples=[
+            "CardioX significantly reduced blood pressure in the Phase III clinical trial."
+        ]
     )
 
 
@@ -174,13 +204,27 @@ class AgentState(BaseModel):
 
 class ExtractedInteraction(BaseModel):
 
-    doctor_name: str
+    doctor_name: str = Field(
+        description="Doctor name extracted by the LLM",
+        examples=["Dr Sharma"]
+    )
 
-    product: str
+    product: str = Field(
+        description="Product extracted by the LLM",
+        examples=["CardioX"]
+    )
 
-    summary: str
+    summary: str = Field(
+        description="Interaction summary extracted by the LLM",
+        examples=[
+            "Doctor requested the latest clinical study."
+        ]
+    )
 
-    follow_up: str
+    follow_up: str = Field(
+        description="Follow-up date extracted by the LLM",
+        examples=["2026-08-15"]
+    )
 
 
 # ==========================================================
@@ -189,7 +233,12 @@ class ExtractedInteraction(BaseModel):
 
 class NextBestActionResponse(BaseModel):
 
-    recommendation: str
+    recommendation: str = Field(
+        description="AI-generated recommendation",
+        examples=[
+            "Schedule a follow-up visit with Dr Sharma next week."
+        ]
+    )
 
 
 # ==========================================================
@@ -198,9 +247,15 @@ class NextBestActionResponse(BaseModel):
 
 class FollowUpRequest(BaseModel):
 
-    interaction_id: int
+    interaction_id: int = Field(
+        description="Interaction ID",
+        examples=[15]
+    )
 
-    follow_up_date: date
+    follow_up_date: date = Field(
+        description="Next follow-up date",
+        examples=["2026-08-15"]
+    )
 
 
 # ==========================================================
@@ -209,28 +264,38 @@ class FollowUpRequest(BaseModel):
 
 class EditInteractionRequest(BaseModel):
 
-    interaction_id: int
+    interaction_id: int = Field(
+        description="Interaction ID",
+        examples=[15]
+    )
 
-    summary: Optional[str] = None
+    summary: Optional[str] = Field(
+        default=None,
+        description="Updated interaction summary",
+        examples=[
+            "Doctor requested the latest brochure."
+        ]
+    )
 
-    product: Optional[str] = None
+    product: Optional[str] = Field(
+        default=None,
+        description="Updated product",
+        examples=["CardioX"]
+    )
 
-    follow_up: Optional[date] = None
+    follow_up: Optional[date] = Field(
+        default=None,
+        description="Updated follow-up date",
+        examples=["2026-08-25"]
+    )
 
-
-# ==========================================================
-# STANDARD API RESPONSE
-# ==========================================================
-
-class APIResponse(BaseModel, Generic[T]):
-    """
-    Standard response returned by every API endpoint.
-    """
-
-    success: bool
-
-    message: str
-
-    data: Optional[T] = None
-
-    error: Optional[str] = None
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "interaction_id": 15,
+                "summary": "Doctor requested the latest brochure.",
+                "product": "CardioX",
+                "follow_up": "2026-08-25"
+            }
+        }
+    )
