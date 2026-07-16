@@ -1,13 +1,13 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Interaction
 from schemas import InteractionCreate
-
+from schemas import APIResponse
 
 router = APIRouter(
     prefix="/interaction",
@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 # ============================================================
-# Response Models
+# Response Data
 # ============================================================
 
 class InteractionResponseData(BaseModel):
@@ -31,19 +31,9 @@ class InteractionResponseData(BaseModel):
 
     follow_up: str | None = None
 
-    class Config:
-        from_attributes = True
-
-
-class APIResponse(BaseModel):
-
-    success: bool
-
-    message: str
-
-    data: InteractionResponseData | list[InteractionResponseData] | None
-
-    error: str | None = None
+    model_config = ConfigDict(
+        from_attributes=True
+    )
 
 
 # ============================================================
@@ -53,13 +43,19 @@ class APIResponse(BaseModel):
 @router.post(
     "/",
     status_code=HTTPStatus.CREATED,
-    response_model=APIResponse,
+    response_model=APIResponse[InteractionResponseData],
     summary="Create Interaction",
     description="Create and store a new HCP interaction.",
     responses={
-        201: {"description": "Interaction created successfully"},
-        400: {"description": "Invalid request"},
-        500: {"description": "Internal server error"}
+        201: {
+            "description": "Interaction created successfully"
+        },
+        400: {
+            "description": "Invalid request"
+        },
+        500: {
+            "description": "Internal server error"
+        }
     }
 )
 def create_interaction(
@@ -87,7 +83,7 @@ def create_interaction(
 
         db.refresh(new_interaction)
 
-        return APIResponse(
+        return APIResponse[InteractionResponseData](
 
             success=True,
 
@@ -103,7 +99,7 @@ def create_interaction(
 
         db.rollback()
 
-        return APIResponse(
+        return APIResponse[InteractionResponseData](
 
             success=False,
 
@@ -122,12 +118,16 @@ def create_interaction(
 
 @router.get(
     "/",
-    response_model=APIResponse,
+    response_model=APIResponse[list[InteractionResponseData]],
     summary="Get All Interactions",
     description="Retrieve all stored HCP interactions.",
     responses={
-        200: {"description": "Interactions retrieved successfully"},
-        500: {"description": "Internal server error"}
+        200: {
+            "description": "Interactions retrieved successfully"
+        },
+        500: {
+            "description": "Internal server error"
+        }
     }
 )
 def get_interactions(
@@ -148,13 +148,13 @@ def get_interactions(
 
         )
 
-        return APIResponse(
+        return APIResponse[list[InteractionResponseData]](
 
             success=True,
 
             message="Interactions retrieved successfully.",
 
-            data=interactions if interactions else [],
+            data=interactions,
 
             error=None
 
@@ -162,7 +162,7 @@ def get_interactions(
 
     except Exception as e:
 
-        return APIResponse(
+        return APIResponse[list[InteractionResponseData]](
 
             success=False,
 
