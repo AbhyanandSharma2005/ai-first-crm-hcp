@@ -23,15 +23,9 @@ class Retriever:
 
         if not self.loaded:
 
-            print("\n========== LOADING VECTOR STORE ==========")
-
             self.vector_store.load()
 
             self.loaded = True
-
-            print("Vector Store Loaded")
-
-            print("==========================================")
 
     # --------------------------------------------------
     # Semantic Search (FAISS)
@@ -88,10 +82,6 @@ class Retriever:
 
             })
 
-        print()
-
-        print(f"Semantic Results : {len(results)}")
-
         return results
 
     # --------------------------------------------------
@@ -104,30 +94,18 @@ class Retriever:
         k=3
     ):
 
-        print("\n==========================================")
-        print("HYBRID SEARCH STARTED")
-        print("Retriever Object :", id(self))
-        print("BM25 Object      :", id(bm25_retriever))
-        print("==========================================")
-
         semantic = self.semantic_search(
             query,
             k
         )
 
-        # ----------------------------------------------
-        # Ensure BM25 is initialized
-        # ----------------------------------------------
-
+        # Ensure BM25 has been initialized during startup
         if bm25_retriever.bm25 is None:
 
-            print()
-
-            print("BM25 NOT INITIALIZED")
-
-            print("Building BM25 Automatically...")
-
-            bm25_retriever.build()
+            raise RuntimeError(
+                "BM25Retriever has not been initialized. "
+                "Ensure initialize_rag() is executed during application startup."
+            )
 
         keyword = bm25_retriever.search(
             query,
@@ -137,13 +115,11 @@ class Retriever:
         merged = {}
 
         # Add semantic results first
-
         for item in semantic:
 
             merged[item["content"]] = item
 
         # Merge BM25 results
-
         for item in keyword:
 
             if item["content"] in merged:
@@ -153,45 +129,6 @@ class Retriever:
             else:
 
                 merged[item["content"]] = item
-
-        print()
-
-        print("========== HYBRID SEARCH RESULTS ==========")
-
-        print(f"Query : {query}")
-
-        print()
-
-        for i, item in enumerate(
-            merged.values(),
-            start=1
-        ):
-
-            print(f"Result {i}")
-
-            print(
-                f"Source : {item['source']}"
-            )
-
-            if "distance" in item:
-
-                print(
-                    f"Distance : {item['distance']:.4f}"
-                )
-
-            if "score" in item:
-
-                print(
-                    f"BM25 Score : {item['score']:.4f}"
-                )
-
-            print(
-                f"Content : {item['content'][:120]}..."
-            )
-
-            print("------------------------------------------")
-
-        print("===========================================")
 
         return list(
             merged.values()
