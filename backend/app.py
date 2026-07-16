@@ -13,7 +13,7 @@ from utils.exception_handler import (
     generic_exception_handler,
     validation_exception_handler
 )
-
+from utils.logger import logger
 
 # ==========================================================
 # Swagger Tag Metadata
@@ -130,8 +130,12 @@ app.add_exception_handler(
 
 @app.on_event("startup")
 def startup():
+    
+    logger.info("Initializing RAG...")
 
     initialize_rag()
+
+    logger.info("Application started successfully.")
 
 
 # ==========================================================
