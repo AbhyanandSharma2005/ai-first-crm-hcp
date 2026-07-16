@@ -11,6 +11,9 @@ from schemas import (
     InteractionResponse
 )
 
+from utils.logger import logger
+
+
 router = APIRouter(
     prefix="/interaction",
     tags=["Interaction"]
@@ -37,7 +40,7 @@ router = APIRouter(
                         "success": True,
                         "message": "Interaction created successfully.",
                         "data": {
-                            "id": 1,
+                            "interaction_id": 1,
                             "hcp_name": "Dr Sharma",
                             "summary": "Discussed CardioX efficacy study.",
                             "product": "CardioX",
@@ -61,38 +64,66 @@ def create_interaction(
     db: Session = Depends(get_db)
 ):
 
+    logger.info(
+        f"Creating interaction for HCP: {interaction.hcp_name}"
+    )
+
     try:
 
         new_interaction = Interaction(
+
             hcp_name=interaction.hcp_name,
+
             summary=interaction.summary,
+
             product=interaction.product,
+
             follow_up=interaction.follow_up
+
         )
 
         db.add(new_interaction)
+
         db.commit()
+
         db.refresh(new_interaction)
 
+        logger.info(
+            f"Interaction created successfully. ID={new_interaction.id}"
+        )
+
         return APIResponse[InteractionResponse](
+
             success=True,
+
             message="Interaction created successfully.",
+
             data=new_interaction,
+
             error=None
+
         )
 
     except Exception as e:
 
         db.rollback()
 
-        return APIResponse[InteractionResponse](
-            success=False,
-            message="Failed to create interaction.",
-            data=None,
-            error=str(e)
+        logger.exception(
+            "Failed to create interaction."
         )
 
+        return APIResponse[InteractionResponse](
 
+            success=False,
+
+            message="Failed to create interaction.",
+
+            data=None,
+
+            error=str(e)
+
+        )
+        
 # ============================================================
 # Get All Interactions
 # ============================================================
@@ -113,7 +144,7 @@ def create_interaction(
                         "message": "Interactions retrieved successfully.",
                         "data": [
                             {
-                                "id": 1,
+                                "interaction_id": 1,
                                 "hcp_name": "Dr Sharma",
                                 "summary": "Discussed CardioX efficacy study.",
                                 "product": "CardioX",
@@ -134,26 +165,52 @@ def get_interactions(
     db: Session = Depends(get_db)
 ):
 
+    logger.info("Fetching all interactions.")
+
     try:
 
         interactions = (
+
             db.query(Interaction)
-            .order_by(Interaction.id.desc())
+
+            .order_by(
+                Interaction.id.desc()
+            )
+
             .all()
+
+        )
+
+        logger.info(
+            f"Retrieved {len(interactions)} interactions."
         )
 
         return APIResponse[list[InteractionResponse]](
+
             success=True,
+
             message="Interactions retrieved successfully.",
+
             data=interactions,
+
             error=None
+
         )
 
     except Exception as e:
 
+        logger.exception(
+            "Failed to retrieve interactions."
+        )
+
         return APIResponse[list[InteractionResponse]](
+
             success=False,
+
             message="Failed to retrieve interactions.",
+
             data=[],
+
             error=str(e)
+
         )
