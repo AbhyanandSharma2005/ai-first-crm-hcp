@@ -1,3 +1,5 @@
+import json
+
 from .conftest import client
 
 
@@ -13,7 +15,9 @@ def test_chat_document_qa():
         json=payload
     )
 
-    print(response.json())
+    print("\n========== CHAT RESPONSE ==========")
+    print(json.dumps(response.json(), indent=4))
+    print("===================================\n")
 
     assert response.status_code == 200
 
@@ -21,4 +25,25 @@ def test_chat_document_qa():
 
     assert body["success"] is True
 
+    assert body["data"] is not None
+
     assert "response" in body["data"]
+
+
+def test_chat_empty_message():
+
+    payload = {
+        "session_id": "pytest",
+        "message": ""
+    }
+
+    response = client.post(
+        "/chat/",
+        json=payload
+    )
+
+    print("\n========== EMPTY MESSAGE RESPONSE ==========")
+    print(json.dumps(response.json(), indent=4))
+    print("============================================\n")
+
+    assert response.status_code == 422 or response.status_code == 400
