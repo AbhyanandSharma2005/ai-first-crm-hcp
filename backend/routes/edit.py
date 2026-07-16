@@ -43,7 +43,8 @@ class EditResponse(BaseModel):
 # ============================================================
 
 @router.put(
-    "/",
+    "/{interaction_id}",
+    operation_id="editInteraction",
     response_model=APIResponse[EditResponse],
     summary="Edit Existing Interaction"
 )

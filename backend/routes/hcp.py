@@ -35,7 +35,8 @@ class HCPResponse(BaseModel):
 # ============================================================
 
 @router.get(
-    "/",
+    "/search",
+    operation_id="searchHCP",
     response_model=APIResponse[HCPResponse],
     summary="Search HCP"
 )

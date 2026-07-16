@@ -77,6 +77,7 @@ class ChatData(BaseModel):
 
 @router.post(
     "/",
+    operation_id="chatWithAgent",
     response_model=APIResponse[ChatData],
     summary="Chat with AI CRM Assistant",
     description="""
