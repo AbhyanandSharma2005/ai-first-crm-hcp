@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field, ConfigDict
 from graph import graph
 from services.session_memory import session_memory
 from schemas import APIResponse
+from utils.logger import logger
+
 
 router = APIRouter(
     prefix="/chat",
@@ -122,11 +124,19 @@ Supported capabilities:
 )
 def chat_with_agent(request: ChatRequest):
 
+    # =========================================================
+    # Logging
+    # =========================================================
+
+    logger.info(f"Chat request received: {request.message}")
+
     # --------------------------------------------------------
     # Empty message validation
     # --------------------------------------------------------
 
     if not request.message.strip():
+
+        logger.warning("Empty chat message received.")
 
         return APIResponse[ChatData](
 
@@ -264,9 +274,11 @@ def chat_with_agent(request: ChatRequest):
             "last_recommendation"
         )
 
-    # --------------------------------------------------------
+        # --------------------------------------------------------
     # Execute LangGraph
     # --------------------------------------------------------
+
+    logger.info(f"Chat request received: {request.message}")
 
     try:
 
@@ -283,7 +295,11 @@ def chat_with_agent(request: ChatRequest):
 
         result = graph.invoke(state)
 
+        logger.info("Chat request completed.")
+
     except Exception as e:
+
+        logger.exception("Error while processing chat request.")
 
         return APIResponse[ChatData](
 

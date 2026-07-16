@@ -1,97 +1,146 @@
-from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from http import HTTPStatus
 
-from graph import graph
-from schemas import APIResponse
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import Interaction
+from schemas import (
+    APIResponse,
+    InteractionUpdate,
+    InteractionResponse
+)
+
+from utils.logger import logger
+
 
 router = APIRouter(
+
     prefix="/edit",
+
     tags=["Edit Interaction"]
+
 )
 
 
 # ============================================================
-# Request Model
-# ============================================================
-
-class EditRequest(BaseModel):
-
-    session_id: str = Field(
-        ...,
-        description="Session ID"
-    )
-
-    message: str = Field(
-        ...,
-        description="Edit instruction"
-    )
-
-
-# ============================================================
-# Response Model
-# ============================================================
-
-class EditResponse(BaseModel):
-
-    interaction_id: int | None = None
-
-    response: str
-
-
-# ============================================================
-# Endpoint
+# Edit Interaction
 # ============================================================
 
 @router.put(
+
     "/{interaction_id}",
+
     operation_id="editInteraction",
-    response_model=APIResponse[EditResponse],
-    summary="Edit Existing Interaction"
-)
-def edit_interaction(request: EditRequest):
 
-    state = {
+    status_code=HTTPStatus.OK,
 
-        "session_id": request.session_id,
+    response_model=APIResponse[InteractionResponse],
 
-        "user_message": request.message,
+    summary="Edit Interaction",
 
-        "intent": "EDIT_INTERACTION",
+    description="Update an existing Healthcare Professional interaction.",
 
-        "tool_output": {},
+    responses={
 
-        "final_response": "",
+        200:{
 
-        "sources": [],
+            "description":"Interaction updated successfully"
 
-        "scores": [],
+        },
 
-        "error": None
+        404:{
+
+            "description":"Interaction not found"
+
+        },
+
+        500:{
+
+            "description":"Internal server error"
+
+        }
 
     }
 
+)
+def edit_interaction(
+
+    interaction_id: int,
+
+    interaction: InteractionUpdate,
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info(
+        f"Editing interaction ID={interaction_id}"
+    )
+
     try:
 
-        result = graph.invoke(state)
+        existing_interaction = (
 
-        return APIResponse[EditResponse](
+            db.query(Interaction)
+
+            .filter(
+                Interaction.id == interaction_id
+            )
+
+            .first()
+
+        )
+
+        if existing_interaction is None:
+
+            logger.warning(
+                f"Interaction ID={interaction_id} not found."
+            )
+
+            return APIResponse[InteractionResponse](
+
+                success=False,
+
+                message="Interaction not found.",
+
+                data=None,
+
+                error="Interaction not found"
+
+            )
+
+        if interaction.hcp_name is not None:
+
+            existing_interaction.hcp_name = interaction.hcp_name
+
+        if interaction.summary is not None:
+
+            existing_interaction.summary = interaction.summary
+
+        if interaction.product is not None:
+
+            existing_interaction.product = interaction.product
+
+        if interaction.follow_up is not None:
+
+            existing_interaction.follow_up = interaction.follow_up
+            
+            db.commit()
+
+        db.refresh(existing_interaction)
+
+        logger.info(
+            f"Interaction ID={interaction_id} updated successfully."
+        )
+
+        return APIResponse[InteractionResponse](
 
             success=True,
 
             message="Interaction updated successfully.",
 
-            data=EditResponse(
-
-                interaction_id=result.get(
-                    "interaction_id"
-                ),
-
-                response=result.get(
-                    "final_response",
-                    ""
-                )
-
-            ),
+            data=existing_interaction,
 
             error=None
 
@@ -99,7 +148,13 @@ def edit_interaction(request: EditRequest):
 
     except Exception as e:
 
-        return APIResponse[EditResponse](
+        db.rollback()
+
+        logger.exception(
+            f"Failed to update interaction ID={interaction_id}."
+        )
+
+        return APIResponse[InteractionResponse](
 
             success=False,
 
