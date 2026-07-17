@@ -5,13 +5,11 @@ function SearchHCP() {
 
     const [doctorName, setDoctorName] = useState("");
 
-    const [result, setResult] = useState("");
+    const [results, setResults] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
     const [error, setError] = useState("");
-
-
 
     const searchDoctor = async () => {
 
@@ -27,7 +25,7 @@ function SearchHCP() {
 
         setError("");
 
-        setResult("");
+        setResults([]);
 
         try {
 
@@ -39,8 +37,6 @@ function SearchHCP() {
 
                     params: {
 
-                        session_id: "frontend-session",
-
                         doctor_name: doctorName
 
                     }
@@ -49,21 +45,17 @@ function SearchHCP() {
 
             );
 
-            console.log(response.data);
+            console.log("Search Response:", response.data);
 
             if (
 
                 response.data.success &&
 
-                response.data.data
+                Array.isArray(response.data.data)
 
             ) {
 
-                setResult(
-
-                    response.data.data.response
-
-                );
+                setResults(response.data.data);
 
             }
 
@@ -73,7 +65,7 @@ function SearchHCP() {
 
                     response.data.message ||
 
-                    "Doctor not found."
+                    "No Healthcare Professional found."
 
                 );
 
@@ -103,8 +95,6 @@ function SearchHCP() {
 
     };
 
-
-
     return (
 
         <div
@@ -130,8 +120,6 @@ function SearchHCP() {
                 Search Healthcare Professional
 
             </h2>
-
-
 
             <div
 
@@ -185,8 +173,6 @@ function SearchHCP() {
 
                 />
 
-
-
                 <button
 
                     onClick={searchDoctor}
@@ -215,19 +201,17 @@ function SearchHCP() {
 
             </div>
 
-
-
             {
 
                 error && (
 
-                    <div
+                    <p
 
                         style={{
 
                             color: "red",
 
-                            marginTop: "10px"
+                            marginBottom: "15px"
 
                         }}
 
@@ -235,49 +219,131 @@ function SearchHCP() {
 
                         {error}
 
-                    </div>
+                    </p>
 
                 )
 
             }
 
+            {
 
+                !loading &&
+
+                results.length === 0 &&
+
+                !error && (
+
+                    <p>
+
+                        Search for a Healthcare Professional.
+
+                    </p>
+
+                )
+
+            }
 
             {
 
-                result && (
+                results.length > 0 && (
 
-                    <div
+                    <table
 
                         style={{
 
-                            marginTop: "20px",
+                            width: "100%",
 
-                            padding: "15px",
-
-                            backgroundColor: "#f8f9fa",
-
-                            border: "1px solid #ddd",
-
-                            borderRadius: "8px"
+                            borderCollapse: "collapse"
 
                         }}
 
                     >
 
-                        <h3>
+                        <thead>
 
-                            Search Result
+                            <tr>
 
-                        </h3>
+                                <th style={tableHeader}>
 
-                        <p>
+                                    ID
 
-                            {result}
+                                </th>
 
-                        </p>
+                                <th style={tableHeader}>
 
-                    </div>
+                                    Doctor Name
+
+                                </th>
+
+                                <th style={tableHeader}>
+
+                                    Specialization
+
+                                </th>
+
+                                <th style={tableHeader}>
+
+                                    Hospital
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {
+
+                                results.map((doctor) => (
+
+                                    <tr key={doctor.id}>
+
+                                        <td style={tableCell}>
+
+                                            {doctor.id}
+
+                                        </td>
+
+                                        <td style={tableCell}>
+
+                                            {doctor.name}
+
+                                        </td>
+
+                                        <td style={tableCell}>
+
+                                            {
+
+                                                doctor.specialization ||
+
+                                                "-"
+
+                                            }
+
+                                        </td>
+
+                                        <td style={tableCell}>
+
+                                            {
+
+                                                doctor.hospital ||
+
+                                                "-"
+
+                                            }
+
+                                        </td>
+
+                                    </tr>
+
+                                ))
+
+                            }
+
+                        </tbody>
+
+                    </table>
 
                 )
 
@@ -288,5 +354,25 @@ function SearchHCP() {
     );
 
 }
+
+const tableHeader = {
+
+    border: "1px solid #ccc",
+
+    padding: "10px",
+
+    backgroundColor: "#f5f5f5",
+
+    textAlign: "left"
+
+};
+
+const tableCell = {
+
+    border: "1px solid #ccc",
+
+    padding: "10px"
+
+};
 
 export default SearchHCP;
