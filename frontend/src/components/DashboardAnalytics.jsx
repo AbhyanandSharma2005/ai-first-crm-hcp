@@ -1,7 +1,19 @@
 import { useEffect, useState } from "react";
 
+import {
+    Card,
+    CardContent,
+    Typography,
+    Button,
+    CircularProgress,
+    Box
+} from "@mui/material";
+
 import API from "../api/api";
+
 import ProductPieChart from "./ProductPieChart";
+import InteractionTrend from "./InteractionTrend";
+import RecentInteractionsTable from "./RecentInteractionsTable";
 
 function DashboardAnalytics({ onDataLoaded }) {
 
@@ -63,8 +75,11 @@ function DashboardAnalytics({ onDataLoaded }) {
             console.error(err);
 
             setError(
+
                 err.response?.data?.message ||
+
                 "Failed to fetch dashboard analytics."
+
             );
 
         }
@@ -87,20 +102,17 @@ function DashboardAnalytics({ onDataLoaded }) {
 
         return (
 
-            <div
-                style={{
-                    marginTop: "30px",
-                    textAlign: "center"
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 5
                 }}
             >
 
-                <h3>
+                <CircularProgress />
 
-                    Loading Dashboard Analytics...
-
-                </h3>
-
-            </div>
+            </Box>
 
         );
 
@@ -110,25 +122,25 @@ function DashboardAnalytics({ onDataLoaded }) {
 
         return (
 
-            <div
-                style={{
-                    marginTop: "30px",
+            <Box
+                sx={{
+                    mt: 4,
                     textAlign: "center"
                 }}
             >
 
-                <p
-                    style={{
-                        color: "red",
-                        marginBottom: "15px"
-                    }}
+                <Typography
+                    color="error"
+                    gutterBottom
                 >
 
                     {error}
 
-                </p>
+                </Typography>
 
-                <button
+                <Button
+
+                    variant="contained"
 
                     onClick={fetchDashboardStats}
 
@@ -136,9 +148,9 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     Retry
 
-                </button>
+                </Button>
 
-            </div>
+            </Box>
 
         );
 
@@ -152,28 +164,29 @@ function DashboardAnalytics({ onDataLoaded }) {
 
     return (
 
-        <div
-            style={{
-                marginTop: "30px"
-            }}
-        >
+        <Box sx={{ mt: 4 }}>
 
-            <div
-                style={{
+            <Box
+                sx={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "20px"
+                    mb: 3
                 }}
             >
 
-                <h2>
+                <Typography
+                    variant="h4"
+                    fontWeight="bold"
+                >
 
                     Dashboard Analytics
 
-                </h2>
+                </Typography>
 
-                <button
+                <Button
+
+                    variant="contained"
 
                     onClick={fetchDashboardStats}
 
@@ -181,55 +194,77 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     Refresh
 
-                </button>
+                </Button>
 
-            </div>
+            </Box>
 
-            <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    marginBottom: "30px"
+            <Card
+                sx={{
+                    mb: 4,
+                    borderRadius: 3,
+                    boxShadow: 3
                 }}
             >
 
-                <tbody>
+                <CardContent>
 
-                    <tr>
+                    <Typography
+                        variant="h6"
+                        gutterBottom
+                    >
 
-                        <td style={tableHeader}>
+                        Overview
 
-                            Total HCPs
+                    </Typography>
 
-                        </td>
+                    <table
+                        style={{
+                            width: "100%",
+                            borderCollapse: "collapse"
+                        }}
+                    >
 
-                        <td style={tableCell}>
+                        <tbody>
 
-                            {stats.total_hcps}
+                            <tr>
 
-                        </td>
+                                <td style={tableHeader}>
 
-                    </tr>
+                                    Total HCPs
 
-                    <tr>
+                                </td>
 
-                        <td style={tableHeader}>
+                                <td style={tableCell}>
 
-                            Total Interactions
+                                    {stats.total_hcps}
 
-                        </td>
+                                </td>
 
-                        <td style={tableCell}>
+                            </tr>
 
-                            {stats.total_interactions}
+                            <tr>
 
-                        </td>
+                                <td style={tableHeader}>
 
-                    </tr>
+                                    Total Interactions
 
-                </tbody>
+                                </td>
 
-            </table>
+                                <td style={tableCell}>
+
+                                    {stats.total_interactions}
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </CardContent>
+
+            </Card>
 
             <ProductPieChart
 
@@ -237,152 +272,15 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             />
 
-            <h2
-                style={{
-                    marginTop: "40px",
-                    marginBottom: "15px"
-                }}
-            >
+            <InteractionTrend />
 
-                Recent Interactions
+            <RecentInteractionsTable
 
-            </h2>
+                interactions={stats.recent_interactions}
 
-            <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse"
-                }}
-            >
+            />
 
-                <thead>
-
-                    <tr>
-
-                        <th style={tableHeader}>
-
-                            ID
-
-                        </th>
-
-                        <th style={tableHeader}>
-
-                            HCP Name
-
-                        </th>
-
-                        <th style={tableHeader}>
-
-                            Product
-
-                        </th>
-
-                        <th style={tableHeader}>
-
-                            Summary
-
-                        </th>
-
-                        <th style={tableHeader}>
-
-                            Follow Up
-
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {
-
-                        stats.recent_interactions &&
-                        stats.recent_interactions.length > 0 ?
-
-                        (
-
-                            stats.recent_interactions.map(
-
-                                (interaction) => (
-
-                                    <tr
-                                        key={interaction.id}
-                                    >
-
-                                        <td style={tableCell}>
-
-                                            {interaction.id}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {interaction.hcp_name}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {interaction.product}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {interaction.summary}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {
-
-                                                interaction.follow_up ||
-
-                                                "-"
-
-                                            }
-
-                                        </td>
-
-                                    </tr>
-
-                                )
-
-                            )
-
-                        )
-
-                        :
-
-                        (
-
-                            <tr>
-
-                                <td
-
-                                    colSpan={5}
-
-                                    style={tableCell}
-
-                                >
-
-                                    No recent interactions found.
-
-                                </td>
-
-                            </tr>
-
-                        )
-
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
+        </Box>
 
     );
 
@@ -400,7 +298,7 @@ const tableHeader = {
 
     fontWeight: "bold",
 
-    textAlign: "left"
+    width: "250px"
 
 };
 
@@ -408,9 +306,7 @@ const tableCell = {
 
     border: "1px solid #ddd",
 
-    padding: "12px",
-
-    textAlign: "left"
+    padding: "12px"
 
 };
 
