@@ -1,237 +1,211 @@
-import React from "react";
-
 import {
-    Card,
-    CardContent,
-    Typography,
-    Box
+  Box,
+  Divider,
+  Stack,
+  Typography,
 } from "@mui/material";
-
+import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
 import { PieChart } from "@mui/x-charts/PieChart";
 
-function ProductPieChart({ products }) {
+const chartColors = [
+  "#2855D9",
+  "#10A683",
+  "#8B5CF6",
+  "#F59E0B",
+  "#EF5B5B",
+  "#14B8A6",
+];
 
-    if (!products || Object.keys(products).length === 0) {
+function ProductPieChart({ products = {} }) {
+  const pieData = Object.entries(products)
+    .map(([label, value], id) => ({
+      id,
+      label,
+      value: Number(value) || 0,
+      color: chartColors[id % chartColors.length],
+    }))
+    .filter((item) => item.value > 0);
 
-        return (
+  const totalInteractions = pieData.reduce(
+    (total, item) => total + item.value,
+    0
+  );
 
-            <Card
-                sx={{
-                    mt: 4,
-                    borderRadius: 3,
-                    boxShadow: 3
-                }}
-            >
-
-                <CardContent>
-
-                    <Typography
-                        variant="h6"
-                        gutterBottom
-                    >
-
-                        Product Distribution
-
-                    </Typography>
-
-                    <Typography
-                        color="text.secondary"
-                    >
-
-                        No product data available.
-
-                    </Typography>
-
-                </CardContent>
-
-            </Card>
-
-        );
-
-    }
-
-    const pieData = Object.entries(products).map(
-
-        ([product, count], index) => ({
-
-            id: index,
-
-            value: count,
-
-            label: product
-
-        })
-
-    );
-
-    const totalProducts = pieData.reduce(
-
-        (sum, item) => sum + item.value,
-
-        0
-
-    );
-
+  if (!pieData.length) {
     return (
+      <Box
+        sx={{
+          minHeight: 250,
+          display: "grid",
+          placeItems: "center",
+          textAlign: "center",
+          border: "1px dashed #D9E1F2",
+          borderRadius: 3,
+          bgcolor: "#FAFBFD",
+          px: 3,
+        }}
+      >
+        <Box>
+          <DonutLargeOutlinedIcon
+            sx={{ color: "#9AA8BA", fontSize: 32, mb: 1 }}
+          />
 
-        <Card
-            sx={{
-                mt: 4,
-                borderRadius: 3,
-                boxShadow: 3
-            }}
+          <Typography fontWeight={700} color="#475569">
+            No product activity yet
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Product distribution will appear after interactions are logged.
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: { xs: "column", md: "row" },
+        gap: { xs: 2, md: 3 },
+      }}
+    >
+      <Box
+        sx={{
+          width: { xs: "100%", sm: 300 },
+          height: 260,
+          position: "relative",
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
+        <PieChart
+          width={300}
+          height={260}
+          hideLegend
+          series={[
+            {
+              data: pieData,
+              innerRadius: 63,
+              outerRadius: 102,
+              paddingAngle: 3,
+              cornerRadius: 5,
+              highlightScope: {
+                faded: "global",
+                highlighted: "item",
+              },
+              faded: {
+                innerRadius: 55,
+                additionalRadius: -8,
+                color: "#DCE4EF",
+              },
+            },
+          ]}
+          sx={{
+            "& .MuiChartsLegend-root": {
+              display: "none",
+            },
+          }}
+        />
+
+        <Box
+          sx={{
+            position: "absolute",
+            textAlign: "center",
+            pointerEvents: "none",
+          }}
         >
+          <Typography
+            variant="h4"
+            fontWeight={800}
+            color="#172033"
+            lineHeight={1}
+          >
+            {totalInteractions}
+          </Typography>
 
-            <CardContent>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontWeight: 650 }}
+          >
+            INTERACTIONS
+          </Typography>
+        </Box>
+      </Box>
 
-                <Typography
-                    variant="h5"
-                    fontWeight="600"
-                    gutterBottom
-                >
+      <Box sx={{ width: { xs: "100%", md: 245 } }}>
+        <Typography fontWeight={750} color="#27364D" sx={{ mb: 0.5 }}>
+          Product activity
+        </Typography>
 
-                    Product Distribution
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Distribution by discussed product.
+        </Typography>
 
-                </Typography>
+        <Divider sx={{ borderColor: "#E7ECF5", mb: 1.25 }} />
 
+        <Stack spacing={1.25}>
+          {pieData.map((item) => {
+            const percentage = ((item.value / totalInteractions) * 100).toFixed(1);
+
+            return (
+              <Box
+                key={item.id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 1,
+                }}
+              >
                 <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: 4,
-                        mt: 2
-                    }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    minWidth: 0,
+                    gap: 1,
+                  }}
                 >
+                  <Box
+                    sx={{
+                      width: 9,
+                      height: 9,
+                      flexShrink: 0,
+                      borderRadius: "50%",
+                      bgcolor: item.color,
+                    }}
+                  />
 
-                    <PieChart
-
-                        width={450}
-
-                        height={300}
-
-                        series={[
-
-                            {
-
-                                data: pieData,
-
-                                innerRadius: 45,
-
-                                outerRadius: 110,
-
-                                paddingAngle: 2,
-
-                                cornerRadius: 5,
-
-                                highlightScope: {
-
-                                    faded: "global",
-
-                                    highlighted: "item"
-
-                                },
-
-                                faded: {
-
-                                    innerRadius: 35,
-
-                                    additionalRadius: -8,
-
-                                    color: "gray"
-
-                                }
-
-                            }
-
-                        ]}
-
-                    />
-
-                    <Box>
-
-                        <Typography
-                            variant="h6"
-                            gutterBottom
-                        >
-
-                            Product Summary
-
-                        </Typography>
-
-                        {
-
-                            pieData.map((item) => (
-
-                                <Box
-                                    key={item.id}
-                                    sx={{
-                                        mb: 1
-                                    }}
-                                >
-
-                                    <Typography>
-
-                                        <strong>
-
-                                            {item.label}
-
-                                        </strong>
-
-                                        {" : "}
-
-                                        {item.value}
-
-                                        {" Interaction"}
-
-                                        {item.value > 1 ? "s" : ""}
-
-                                        {" ("}
-
-                                        {
-
-                                            (
-
-                                                (item.value / totalProducts) *
-
-                                                100
-
-                                            ).toFixed(1)
-
-                                        }
-
-                                        {"%)"}
-
-                                    </Typography>
-
-                                </Box>
-
-                            ))
-
-                        }
-
-                        <Typography
-                            sx={{
-                                mt: 2,
-                                fontWeight: "bold"
-                            }}
-                        >
-
-                            Total Interactions : {totalProducts}
-
-                        </Typography>
-
-                    </Box>
-
+                  <Typography
+                    variant="body2"
+                    fontWeight={650}
+                    color="#475569"
+                    noWrap
+                  >
+                    {item.label}
+                  </Typography>
                 </Box>
 
-            </CardContent>
-
-        </Card>
-
-    );
-
+                <Typography
+                  variant="body2"
+                  color="#64748B"
+                  sx={{ flexShrink: 0 }}
+                >
+                  <Box component="span" fontWeight={750} color="#27364D">
+                    {item.value}
+                  </Box>{" "}
+                  · {percentage}%
+                </Typography>
+              </Box>
+            );
+          })}
+        </Stack>
+      </Box>
+    </Box>
+  );
 }
 
 export default ProductPieChart;
