@@ -1,117 +1,109 @@
-from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
-from graph import graph
-from schemas import APIResponse
+from database import get_db
+from models import HCP
+from schemas import APIResponse, HCPResponse
 from utils.logger import logger
 
 
 router = APIRouter(
+
     prefix="/hcp",
+
     tags=["HCP Search"]
+
 )
 
 
-# ============================================================
-# Request
-# ============================================================
-
-class HCPRequest(BaseModel):
-
-    session_id: str = Field(
-        ...,
-        description="Unique session identifier",
-        examples=["abc123"]
-    )
-
-    doctor_name: str = Field(
-        ...,
-        description="Doctor name to search",
-        examples=["Dr Sharma"]
-    )
-
-
-# ============================================================
-# Response
-# ============================================================
-
-class HCPResponse(BaseModel):
-
-    response: str = Field(
-        description="Search result"
-    )
-
-
-# ============================================================
-# Endpoint
-# ============================================================
+# ==========================================================
+# Search HCP
+# ==========================================================
 
 @router.get(
+
     "/search",
+
     operation_id="searchHCP",
-    response_model=APIResponse[HCPResponse],
-    summary="Search HCP",
-    description="Search Healthcare Professionals using the AI agent.",
+
+    response_model=APIResponse[list[HCPResponse]],
+
+    summary="Search Healthcare Professionals",
+
+    description="Search Healthcare Professionals from the database.",
+
     responses={
+
         200: {
-            "description": "HCP retrieved successfully"
+
+            "description": "Healthcare Professionals retrieved successfully"
+
         },
-        400: {
-            "description": "Invalid request"
-        },
+
         500: {
+
             "description": "Internal server error"
+
         }
+
     }
+
 )
-def search_hcp(request: HCPRequest):
+def search_hcp(
 
-    logger.info(
-        f"Searching HCP: {request.doctor_name}"
-    )
+    doctor_name: str = Query(
 
-    state = {
+        ...,
 
-        "session_id": request.session_id,
+        description="Doctor name to search",
 
-        "user_message": request.doctor_name,
+        examples=["Dr Sharma"]
 
-        "intent": "SEARCH_HCP",
+    ),
 
-        "tool_output": {},
+    db: Session = Depends(get_db)
 
-        "final_response": "",
+):
 
-        "sources": [],
-
-        "scores": [],
-
-        "error": None
-
-    }
+    logger.info(f"Searching HCP: {doctor_name}")
 
     try:
 
-        result = graph.invoke(state)
+        doctors = (
 
-        logger.info(
-            f"HCP search completed for: {request.doctor_name}"
+            db.query(HCP)
+
+            .filter(
+
+                HCP.name.ilike(f"%{doctor_name}%")
+
+            )
+
+            .all()
+
         )
 
-        return APIResponse[HCPResponse](
+        logger.info(
+
+            f"{len(doctors)} doctor(s) found."
+
+        )
+
+        return APIResponse[list[HCPResponse]](
 
             success=True,
 
-            message="HCP retrieved successfully.",
+            message=(
 
-            data=HCPResponse(
+                "Healthcare Professionals retrieved successfully."
 
-                response=result.get(
-                    "final_response",
-                    ""
-                )
+                if doctors
+
+                else "No Healthcare Professionals found."
 
             ),
+
+            data=doctors,
 
             error=None
 
@@ -120,16 +112,18 @@ def search_hcp(request: HCPRequest):
     except Exception as e:
 
         logger.exception(
-            f"Failed to search HCP: {request.doctor_name}"
+
+            "Failed to search Healthcare Professional."
+
         )
 
-        return APIResponse[HCPResponse](
+        return APIResponse[list[HCPResponse]](
 
             success=False,
 
-            message="Failed to search HCP.",
+            message="Failed to search Healthcare Professional.",
 
-            data=None,
+            data=[],
 
             error=str(e)
 
