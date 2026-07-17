@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
+
 import API from "../api/api";
+
+import EditInteraction from "./EditInteraction";
 
 function InteractionHistory() {
 
@@ -10,6 +13,10 @@ function InteractionHistory() {
     const [refreshing, setRefreshing] = useState(false);
 
     const [error, setError] = useState("");
+
+    const [selectedInteraction, setSelectedInteraction] = useState(null);
+
+    const [showEdit, setShowEdit] = useState(false);
 
 
 
@@ -90,6 +97,27 @@ function InteractionHistory() {
 
 
 
+    const openEdit = (interaction) => {
+
+        setSelectedInteraction(interaction);
+
+        setShowEdit(true);
+
+    };
+
+
+
+    const closeEdit = () => {
+
+        setSelectedInteraction(null);
+
+        setShowEdit(false);
+
+    };
+
+
+
+
     if (loading) {
 
         return (
@@ -117,7 +145,9 @@ function InteractionHistory() {
                 <h3>Interaction History</h3>
 
                 <p style={{ color: "red" }}>
+
                     {error}
+
                 </p>
 
                 <button
@@ -149,22 +179,37 @@ function InteractionHistory() {
     return (
 
         <div
+
             style={{
+
                 marginTop: "20px",
+
                 padding: "20px",
+
                 border: "1px solid #ddd",
+
                 borderRadius: "8px",
+
                 backgroundColor: "#fff"
+
             }}
+
         >
 
             <div
+
                 style={{
+
                     display: "flex",
+
                     justifyContent: "space-between",
+
                     alignItems: "center",
+
                     marginBottom: "20px"
+
                 }}
+
             >
 
                 <h2>Interaction History</h2>
@@ -210,10 +255,15 @@ function InteractionHistory() {
                 ) : (
 
                     <table
+
                         style={{
+
                             width: "100%",
+
                             borderCollapse: "collapse"
+
                         }}
+
                     >
 
                         <thead>
@@ -230,6 +280,8 @@ function InteractionHistory() {
 
                                 <th style={tableHeader}>Follow Up</th>
 
+                                <th style={tableHeader}>Action</th>
+
                             </tr>
 
                         </thead>
@@ -243,29 +295,55 @@ function InteractionHistory() {
                                     <tr key={interaction.id}>
 
                                         <td style={tableCell}>
+
                                             {interaction.id}
+
                                         </td>
 
                                         <td style={tableCell}>
+
                                             {interaction.hcp_name}
+
                                         </td>
 
                                         <td style={tableCell}>
+
                                             {interaction.summary}
+
                                         </td>
 
                                         <td style={tableCell}>
+
                                             {interaction.product}
+
                                         </td>
 
                                         <td style={tableCell}>
+
                                             {
 
-                                                interaction.follow_up ||
+                                                interaction.follow_up
 
-                                                "-"
+                                                    ? interaction.follow_up.substring(0, 10)
+
+                                                    : "-"
 
                                             }
+
+                                        </td>
+
+                                        <td style={tableCell}>
+
+                                            <button
+
+                                                onClick={() => openEdit(interaction)}
+
+                                            >
+
+                                                Edit
+
+                                            </button>
+
                                         </td>
 
                                     </tr>
@@ -277,6 +355,26 @@ function InteractionHistory() {
                         </tbody>
 
                     </table>
+
+                )
+
+            }
+
+
+
+            {
+
+                showEdit && (
+
+                    <EditInteraction
+
+                        interaction={selectedInteraction}
+
+                        onClose={closeEdit}
+
+                        onUpdate={fetchInteractions}
+
+                    />
 
                 )
 
