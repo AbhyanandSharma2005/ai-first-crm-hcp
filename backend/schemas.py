@@ -164,6 +164,18 @@ class DashboardStats(BaseModel):
     products: dict[str, int]
 
     recent_interactions: list[InteractionResponse]
+    
+    
+class MonthlyInteraction(BaseModel):
+
+    month: str
+
+    count: int
+
+
+class MonthlyInteractionResponse(BaseModel):
+
+    monthly_data: list[MonthlyInteraction]
 
 # ==========================================================
 # CHAT SCHEMAS

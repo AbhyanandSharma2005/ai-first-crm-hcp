@@ -1,14 +1,28 @@
 from collections import Counter
 
 from fastapi import APIRouter, Depends
+
 from sqlalchemy.orm import Session
 
+from sqlalchemy import (
+    extract,
+    func
+)
+
 from database import get_db
-from models import HCP, Interaction
+
+from models import (
+    HCP,
+    Interaction
+)
+
 from schemas import (
     APIResponse,
-    DashboardStats
+    DashboardStats,
+    MonthlyInteraction,
+    MonthlyInteractionResponse
 )
+
 from utils.logger import logger
 
 
@@ -40,11 +54,15 @@ router = APIRouter(
     responses={
 
         200: {
+
             "description": "Dashboard statistics retrieved successfully."
+
         },
 
         500: {
+
             "description": "Internal server error."
+
         }
 
     }
@@ -56,7 +74,11 @@ def get_dashboard_stats(
 
 ):
 
-    logger.info("Fetching dashboard statistics.")
+    logger.info(
+
+        "Fetching dashboard statistics."
+
+    )
 
     try:
 
@@ -133,7 +155,7 @@ def get_dashboard_stats(
         )
 
         # =====================================================
-        # Response
+        # Dashboard Response
         # =====================================================
 
         dashboard = DashboardStats(
@@ -148,7 +170,11 @@ def get_dashboard_stats(
 
         )
 
-        logger.info("Dashboard statistics fetched successfully.")
+        logger.info(
+
+            "Dashboard statistics fetched successfully."
+
+        )
 
         return APIResponse[DashboardStats](
 
@@ -164,7 +190,11 @@ def get_dashboard_stats(
 
     except Exception as e:
 
-        logger.exception("Failed to fetch dashboard statistics.")
+        logger.exception(
+
+            "Failed to fetch dashboard statistics."
+
+        )
 
         return APIResponse[DashboardStats](
 
