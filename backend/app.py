@@ -17,6 +17,14 @@ from utils.exception_handler import (
 from utils.logger import logger
 from middleware.logging import LoggingMiddleware
 
+from sqlalchemy.orm import Session
+
+from database import get_db
+
+from models import Interaction, HCP
+
+from fastapi import Depends
+
 
 # ==========================================================
 # Swagger Tag Metadata
@@ -297,39 +305,89 @@ def version():
 # Metrics
 # ==========================================================
 
+# ==========================================================
+# Metrics
+# ==========================================================
+
 @app.get(
 
     "/metrics",
 
     summary="Application Metrics",
 
-    description="Returns basic application runtime metrics.",
+    description="Returns application runtime metrics.",
 
     tags=["System"]
 
 )
-def metrics():
+def metrics(
+
+    db: Session = Depends(get_db)
+
+):
 
     logger.info("Metrics endpoint accessed.")
 
-    return {
+    try:
 
-        "success": True,
+        total_interactions = (
 
-        "message": "Application metrics.",
+            db.query(Interaction)
 
-        "data": {
+            .count()
 
-            "status": "Running",
+        )
 
-            "environment": "Development",
+        total_hcps = (
 
-            "api": "AI First CRM HCP API",
+            db.query(HCP)
 
-            "version": "1.0.0"
+            .count()
 
-        },
+        )
 
-        "error": None
+        return {
 
-    }
+            "success": True,
+
+            "message": "Application metrics.",
+
+            "data": {
+
+                "total_interactions": total_interactions,
+
+                "total_hcps": total_hcps,
+
+                "status": "Running",
+
+                "environment": "Development",
+
+                "api": "AI First CRM HCP API",
+
+                "version": "1.0.0"
+
+            },
+
+            "error": None
+
+        }
+
+    except Exception as e:
+
+        logger.exception(
+
+            "Failed to load metrics."
+
+        )
+
+        return {
+
+            "success": False,
+
+            "message": "Unable to load metrics.",
+
+            "data": None,
+
+            "error": str(e)
+
+        }
