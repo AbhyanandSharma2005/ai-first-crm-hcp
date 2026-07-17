@@ -207,3 +207,190 @@ def get_dashboard_stats(
             error=str(e)
 
         )
+
+# ==========================================================
+# Monthly Interaction Trend
+# ==========================================================
+
+@router.get(
+
+    "/monthly",
+
+    operation_id="getMonthlyInteractionTrend",
+
+    response_model=APIResponse[MonthlyInteractionResponse],
+
+    summary="Monthly Interaction Trend",
+
+    description="Returns monthly interaction counts grouped by follow-up month.",
+
+    responses={
+
+        200: {
+
+            "description": "Monthly interaction trend retrieved successfully."
+
+        },
+
+        500: {
+
+            "description": "Internal server error."
+
+        }
+
+    }
+
+)
+def monthly_interactions(
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info(
+
+        "Fetching monthly interaction trend."
+
+    )
+
+    try:
+
+        months = [
+
+            "Jan",
+
+            "Feb",
+
+            "Mar",
+
+            "Apr",
+
+            "May",
+
+            "Jun",
+
+            "Jul",
+
+            "Aug",
+
+            "Sep",
+
+            "Oct",
+
+            "Nov",
+
+            "Dec"
+
+        ]
+
+        result = (
+
+            db.query(
+
+                extract(
+
+                    "month",
+
+                    Interaction.follow_up
+
+                ).label("month"),
+
+                func.count(
+
+                    Interaction.id
+
+                ).label("count")
+
+            )
+
+            .filter(
+
+                Interaction.follow_up.isnot(None)
+
+            )
+
+            .group_by(
+
+                extract(
+
+                    "month",
+
+                    Interaction.follow_up
+
+                )
+
+            )
+
+            .order_by(
+
+                extract(
+
+                    "month",
+
+                    Interaction.follow_up
+
+                )
+
+            )
+
+            .all()
+
+        )
+
+        monthly_data = []
+
+        for month, count in result:
+
+            monthly_data.append(
+
+                MonthlyInteraction(
+
+                    month=months[int(month) - 1],
+
+                    count=count
+
+                )
+
+            )
+
+        logger.info(
+
+            "Monthly interaction trend fetched successfully."
+
+        )
+
+        return APIResponse[MonthlyInteractionResponse](
+
+            success=True,
+
+            message="Monthly interaction trend retrieved successfully.",
+
+            data=MonthlyInteractionResponse(
+
+                monthly_data=monthly_data
+
+            ),
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        logger.exception(
+
+            "Failed to fetch monthly interaction trend."
+
+        )
+
+        return APIResponse[MonthlyInteractionResponse](
+
+            success=False,
+
+            message="Failed to retrieve monthly interaction trend.",
+
+            data=None,
+
+            error=str(e)
+
+        )
