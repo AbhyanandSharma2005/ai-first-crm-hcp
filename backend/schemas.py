@@ -152,6 +152,20 @@ class InteractionResponse(InteractionBase):
     )
 
 # ==========================================================
+# DASHBOARD SCHEMAS
+# ==========================================================
+
+class DashboardStats(BaseModel):
+
+    total_hcps: int
+
+    total_interactions: int
+
+    products: dict[str, int]
+
+    recent_interactions: list[InteractionResponse]
+
+# ==========================================================
 # CHAT SCHEMAS
 # ==========================================================
 
@@ -299,3 +313,4 @@ class EditInteractionRequest(BaseModel):
             }
         }
     )
+    
