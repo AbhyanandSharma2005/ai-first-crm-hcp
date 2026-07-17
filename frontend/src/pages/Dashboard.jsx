@@ -1,195 +1,372 @@
+import React, { useState, useEffect } from "react";
+
 import {
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  Box
+    Card,
+    CardContent,
+    Grid,
+    Typography,
+    Box,
+    CircularProgress
 } from "@mui/material";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import SearchHCP from "../components/SearchHCP";
 
+import API from "../api/api";
+
+import SearchHCP from "../components/SearchHCP";
+import Metrics from "../components/Metrics";
+import DashboardAnalytics from "../components/DashboardAnalytics";
 
 function Dashboard() {
 
-  const cards = [
-    {
-      title: "Total HCPs",
-      value: "120",
-      icon: <PeopleAltIcon fontSize="large" />,
-      description: "Healthcare Professionals"
-    },
-    {
-      title: "Interactions Logged",
-      value: "356",
-      icon: <EventNoteIcon fontSize="large" />,
-      description: "Total interactions recorded"
-    },
-    {
-      title: "AI Assisted Logs",
-      value: "89",
-      icon: <SmartToyIcon fontSize="large" />,
-      description: "Created using AI assistant"
-    },
-    {
-      title: "Follow-ups",
-      value: "24",
-      icon: <TrendingUpIcon fontSize="large" />,
-      description: "Upcoming follow-ups"
-    }
-  ];
+    const [metrics, setMetrics] = useState(null);
 
+    const [dashboardStats, setDashboardStats] = useState(null);
 
-  return (
+    const [loading, setLoading] = useState(true);
 
-    <Box>
+    useEffect(() => {
 
-      <Typography 
-        variant="h4"
-        fontWeight="600"
-        gutterBottom
-      >
-        Dashboard
-      </Typography>
+        fetchMetrics();
 
+    }, []);
 
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ mb: 3 }}
-      >
-        Welcome to the AI-First CRM Healthcare Professional Module.
-        Manage HCP interactions efficiently using AI-powered assistance.
-      </Typography>
+    const fetchMetrics = async () => {
 
+        try {
 
-      <Grid 
-        container 
-        spacing={3}
-      >
+            const response = await API.get("/metrics");
 
-        {
-          cards.map((card, index) => (
+            console.log("Metrics:", response.data);
 
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={3}
-              key={index}
+            if (
+
+                response.data.success &&
+
+                response.data.data
+
+            ) {
+
+                setMetrics(response.data.data);
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    if (loading) {
+
+        return (
+
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 10
+                }}
             >
 
-              <Card
-                sx={{
-                  height: "100%",
-                  borderRadius: 3,
-                  boxShadow: 3
-                }}
-              >
+                <CircularProgress />
 
-                <CardContent>
+            </Box>
 
+        );
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mb: 2
-                    }}
-                  >
+    }
 
-                    <Typography
-                      variant="h6"
-                      color="text.secondary"
-                    >
-                      {card.title}
-                    </Typography>
+    const cards = [
 
+        {
 
-                    {card.icon}
+            title: "Total HCPs",
 
+            value:
 
-                  </Box>
+                dashboardStats?.total_hcps ??
 
+                metrics?.total_hcps ??
 
+                "-",
 
-                  <Typography
-                    variant="h3"
-                    fontWeight="bold"
-                  >
-                    {card.value}
-                  </Typography>
+            icon: <PeopleAltIcon fontSize="large" />,
 
+            description: "Healthcare Professionals"
 
+        },
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    {card.description}
-                  </Typography>
+        {
 
+            title: "Interactions Logged",
 
-                </CardContent>
+            value:
 
-              </Card>
+                dashboardStats?.total_interactions ??
 
+                metrics?.total_interactions ??
+
+                "-",
+
+            icon: <EventNoteIcon fontSize="large" />,
+
+            description: "Total interactions recorded"
+
+        },
+
+        {
+
+            title: "Application",
+
+            value:
+
+                metrics?.status ??
+
+                "-",
+
+            icon: <SmartToyIcon fontSize="large" />,
+
+            description:
+
+                metrics?.api ??
+
+                "AI CRM"
+
+        },
+
+        {
+
+            title: "Environment",
+
+            value:
+
+                metrics?.environment ??
+
+                "-",
+
+            icon: <TrendingUpIcon fontSize="large" />,
+
+            description:
+
+                `Version ${metrics?.version ?? "-"}`
+
+        }
+
+    ];
+
+    return (
+
+        <Box>
+
+            <Typography
+                variant="h4"
+                fontWeight="600"
+                gutterBottom
+            >
+
+                Dashboard
+
+            </Typography>
+
+            <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ mb: 3 }}
+            >
+
+                Welcome to the AI-First CRM Healthcare Professional Module.
+
+                Manage HCP interactions efficiently using AI-powered assistance.
+
+            </Typography>
+
+            <Grid
+                container
+                spacing={3}
+            >
+
+                {
+
+                    cards.map((card, index) => (
+
+                        <Grid
+
+                            item
+
+                            xs={12}
+
+                            sm={6}
+
+                            md={3}
+
+                            key={index}
+
+                        >
+
+                            <Card
+
+                                sx={{
+
+                                    height: "100%",
+
+                                    borderRadius: 3,
+
+                                    boxShadow: 3
+
+                                }}
+
+                            >
+
+                                <CardContent>
+
+                                    <Box
+
+                                        sx={{
+
+                                            display: "flex",
+
+                                            justifyContent: "space-between",
+
+                                            alignItems: "center",
+
+                                            mb: 2
+
+                                        }}
+
+                                    >
+
+                                        <Typography
+
+                                            variant="h6"
+
+                                            color="text.secondary"
+
+                                        >
+
+                                            {card.title}
+
+                                        </Typography>
+
+                                        {card.icon}
+
+                                    </Box>
+
+                                    <Typography
+
+                                        variant="h3"
+
+                                        fontWeight="bold"
+
+                                    >
+
+                                        {card.value}
+
+                                    </Typography>
+
+                                    <Typography
+
+                                        variant="body2"
+
+                                        color="text.secondary"
+
+                                        sx={{ mt: 1 }}
+
+                                    >
+
+                                        {card.description}
+
+                                    </Typography>
+
+                                </CardContent>
+
+                            </Card>
+
+                        </Grid>
+
+                    ))
+
+                }
 
             </Grid>
 
-          ))
-        }
+            <Card
+                sx={{
+                    mt: 4,
+                    borderRadius: 3,
+                    boxShadow: 3
+                }}
+            >
 
+                <CardContent>
 
-      </Grid>
+                    <Typography
+                        variant="h5"
+                        fontWeight="600"
+                        gutterBottom
+                    >
 
+                        AI CRM Assistant
 
+                    </Typography>
 
-      <Card
-        sx={{
-          mt:4,
-          borderRadius:3,
-          boxShadow:3
-        }}
-      >
+                    <Typography color="text.secondary">
 
-        <CardContent>
+                        Use the AI assistant to summarize HCP meetings,
 
+                        extract key insights,
 
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            gutterBottom
-          >
-            AI CRM Assistant
-          </Typography>
+                        recommend next actions,
 
+                        search Healthcare Professionals,
 
-          <Typography
-            color="text.secondary"
-          >
-            Use the AI assistant to summarize HCP meetings,
-            extract key insights, recommend next actions,
-            and maintain accurate interaction records.
-          </Typography>
+                        and maintain accurate interaction records.
 
+                    </Typography>
 
-        </CardContent>
+                </CardContent>
 
+            </Card>
 
-      </Card>
+            <Box sx={{ mt: 4 }}>
 
+                <DashboardAnalytics
 
-    </Box>
+                    onDataLoaded={setDashboardStats}
 
-  );
+                />
+
+            </Box>
+
+            <Box sx={{ mt: 4 }}>
+
+                <SearchHCP />
+
+            </Box>
+
+            <Box sx={{ mt: 4 }}>
+
+                <Metrics />
+
+            </Box>
+
+        </Box>
+
+    );
 
 }
-
 
 export default Dashboard;
