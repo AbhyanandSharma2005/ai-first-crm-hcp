@@ -1,56 +1,43 @@
 import React, { useState } from "react";
-
 import API from "../api/api";
 
+function InteractionForm() {
 
+    const [formData, setFormData] = useState({
 
-function InteractionForm(){
+        hcp_name: "",
 
+        summary: "",
 
-    const [formData,setFormData] = useState({
+        product: "",
 
-        hcp_name:"",
-
-        summary:"",
-
-        product:"",
-
-        follow_up:""
+        follow_up: ""
 
     });
 
+    const [message, setMessage] = useState("");
 
+    const [loading, setLoading] = useState(false);
 
-    const [message,setMessage] = useState("");
-
-
-
-    const handleChange = (e)=>{
-
+    const handleChange = (e) => {
 
         setFormData({
 
             ...formData,
 
-            [e.target.name]:
-            e.target.value
+            [e.target.name]: e.target.value
 
         });
 
-
     };
 
-
-
-    const submitInteraction = async(e)=>{
-
+    const submitInteraction = async (e) => {
 
         e.preventDefault();
 
+        setLoading(true);
 
-
-        try{
-
+        try {
 
             const response = await API.post(
 
@@ -60,236 +47,202 @@ function InteractionForm(){
 
             );
 
-
-
             console.log(response.data);
 
-
-
             setMessage(
+
+                response.data.message ||
+
                 "Interaction saved successfully"
+
             );
-
-
 
             setFormData({
 
-                hcp_name:"",
+                hcp_name: "",
 
-                summary:"",
+                summary: "",
 
-                product:"",
+                product: "",
 
-                follow_up:""
+                follow_up: ""
 
             });
 
-
-
         }
 
+        catch (error) {
 
-        catch(error){
-
-
-            console.error(
-                error
-            );
-
+            console.error(error);
 
             setMessage(
+
+                error.response?.data?.message ||
+
                 "Failed to save interaction"
+
             );
 
         }
 
+        finally {
+
+            setLoading(false);
+
+        }
 
     };
-
-
 
     return (
 
         <div>
 
-
-            <form
-            onSubmit={submitInteraction}
-            >
-
+            <form onSubmit={submitInteraction}>
 
                 <div>
 
-                <label>
-                    HCP Name
-                </label>
+                    <label>
 
-                <br/>
+                        HCP Name
 
+                    </label>
 
-                <input
+                    <br />
 
-                name="hcp_name"
+                    <input
 
-                value={
-                    formData.hcp_name
-                }
+                        name="hcp_name"
 
-                onChange={
-                    handleChange
-                }
+                        value={formData.hcp_name}
 
-                placeholder="Doctor Name"
+                        onChange={handleChange}
 
-                />
+                        placeholder="Doctor Name"
+
+                        disabled={loading}
+
+                    />
 
                 </div>
 
-
-
-                <br/>
-
-
+                <br />
 
                 <div>
 
+                    <label>
 
-                <label>
-                    Interaction Summary
-                </label>
+                        Interaction Summary
 
+                    </label>
 
-                <br/>
+                    <br />
 
+                    <textarea
 
-                <textarea
+                        name="summary"
 
-                name="summary"
+                        value={formData.summary}
 
-                value={
-                    formData.summary
-                }
+                        onChange={handleChange}
 
-                onChange={
-                    handleChange
-                }
+                        placeholder="Describe interaction"
 
+                        disabled={loading}
 
-                placeholder=
-                "Describe interaction"
-
-                />
-
+                    />
 
                 </div>
 
-
-
-                <br/>
-
-
+                <br />
 
                 <div>
 
+                    <label>
 
-                <label>
-                    Product Discussed
-                </label>
+                        Product Discussed
 
+                    </label>
 
-                <br/>
+                    <br />
 
+                    <input
 
-                <input
+                        name="product"
 
-                name="product"
+                        value={formData.product}
 
-                value={
-                    formData.product
-                }
+                        onChange={handleChange}
 
-                onChange={
-                    handleChange
-                }
+                        placeholder="Product name"
 
+                        disabled={loading}
 
-                placeholder="Product name"
-
-                />
-
+                    />
 
                 </div>
 
-
-
-                <br/>
-
-
+                <br />
 
                 <div>
 
+                    <label>
 
-                <label>
-                    Follow Up Date
-                </label>
+                        Follow Up Date
 
+                    </label>
 
-                <br/>
+                    <br />
 
+                    <input
 
-                <input
+                        type="date"
 
-                type="date"
+                        name="follow_up"
 
-                name="follow_up"
+                        value={formData.follow_up}
 
+                        onChange={handleChange}
 
-                value={
-                    formData.follow_up
-                }
+                        disabled={loading}
 
-
-                onChange={
-                    handleChange
-                }
-
-                />
-
+                    />
 
                 </div>
 
-
-
-                <br/>
-
+                <br />
 
                 <button
-                type="submit"
+
+                    type="submit"
+
+                    disabled={loading}
+
                 >
 
-                    Save Interaction
+                    {
+
+                        loading
+
+                            ? "Saving..."
+
+                            : "Save Interaction"
+
+                    }
 
                 </button>
 
-
-
             </form>
-
-
 
             <p>
 
-            {message}
+                {message}
 
             </p>
-
 
         </div>
 
     );
 
-
 }
-
 
 export default InteractionForm;

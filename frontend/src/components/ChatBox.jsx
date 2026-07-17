@@ -1,107 +1,135 @@
 import React, { useState } from "react";
 import API from "../api/api";
 
-
 function ChatBox() {
 
     const [message, setMessage] = useState("");
 
     const [chatMessages, setChatMessages] = useState([]);
 
+    const [loading, setLoading] = useState(false);
+
+
 
     const sendMessage = async () => {
 
-        if (!message.trim()) {
-            return;
+    if (!message.trim()) {
+        return;
+    }
+
+    const userMessage = {
+        sender: "You",
+        text: message
+    };
+
+    setChatMessages((previous) => [
+        ...previous,
+        userMessage
+    ]);
+
+    const currentMessage = message;
+
+    setMessage("");
+
+    setLoading(true);
+
+    try {
+
+        const response = await API.post(
+            "/chat/",
+            {
+                session_id: "frontend-session",
+                message: currentMessage
+            }
+        );
+
+        console.log("Chat Response:", response.data);
+
+        let aiResponse = "";
+
+        if (response.data.response) {
+
+            aiResponse = response.data.response;
+
         }
 
+        else if (response.data.final_response) {
 
-        const userMessage = {
-            sender: "You",
-            text: message
+            aiResponse = response.data.final_response;
+
+        }
+
+        else if (response.data.message) {
+
+            aiResponse = response.data.message;
+
+        }
+
+        else {
+
+            aiResponse = JSON.stringify(response.data);
+
+        }
+
+        const aiMessage = {
+
+            sender: "AI Assistant",
+
+            text: aiResponse
+
         };
 
-
         setChatMessages((previous) => [
+
             ...previous,
-            userMessage
+
+            aiMessage
+
         ]);
 
+    }
 
+    catch (error) {
 
-        try {
+        console.error("Chat API Error:", error);
 
-            const response = await API.post(
-                "/chat/",
-                {
-                    message: message
-                }
-            );
+        setChatMessages((previous) => [
 
+            ...previous,
 
-            const aiMessage = {
+            {
 
                 sender: "AI Assistant",
 
-                text: response.data.response
-
-            };
-
-
-            setChatMessages((previous) => [
-
-                ...previous,
-
-                aiMessage
-
-            ]);
-
-
-        } 
-        
-        catch (error) {
-
-
-            console.error(
-                "Chat API Error:",
-                error
-            );
-
-
-            setChatMessages((previous) => [
-
-                ...previous,
-
-                {
-
-                    sender: "AI Assistant",
-
-                    text:
+                text:
+                    error.response?.data?.message ||
                     "Unable to connect with AI service."
 
-                }
+            }
 
-            ]);
+        ]);
 
-        }
+    }
 
+    finally {
 
-        setMessage("");
+        setLoading(false);
 
-    };
+    }
+
+};
 
 
 
     return (
 
         <div
-        style={{
-            border:"1px solid #ccc",
-            padding:"20px",
-            borderRadius:"10px"
-        }}
+            style={{
+                border: "1px solid #ccc",
+                padding: "20px",
+                borderRadius: "10px"
+            }}
         >
-
 
             <h3>
                 AI CRM Assistant
@@ -110,39 +138,65 @@ function ChatBox() {
 
 
             <div
-            style={{
-                height:"250px",
-                overflowY:"auto",
-                border:"1px solid #ddd",
-                padding:"10px",
-                marginBottom:"15px"
-            }}
+                style={{
+                    height: "300px",
+                    overflowY: "auto",
+                    border: "1px solid #ddd",
+                    padding: "10px",
+                    marginBottom: "15px"
+                }}
             >
-
 
                 {
                     chatMessages.map(
-                        (msg,index)=>(
 
-                            <div key={index}>
+                        (msg, index) => (
+
+                            <div
+                                key={index}
+                                style={{
+                                    marginBottom: "12px"
+                                }}
+                            >
 
                                 <strong>
+
                                     {msg.sender}
+
                                 </strong>
 
-                                :
+                                <br />
 
                                 <span>
-                                    {" "}
+
                                     {msg.text}
+
                                 </span>
 
                             </div>
 
                         )
+
                     )
                 }
 
+                {
+
+                    loading && (
+
+                        <p>
+
+                            <em>
+
+                                AI Assistant is typing...
+
+                            </em>
+
+                        </p>
+
+                    )
+
+                }
 
             </div>
 
@@ -150,38 +204,37 @@ function ChatBox() {
 
             <input
 
-            type="text"
+                type="text"
 
-            placeholder=
-            "Ask AI CRM Assistant..."
+                placeholder="Ask AI CRM Assistant..."
 
-            value={message}
+                value={message}
 
+                onChange={(e) =>
 
-            onChange={
-                (e)=>
-                setMessage(
-                    e.target.value
-                )
-            }
-
-
-            onKeyDown={
-                (e)=>{
-
-                    if(e.key==="Enter")
-                    {
-                        sendMessage();
-                    }
+                    setMessage(e.target.value)
 
                 }
-            }
 
+                onKeyDown={(e) => {
 
-            style={{
-                width:"80%",
-                padding:"10px"
-            }}
+                    if (e.key === "Enter") {
+
+                        sendMessage();
+
+                    }
+
+                }}
+
+                disabled={loading}
+
+                style={{
+
+                    width: "80%",
+
+                    padding: "10px"
+
+                }}
 
             />
 
@@ -189,26 +242,36 @@ function ChatBox() {
 
             <button
 
-            onClick={sendMessage}
+                onClick={sendMessage}
 
-            style={{
-                padding:"10px",
-                marginLeft:"10px"
-            }}
+                disabled={loading}
+
+                style={{
+
+                    padding: "10px",
+
+                    marginLeft: "10px"
+
+                }}
 
             >
 
-                Send
+                {
+
+                    loading
+
+                        ? "Sending..."
+
+                        : "Send"
+
+                }
 
             </button>
-
-
 
         </div>
 
     );
 
 }
-
 
 export default ChatBox;

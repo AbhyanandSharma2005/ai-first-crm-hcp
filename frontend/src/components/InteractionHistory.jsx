@@ -7,19 +7,49 @@ function InteractionHistory() {
 
     const [loading, setLoading] = useState(true);
 
+    const [refreshing, setRefreshing] = useState(false);
+
     const [error, setError] = useState("");
 
 
 
-    const fetchInteractions = async () => {
+    const fetchInteractions = async (isRefresh = false) => {
 
         try {
 
-            setLoading(true);
+            if (isRefresh) {
+
+                setRefreshing(true);
+
+            }
+
+            else {
+
+                setLoading(true);
+
+            }
 
             const response = await API.get("/interaction/");
 
-            setInteractions(response.data);
+            console.log("Interaction History:", response.data);
+
+            if (Array.isArray(response.data)) {
+
+                setInteractions(response.data);
+
+            }
+
+            else if (Array.isArray(response.data.data)) {
+
+                setInteractions(response.data.data);
+
+            }
+
+            else {
+
+                setInteractions([]);
+
+            }
 
             setError("");
 
@@ -29,13 +59,21 @@ function InteractionHistory() {
 
             console.error("Error fetching interactions:", err);
 
-            setError("Unable to load interaction history.");
+            setError(
+
+                err.response?.data?.message ||
+
+                "Unable to load interaction history."
+
+            );
 
         }
 
         finally {
 
             setLoading(false);
+
+            setRefreshing(false);
 
         }
 
@@ -78,7 +116,27 @@ function InteractionHistory() {
 
                 <h3>Interaction History</h3>
 
-                <p style={{ color: "red" }}>{error}</p>
+                <p style={{ color: "red" }}>
+                    {error}
+                </p>
+
+                <button
+
+                    onClick={() => fetchInteractions()}
+
+                    style={{
+
+                        marginTop: "10px",
+
+                        padding: "8px 15px"
+
+                    }}
+
+                >
+
+                    Retry
+
+                </button>
 
             </div>
 
@@ -112,13 +170,31 @@ function InteractionHistory() {
                 <h2>Interaction History</h2>
 
                 <button
-                    onClick={fetchInteractions}
+
+                    onClick={() => fetchInteractions(true)}
+
+                    disabled={refreshing}
+
                     style={{
+
                         padding: "8px 15px",
+
                         cursor: "pointer"
+
                     }}
+
                 >
-                    Refresh
+
+                    {
+
+                        refreshing
+
+                            ? "Refreshing..."
+
+                            : "Refresh"
+
+                    }
+
                 </button>
 
             </div>
@@ -126,6 +202,7 @@ function InteractionHistory() {
 
 
             {
+
                 interactions.length === 0 ? (
 
                     <p>No interactions found.</p>
@@ -157,8 +234,6 @@ function InteractionHistory() {
 
                         </thead>
 
-
-
                         <tbody>
 
                             {
@@ -184,7 +259,13 @@ function InteractionHistory() {
                                         </td>
 
                                         <td style={tableCell}>
-                                            {interaction.follow_up}
+                                            {
+
+                                                interaction.follow_up ||
+
+                                                "-"
+
+                                            }
                                         </td>
 
                                     </tr>
