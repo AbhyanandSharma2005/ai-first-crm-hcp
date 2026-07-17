@@ -126,7 +126,7 @@ def edit_interaction(
 
             existing_interaction.follow_up = interaction.follow_up
             
-            db.commit()
+        db.commit()
 
         db.refresh(existing_interaction)
 
