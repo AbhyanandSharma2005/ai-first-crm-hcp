@@ -91,6 +91,14 @@ function Metrics() {
 
         fetchMetrics();
 
+        const interval = setInterval(() => {
+
+            fetchMetrics();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
+
     }, []);
 
     if (loading) {

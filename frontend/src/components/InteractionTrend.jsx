@@ -103,6 +103,14 @@ function InteractionTrend() {
 
         fetchTrend();
 
+        const interval = setInterval(() => {
+
+            fetchTrend();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
+
     }, []);
 
     if (loading) {

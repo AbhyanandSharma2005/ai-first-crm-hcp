@@ -5,8 +5,7 @@ import {
     CardContent,
     Grid,
     Typography,
-    Box,
-    CircularProgress
+    Box
 } from "@mui/material";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
@@ -19,6 +18,7 @@ import API from "../api/api";
 import SearchHCP from "../components/SearchHCP";
 import Metrics from "../components/Metrics";
 import DashboardAnalytics from "../components/DashboardAnalytics";
+import LoadingCards from "../components/LoadingCards";
 
 function Dashboard() {
 
@@ -28,11 +28,9 @@ function Dashboard() {
 
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-
-        fetchMetrics();
-
-    }, []);
+    const [lastUpdated, setLastUpdated] = useState(
+        new Date()
+    );
 
     const fetchMetrics = async () => {
 
@@ -58,7 +56,7 @@ function Dashboard() {
 
         catch (error) {
 
-            console.error(error);
+            console.error("Failed to fetch metrics", error);
 
         }
 
@@ -70,19 +68,27 @@ function Dashboard() {
 
     };
 
+    useEffect(() => {
+
+        fetchMetrics();
+
+        const interval = setInterval(() => {
+
+            fetchMetrics();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
+
+    }, []);
+
     if (loading) {
 
         return (
 
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: 10
-                }}
-            >
+            <Box sx={{ mt: 5 }}>
 
-                <CircularProgress />
+                <LoadingCards />
 
             </Box>
 
@@ -183,9 +189,19 @@ function Dashboard() {
             </Typography>
 
             <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 2 }}
+            >
+
+                Last Updated : {lastUpdated.toLocaleTimeString()}
+
+            </Typography>
+
+            <Typography
                 variant="body1"
                 color="text.secondary"
-                sx={{ mb: 3 }}
+                sx={{ mb: 4 }}
             >
 
                 Welcome to the AI-First CRM Healthcare Professional Module.
@@ -304,19 +320,29 @@ function Dashboard() {
             </Grid>
 
             <Card
+
                 sx={{
+
                     mt: 4,
+
                     borderRadius: 3,
+
                     boxShadow: 3
+
                 }}
+
             >
 
                 <CardContent>
 
                     <Typography
+
                         variant="h5"
+
                         fontWeight="600"
+
                         gutterBottom
+
                     >
 
                         AI CRM Assistant
@@ -326,13 +352,9 @@ function Dashboard() {
                     <Typography color="text.secondary">
 
                         Use the AI assistant to summarize HCP meetings,
-
                         extract key insights,
-
                         recommend next actions,
-
                         search Healthcare Professionals,
-
                         and maintain accurate interaction records.
 
                     </Typography>
@@ -341,23 +363,29 @@ function Dashboard() {
 
             </Card>
 
-            <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: 5 }}>
 
                 <DashboardAnalytics
 
-                    onDataLoaded={setDashboardStats}
+                    onDataLoaded={(data) => {
+
+                        setDashboardStats(data);
+
+                        setLastUpdated(new Date());
+
+                    }}
 
                 />
 
             </Box>
 
-            <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: 5 }}>
 
                 <SearchHCP />
 
             </Box>
 
-            <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: 5 }}>
 
                 <Metrics />
 

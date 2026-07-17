@@ -1,169 +1,175 @@
 import {
-    Paper,
+    Card,
+    CardContent,
+    Typography,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Typography
+    Paper,
+    Chip
 } from "@mui/material";
 
 function RecentInteractionsTable({ interactions }) {
 
-    if (!interactions || interactions.length === 0) {
-
-        return (
-
-            <Typography
-                sx={{ mt: 3 }}
-            >
-
-                No recent interactions found.
-
-            </Typography>
-
-        );
-
-    }
-
     return (
 
-        <TableContainer
-
-            component={Paper}
-
+        <Card
             sx={{
-
                 mt: 4,
-
-                borderRadius: 3
-
+                borderRadius: 3,
+                boxShadow: 3
             }}
-
         >
 
-            <Typography
+            <CardContent>
 
-                variant="h6"
+                <Typography
+                    variant="h5"
+                    fontWeight="bold"
+                    gutterBottom
+                >
+                    Recent Interactions
+                </Typography>
 
-                sx={{
+                {
 
-                    p: 2,
+                    !interactions ||
 
-                    fontWeight: 600
+                    interactions.length === 0 ?
 
-                }}
+                    (
 
-            >
+                        <Typography
+                            color="text.secondary"
+                        >
 
-                Recent Interactions
+                            No recent interactions available.
 
-            </Typography>
+                        </Typography>
 
-            <Table>
+                    )
 
-                <TableHead>
+                    :
 
-                    <TableRow>
+                    (
 
-                        <TableCell>
+                        <TableContainer
+                            component={Paper}
+                            elevation={0}
+                        >
 
-                            ID
+                            <Table>
 
-                        </TableCell>
+                                <TableHead>
 
-                        <TableCell>
+                                    <TableRow>
 
-                            HCP
+                                        <TableCell>
+                                            <b>ID</b>
+                                        </TableCell>
 
-                        </TableCell>
+                                        <TableCell>
+                                            <b>HCP</b>
+                                        </TableCell>
 
-                        <TableCell>
+                                        <TableCell>
+                                            <b>Product</b>
+                                        </TableCell>
 
-                            Product
+                                        <TableCell>
+                                            <b>Summary</b>
+                                        </TableCell>
 
-                        </TableCell>
+                                        <TableCell>
+                                            <b>Follow Up</b>
+                                        </TableCell>
 
-                        <TableCell>
+                                    </TableRow>
 
-                            Summary
+                                </TableHead>
 
-                        </TableCell>
+                                <TableBody>
 
-                        <TableCell>
+                                    {
 
-                            Follow Up
+                                        interactions.map((item) => (
 
-                        </TableCell>
+                                            <TableRow
+                                                key={item.id}
+                                                hover
+                                            >
 
-                    </TableRow>
+                                                <TableCell>
 
-                </TableHead>
+                                                    {item.id}
 
-                <TableBody>
+                                                </TableCell>
 
-                    {
+                                                <TableCell>
 
-                        interactions.map(
+                                                    {item.hcp_name}
 
-                            (interaction) => (
+                                                </TableCell>
 
-                                <TableRow
+                                                <TableCell>
 
-                                    key={interaction.id}
+                                                    <Chip
 
-                                >
+                                                        label={
 
-                                    <TableCell>
+                                                            item.product ||
 
-                                        {interaction.id}
+                                                            "Unknown"
 
-                                    </TableCell>
+                                                        }
 
-                                    <TableCell>
+                                                        color="primary"
+                                                        size="small"
 
-                                        {interaction.hcp_name}
+                                                    />
 
-                                    </TableCell>
+                                                </TableCell>
 
-                                    <TableCell>
+                                                <TableCell>
 
-                                        {interaction.product}
+                                                    {item.summary}
 
-                                    </TableCell>
+                                                </TableCell>
 
-                                    <TableCell>
+                                                <TableCell>
 
-                                        {interaction.summary}
+                                                    {
 
-                                    </TableCell>
+                                                        item.follow_up ||
 
-                                    <TableCell>
+                                                        "-"
 
-                                        {
+                                                    }
 
-                                            interaction.follow_up ||
+                                                </TableCell>
 
-                                            "-"
+                                            </TableRow>
 
-                                        }
+                                        ))
 
-                                    </TableCell>
+                                    }
 
-                                </TableRow>
+                                </TableBody>
 
-                            )
+                            </Table>
 
-                        )
+                        </TableContainer>
 
-                    }
+                    )
 
-                </TableBody>
+                }
 
-            </Table>
+            </CardContent>
 
-        </TableContainer>
+        </Card>
 
     );
 
