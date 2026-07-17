@@ -6,6 +6,7 @@ from routes import interaction
 from routes import chat
 from routes import edit
 from routes import hcp
+from routes import dashboard
 
 from rag.startup import initialize_rag
 
@@ -184,6 +185,8 @@ app.include_router(chat.router)
 app.include_router(edit.router)
 
 app.include_router(hcp.router)
+
+app.include_router(dashboard.router)
 
 # ==========================================================
 # Root Endpoint
