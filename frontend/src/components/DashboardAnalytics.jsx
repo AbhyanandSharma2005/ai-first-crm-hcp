@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 
 import API from "../api/api";
+import ProductChart from "./ProductChart";
 
-function DashboardAnalytics({
-
-    onDataLoaded
-
-}) {
+function DashboardAnalytics({ onDataLoaded }) {
 
     const [loading, setLoading] = useState(true);
 
@@ -23,41 +20,27 @@ function DashboardAnalytics({
             setError("");
 
             const response = await API.get(
-
                 "/dashboard/stats"
-
             );
 
             console.log(
-
                 "Dashboard Stats:",
-
                 response.data
-
             );
 
             if (
-
-                response.data.success
-
+                response.data.success &&
+                response.data.data
             ) {
 
                 setStats(
-
                     response.data.data
-
                 );
 
-                if (
-
-                    onDataLoaded
-
-                ) {
+                if (onDataLoaded) {
 
                     onDataLoaded(
-
                         response.data.data
-
                     );
 
                 }
@@ -67,11 +50,8 @@ function DashboardAnalytics({
             else {
 
                 setError(
-
                     response.data.message ||
-
-                    "Unable to load dashboard."
-
+                    "Unable to load dashboard analytics."
                 );
 
             }
@@ -83,11 +63,8 @@ function DashboardAnalytics({
             console.error(err);
 
             setError(
-
                 err.response?.data?.message ||
-
                 "Failed to fetch dashboard analytics."
-
             );
 
         }
@@ -110,11 +87,16 @@ function DashboardAnalytics({
 
         return (
 
-            <p>
+            <div
+                style={{
+                    marginTop: "20px",
+                    textAlign: "center"
+                }}
+            >
 
-                Loading Dashboard Analytics...
+                <h3>Loading Dashboard Analytics...</h3>
 
-            </p>
+            </div>
 
         );
 
@@ -124,22 +106,24 @@ function DashboardAnalytics({
 
         return (
 
-            <div>
+            <div
+                style={{
+                    marginTop: "20px"
+                }}
+            >
 
-                <p style={{ color: "red" }}>
-
+                <p
+                    style={{
+                        color: "red"
+                    }}
+                >
                     {error}
-
                 </p>
 
                 <button
-
                     onClick={fetchDashboardStats}
-
                 >
-
                     Retry
-
                 </button>
 
             </div>
@@ -148,9 +132,19 @@ function DashboardAnalytics({
 
     }
 
+    if (!stats) {
+
+        return null;
+
+    }
+
     return (
 
-        <div>
+        <div
+            style={{
+                marginTop: "30px"
+            }}
+        >
 
             <h2>
 
@@ -159,15 +153,11 @@ function DashboardAnalytics({
             </h2>
 
             <table
-
                 style={{
-
                     width: "100%",
-
-                    borderCollapse: "collapse"
-
+                    borderCollapse: "collapse",
+                    marginBottom: "30px"
                 }}
-
             >
 
                 <tbody>
@@ -175,15 +165,11 @@ function DashboardAnalytics({
                     <tr>
 
                         <td style={tableHeader}>
-
                             Total HCPs
-
                         </td>
 
                         <td style={tableCell}>
-
                             {stats.total_hcps}
-
                         </td>
 
                     </tr>
@@ -191,55 +177,11 @@ function DashboardAnalytics({
                     <tr>
 
                         <td style={tableHeader}>
-
                             Total Interactions
-
                         </td>
 
                         <td style={tableCell}>
-
                             {stats.total_interactions}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td style={tableHeader}>
-
-                            Products
-
-                        </td>
-
-                        <td style={tableCell}>
-
-                            {
-
-                                Object.entries(
-
-                                    stats.products
-
-                                ).map(
-
-                                    ([product, count]) => (
-
-                                        <div
-
-                                            key={product}
-
-                                        >
-
-                                            {product} : {count}
-
-                                        </div>
-
-                                    )
-
-                                )
-
-                            }
-
                         </td>
 
                     </tr>
@@ -247,6 +189,10 @@ function DashboardAnalytics({
                 </tbody>
 
             </table>
+
+            <ProductChart
+                products={stats.products}
+            />
 
         </div>
 
@@ -258,7 +204,7 @@ const tableHeader = {
 
     border: "1px solid #ddd",
 
-    padding: "10px",
+    padding: "12px",
 
     backgroundColor: "#f5f5f5",
 
@@ -272,7 +218,7 @@ const tableCell = {
 
     border: "1px solid #ddd",
 
-    padding: "10px"
+    padding: "12px"
 
 };
 
