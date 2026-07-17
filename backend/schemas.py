@@ -39,14 +39,14 @@ class HCPBase(BaseModel):
         examples=["Dr Sharma"]
     )
 
-    specialization: str = Field(
-        ...,
+    specialization: Optional[str] = Field(
+        default=None,
         description="Medical specialization",
         examples=["Cardiology"]
     )
 
-    hospital: str = Field(
-        ...,
+    hospital: Optional[str] = Field(
+        default=None,
         description="Hospital name",
         examples=["Apollo Hospital"]
     )
