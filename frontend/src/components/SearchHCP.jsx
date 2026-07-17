@@ -1,378 +1,353 @@
 import React, { useState } from "react";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
+import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
+
 import API from "../api/api";
 
 function SearchHCP() {
+  const [doctorName, setDoctorName] = useState("");
+  const [results, setResults] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const [doctorName, setDoctorName] = useState("");
+  const searchDoctor = async () => {
+    const query = doctorName.trim();
 
-    const [results, setResults] = useState([]);
+    if (!query) {
+      setError("Enter a healthcare professional's name to search.");
+      setResults([]);
+      return;
+    }
 
-    const [loading, setLoading] = useState(false);
+    setLoading(true);
+    setError("");
+    setResults([]);
+    setHasSearched(true);
 
-    const [error, setError] = useState("");
+    try {
+      const response = await API.get("/hcp/search", {
+        params: { doctor_name: query },
+      });
 
-    const searchDoctor = async () => {
+      if (response.data?.success && Array.isArray(response.data?.data)) {
+        setResults(response.data.data);
+      } else {
+        setError(
+          response.data?.message ||
+            "No healthcare professionals matched your search."
+        );
+      }
+    } catch (err) {
+      console.error("HCP search failed:", err);
+      setError(
+        err.response?.data?.message ||
+          "Unable to search healthcare professionals. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (!doctorName.trim()) {
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") searchDoctor();
+  };
 
-            setError("Please enter a doctor name.");
-
-            return;
-
-        }
-
-        setLoading(true);
-
-        setError("");
-
-        setResults([]);
-
-        try {
-
-            const response = await API.get(
-
-                "/hcp/search",
-
-                {
-
-                    params: {
-
-                        doctor_name: doctorName
-
-                    }
-
-                }
-
-            );
-
-            console.log("Search Response:", response.data);
-
-            if (
-
-                response.data.success &&
-
-                Array.isArray(response.data.data)
-
-            ) {
-
-                setResults(response.data.data);
-
-            }
-
-            else {
-
-                setError(
-
-                    response.data.message ||
-
-                    "No Healthcare Professional found."
-
-                );
-
-            }
-
-        }
-
-        catch (err) {
-
-            console.error(err);
-
-            setError(
-
-                err.response?.data?.message ||
-
-                "Unable to search Healthcare Professional."
-
-            );
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
-    };
-
-    return (
-
-        <div
-
-            style={{
-
-                marginTop: "20px",
-
-                padding: "20px",
-
-                border: "1px solid #ddd",
-
-                borderRadius: "8px",
-
-                backgroundColor: "#ffffff"
-
-            }}
-
+  return (
+    <Card
+      sx={{
+        borderRadius: 4,
+        border: "1px solid #E7ECF5",
+        boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
+      }}
+    >
+      <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 1.5,
+            mb: 3,
+          }}
         >
+          <Avatar
+            variant="rounded"
+            sx={{
+              width: 46,
+              height: 46,
+              borderRadius: 2.5,
+              bgcolor: "#EAF0FF",
+              color: "#2855D9",
+            }}
+          >
+            <PersonSearchOutlinedIcon />
+          </Avatar>
 
-            <h2>
+          <Box>
+            <Typography variant="h6" fontWeight={750} color="#172033">
+              Search healthcare professionals
+            </Typography>
 
-                Search Healthcare Professional
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+              Find HCP records by doctor name and review profile details.
+            </Typography>
+          </Box>
+        </Box>
 
-            </h2>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 1.5,
+            mb: 3,
+          }}
+        >
+          <TextField
+            fullWidth
+            value={doctorName}
+            onChange={(event) => setDoctorName(event.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            placeholder="Search by doctor name, e.g. Dr. Sharma"
+            size="medium"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                bgcolor: "#FFFFFF",
+                borderRadius: 2.5,
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchRoundedIcon sx={{ color: "#718096" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
 
-            <div
+          <Button
+            variant="contained"
+            onClick={searchDoctor}
+            disabled={loading}
+            startIcon={
+              loading ? (
+                <CircularProgress color="inherit" size={18} />
+              ) : (
+                <SearchRoundedIcon />
+              )
+            }
+            sx={{
+              minWidth: { xs: "100%", sm: 140 },
+              px: 2.5,
+              borderRadius: 2.5,
+              bgcolor: "#2855D9",
+              boxShadow: "0 8px 16px rgba(40,85,217,.2)",
+              "&:hover": { bgcolor: "#1F46BA" },
+            }}
+          >
+            {loading ? "Searching" : "Search"}
+          </Button>
+        </Box>
 
-                style={{
+        {error && (
+          <Alert
+            severity="info"
+            sx={{
+              mb: 3,
+              borderRadius: 2.5,
+              border: "1px solid #B8D4FF",
+              bgcolor: "#F2F8FF",
+              color: "#255FA8",
+            }}
+          >
+            {error}
+          </Alert>
+        )}
 
-                    display: "flex",
+        {!hasSearched && !loading && !error && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: 160,
+              border: "1px dashed #D9E1F2",
+              borderRadius: 3,
+              bgcolor: "#FAFBFD",
+              textAlign: "center",
+              px: 3,
+            }}
+          >
+            <Box>
+              <SearchRoundedIcon sx={{ color: "#A0AEC0", fontSize: 30, mb: 1 }} />
+              <Typography fontWeight={650} color="#475569">
+                Search your HCP directory
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Enter a doctor name to find their profile and hospital details.
+              </Typography>
+            </Box>
+          </Box>
+        )}
 
-                    gap: "10px",
+        {hasSearched && !loading && !error && results.length === 0 && (
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 5,
+              borderRadius: 3,
+              bgcolor: "#FAFBFD",
+              border: "1px dashed #D9E1F2",
+            }}
+          >
+            <Typography fontWeight={700} color="#475569">
+              No matching HCPs found
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Try another spelling or a more general name.
+            </Typography>
+          </Box>
+        )}
 
-                    marginBottom: "20px"
-
-                }}
-
+        {results.length > 0 && (
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 1.5,
+              }}
             >
+              <Typography variant="body2" color="text.secondary">
+                Search results
+              </Typography>
 
-                <input
+              <Chip
+                label={`${results.length} ${results.length === 1 ? "record" : "records"}`}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            </Box>
 
-                    type="text"
+            <TableContainer
+              component={Paper}
+              variant="outlined"
+              sx={{
+                borderRadius: 3,
+                borderColor: "#E7ECF5",
+                overflowX: "auto",
+              }}
+            >
+              <Table sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: "#F8FAFD" }}>
+                    <TableCell sx={headerCellSx}>HCP</TableCell>
+                    <TableCell sx={headerCellSx}>Specialization</TableCell>
+                    <TableCell sx={headerCellSx}>Hospital</TableCell>
+                    <TableCell sx={headerCellSx}>Record ID</TableCell>
+                  </TableRow>
+                </TableHead>
 
-                    placeholder="Enter Doctor Name"
-
-                    value={doctorName}
-
-                    onChange={(e) =>
-
-                        setDoctorName(
-
-                            e.target.value
-
-                        )
-
-                    }
-
-                    onKeyDown={(e) => {
-
-                        if (e.key === "Enter") {
-
-                            searchDoctor();
-
-                        }
-
-                    }}
-
-                    style={{
-
-                        flex: 1,
-
-                        padding: "10px"
-
-                    }}
-
-                />
-
-                <button
-
-                    onClick={searchDoctor}
-
-                    disabled={loading}
-
-                    style={{
-
-                        padding: "10px 20px"
-
-                    }}
-
-                >
-
-                    {
-
-                        loading
-
-                            ? "Searching..."
-
-                            : "Search"
-
-                    }
-
-                </button>
-
-            </div>
-
-            {
-
-                error && (
-
-                    <p
-
-                        style={{
-
-                            color: "red",
-
-                            marginBottom: "15px"
-
-                        }}
-
+                <TableBody>
+                  {results.map((doctor) => (
+                    <TableRow
+                      key={doctor.id}
+                      hover
+                      sx={{
+                        "&:last-child td": { borderBottom: 0 },
+                        "&:hover": { bgcolor: "#FAFCFF" },
+                      }}
                     >
-
-                        {error}
-
-                    </p>
-
-                )
-
-            }
-
-            {
-
-                !loading &&
-
-                results.length === 0 &&
-
-                !error && (
-
-                    <p>
-
-                        Search for a Healthcare Professional.
-
-                    </p>
-
-                )
-
-            }
-
-            {
-
-                results.length > 0 && (
-
-                    <table
-
-                        style={{
-
-                            width: "100%",
-
-                            borderCollapse: "collapse"
-
-                        }}
-
-                    >
-
-                        <thead>
-
-                            <tr>
-
-                                <th style={tableHeader}>
-
-                                    ID
-
-                                </th>
-
-                                <th style={tableHeader}>
-
-                                    Doctor Name
-
-                                </th>
-
-                                <th style={tableHeader}>
-
-                                    Specialization
-
-                                </th>
-
-                                <th style={tableHeader}>
-
-                                    Hospital
-
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {
-
-                                results.map((doctor) => (
-
-                                    <tr key={doctor.id}>
-
-                                        <td style={tableCell}>
-
-                                            {doctor.id}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {doctor.name}
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {
-
-                                                doctor.specialization ||
-
-                                                "-"
-
-                                            }
-
-                                        </td>
-
-                                        <td style={tableCell}>
-
-                                            {
-
-                                                doctor.hospital ||
-
-                                                "-"
-
-                                            }
-
-                                        </td>
-
-                                    </tr>
-
-                                ))
-
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                )
-
-            }
-
-        </div>
-
-    );
-
+                      <TableCell sx={{ py: 1.75 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                          <Avatar
+                            sx={{
+                              width: 34,
+                              height: 34,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              bgcolor: "#EAF0FF",
+                              color: "#2855D9",
+                            }}
+                          >
+                            {(doctor.name || "H").charAt(0).toUpperCase()}
+                          </Avatar>
+
+                          <Typography fontWeight={650} color="#26354D">
+                            {doctor.name || "—"}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell sx={{ color: "#526176" }}>
+                        {doctor.specialization || "Not specified"}
+                      </TableCell>
+
+                      <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                          <LocalHospitalOutlinedIcon
+                            sx={{ color: "#8A98AB", fontSize: 18 }}
+                          />
+                          <Typography variant="body2" color="#526176">
+                            {doctor.hospital || "Not specified"}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={`#${doctor.id}`}
+                          size="small"
+                          sx={{
+                            bgcolor: "#F1F5F9",
+                            color: "#526176",
+                            fontWeight: 650,
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
-const tableHeader = {
-
-    border: "1px solid #ccc",
-
-    padding: "10px",
-
-    backgroundColor: "#f5f5f5",
-
-    textAlign: "left"
-
-};
-
-const tableCell = {
-
-    border: "1px solid #ccc",
-
-    padding: "10px"
-
+const headerCellSx = {
+  py: 1.5,
+  color: "#667085",
+  fontSize: "0.72rem",
+  fontWeight: 800,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  borderColor: "#E7ECF5",
 };
 
 export default SearchHCP;
