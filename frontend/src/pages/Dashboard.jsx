@@ -10,6 +10,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import SearchHCP from "../components/SearchHCP";
 
 
 function Dashboard() {
