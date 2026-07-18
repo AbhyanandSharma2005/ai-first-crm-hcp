@@ -15,9 +15,13 @@ import {
 
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DownloadIcon from "@mui/icons-material/Download";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SpeedIcon from "@mui/icons-material/Speed";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import API from "../api/api";
 
@@ -301,6 +305,815 @@ function DashboardAnalytics({ onDataLoaded }) {
         window.URL.revokeObjectURL(url);
 
     };
+
+    //-----------------------------------------------------
+    // PDF Export Function
+    //-----------------------------------------------------
+
+    const exportPDF = () => {
+
+        const doc = new jsPDF({
+
+            orientation: "portrait",
+
+            unit: "mm",
+
+            format: "a4"
+
+        });
+
+        //----------------------------------------------------
+        // Colors
+        //----------------------------------------------------
+
+        const primaryColor = [25, 118, 210];
+
+        const secondaryColor = [71, 85, 105];
+
+        const lightColor = [245, 247, 250];
+
+        //----------------------------------------------------
+        // Report Header
+        //----------------------------------------------------
+
+        doc.setFillColor(...primaryColor);
+
+        doc.rect(
+
+            0,
+
+            0,
+
+            210,
+
+            28,
+
+            "F"
+
+        );
+
+        doc.setTextColor(255, 255, 255);
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(20);
+
+        doc.text(
+
+            "AI-First CRM HCP Dashboard",
+
+            14,
+
+            16
+
+        );
+
+        doc.setFontSize(10);
+
+        doc.text(
+
+            "Dashboard Analytics Report",
+
+            14,
+
+            23
+
+        );
+
+        //----------------------------------------------------
+        // Metadata
+        //----------------------------------------------------
+
+        doc.setTextColor(0, 0, 0);
+
+        doc.setFontSize(10);
+
+        doc.text(
+
+            `Generated : ${new Date().toLocaleString()}`,
+
+            14,
+
+            38
+
+        );
+
+        doc.text(
+
+            `Last Updated : ${lastUpdated || "-"}`,
+
+            14,
+
+            44
+
+        );
+
+        doc.text(
+
+            `Backend Response : ${responseTime || "-"} sec`,
+
+            14,
+
+            50
+
+        );
+
+        //----------------------------------------------------
+        // Divider
+        //----------------------------------------------------
+
+        doc.setDrawColor(220);
+
+        doc.line(
+
+            14,
+
+            55,
+
+            196,
+
+            55
+
+        );
+
+        //----------------------------------------------------
+        // Dashboard Summary
+        //----------------------------------------------------
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(16);
+
+        doc.text(
+
+            "Dashboard Overview",
+
+            14,
+
+            66
+
+        );
+
+        doc.setFont(
+
+            "helvetica",
+
+            "normal"
+
+        );
+
+        doc.setFontSize(11);
+
+        doc.text(
+
+            "This report summarizes the current Healthcare Professional CRM dashboard.",
+
+            14,
+
+            74
+
+        );
+
+        doc.text(
+
+            "It includes interaction statistics, products, trends and recent activities.",
+
+            14,
+
+            80
+
+        );
+
+        //----------------------------------------------------
+        // KPI Section
+        //----------------------------------------------------
+
+        doc.setFillColor(...lightColor);
+
+        doc.roundedRect(
+
+            14,
+
+            90,
+
+            182,
+
+            42,
+
+            3,
+
+            3,
+
+            "F"
+
+        );
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(14);
+
+        doc.text(
+
+            "Key Performance Indicators",
+
+            18,
+
+            100
+
+        );
+
+        doc.setFont(
+
+            "helvetica",
+
+            "normal"
+
+        );
+
+        doc.setFontSize(12);
+
+        doc.text(
+
+            `Total HCPs : ${stats.total_hcps}`,
+
+            20,
+
+            112
+
+        );
+
+        doc.text(
+
+            `Total Interactions : ${stats.total_interactions}`,
+
+            20,
+
+            120
+
+        );
+
+        doc.text(
+
+            `Unique Products : ${
+
+                Object.keys(
+
+                    stats.products || {}
+
+                ).length
+
+            }`,
+
+            110,
+
+            112
+
+        );
+
+        doc.text(
+
+            `Report Status : Active`,
+
+            110,
+
+            120
+
+        );
+
+        //----------------------------------------------------
+        // Product Distribution Summary
+        //----------------------------------------------------
+
+        let yPosition = 145;
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(14);
+
+        doc.text(
+
+            "Product Distribution",
+
+            14,
+
+            yPosition
+
+        );
+
+        yPosition += 10;
+
+        doc.setFont(
+
+            "helvetica",
+
+            "normal"
+
+        );
+
+        Object.entries(
+
+            stats.products || {}
+
+        ).forEach(
+
+            ([product, count]) => {
+
+                doc.text(
+
+                    `${product} : ${count} interactions`,
+
+                    20,
+
+                    yPosition
+
+                );
+
+                yPosition += 8;
+
+            }
+
+        );
+
+        //----------------------------------------------------
+        // Recent Interactions Table
+        //----------------------------------------------------
+
+        yPosition += 10;
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(14);
+
+        doc.text(
+
+            "Recent Interactions",
+
+            14,
+
+            yPosition
+
+        );
+
+        yPosition += 6;
+
+        const interactionRows = (
+
+            stats.recent_interactions || []
+
+        ).map((interaction) => [
+
+            interaction.id ?? "-",
+
+            interaction.hcp_name ?? "Unknown",
+
+            interaction.product ?? "N/A",
+
+            interaction.summary ?? "N/A",
+
+            interaction.follow_up
+
+                ? new Date(
+
+                      interaction.follow_up
+
+                  ).toLocaleDateString()
+
+                : "Not Scheduled"
+
+        ]);
+
+        autoTable(doc, {
+
+            startY: yPosition,
+
+            head: [[
+
+                "ID",
+
+                "Doctor",
+
+                "Product",
+
+                "Summary",
+
+                "Follow-up"
+
+            ]],
+
+            body: interactionRows,
+
+            theme: "grid",
+
+            headStyles: {
+
+                fillColor: [25,118,210],
+
+                textColor: [255,255,255],
+
+                fontStyle: "bold",
+
+                halign: "center"
+
+            },
+
+            bodyStyles: {
+
+                fontSize: 9,
+
+                valign: "middle"
+
+            },
+
+            alternateRowStyles: {
+
+                fillColor: [248,250,252]
+
+            },
+
+            styles: {
+
+                cellPadding: 3,
+
+                overflow: "linebreak"
+
+            },
+
+            columnStyles: {
+
+                0: {
+
+                    cellWidth: 15,
+
+                    halign: "center"
+
+                },
+
+                1: {
+
+                    cellWidth: 35
+
+                },
+
+                2: {
+
+                    cellWidth: 30
+
+                },
+
+                3: {
+
+                    cellWidth: 70
+
+                },
+
+                4: {
+
+                    cellWidth: 35
+
+                }
+
+            }
+
+        });
+
+        yPosition = doc.lastAutoTable.finalY + 12;
+
+        //----------------------------------------------------
+        // Product Analytics (New Page)
+        //----------------------------------------------------
+
+        doc.addPage();
+
+        let pageY = 20;
+
+        doc.setFont(
+
+            "helvetica",
+
+            "bold"
+
+        );
+
+        doc.setFontSize(18);
+
+        doc.setTextColor(...primaryColor);
+
+        doc.text(
+
+            "Product Analytics",
+
+            14,
+
+            pageY
+
+        );
+
+        pageY += 12;
+
+        doc.setFontSize(12);
+
+        doc.setTextColor(...secondaryColor);
+
+        doc.text(
+
+            "Product Distribution Summary",
+
+            14,
+
+            pageY
+
+        );
+
+        pageY += 10;
+
+        Object.entries(stats.products || {}).forEach(
+
+            ([product, count]) => {
+
+                doc.setDrawColor(220);
+
+                doc.roundedRect(
+
+                    14,
+
+                    pageY - 5,
+
+                    182,
+
+                    10,
+
+                    2,
+
+                    2
+
+                );
+
+                doc.setTextColor(...primaryColor);
+
+                doc.text(
+
+                    product,
+
+                    20,
+
+                    pageY + 1
+
+                );
+
+                doc.setTextColor(...secondaryColor);
+
+                doc.text(
+
+                    `${count} Interactions`,
+
+                    145,
+
+                    pageY + 1
+
+                );
+
+                pageY += 14;
+
+            }
+
+        );
+
+        //----------------------------------------------------
+        // Monthly Trend
+        //----------------------------------------------------
+
+        pageY += 8;
+
+        doc.setFontSize(16);
+
+        doc.setTextColor(...primaryColor);
+
+        doc.text(
+
+            "Monthly Interaction Trend",
+
+            14,
+
+            pageY
+
+        );
+
+        pageY += 8;
+
+        autoTable(doc, {
+
+            startY: pageY,
+
+            head: [[
+
+                "Month",
+
+                "Interactions"
+
+            ]],
+
+            body: monthlyData.map(item => [
+
+                item.month,
+
+                item.count
+
+            ]),
+
+            headStyles: {
+
+                fillColor: [25,118,210],
+
+                textColor: [255,255,255]
+
+            },
+
+            alternateRowStyles: {
+
+                fillColor: [248,250,252]
+
+            },
+
+            theme: "striped"
+
+        });
+
+        pageY = doc.lastAutoTable.finalY + 15;
+
+        //----------------------------------------------------
+        // Executive Summary
+        //----------------------------------------------------
+
+        doc.setFontSize(16);
+
+        doc.setTextColor(...primaryColor);
+
+        doc.text(
+
+            "Executive Summary",
+
+            14,
+
+            pageY
+
+        );
+
+        pageY += 10;
+
+        doc.setFontSize(11);
+
+        doc.setTextColor(...secondaryColor);
+
+        doc.text(
+
+            `• Total Healthcare Professionals : ${stats.total_hcps}`,
+
+            20,
+
+            pageY
+
+        );
+
+        pageY += 8;
+
+        doc.text(
+
+            `• Total Interactions : ${stats.total_interactions}`,
+
+            20,
+
+            pageY
+
+        );
+
+        pageY += 8;
+
+        doc.text(
+
+            `• Total Products : ${Object.keys(stats.products || {}).length}`,
+
+            20,
+
+            pageY
+
+        );
+
+        pageY += 8;
+
+        doc.text(
+
+            `• Report Generated : ${new Date().toLocaleString()}`,
+
+            20,
+
+            pageY
+
+        );
+
+        //----------------------------------------------------
+        // Footer on Every Page
+        //----------------------------------------------------
+
+        const pageCount = doc.getNumberOfPages();
+
+        for (
+
+            let i = 1;
+
+            i <= pageCount;
+
+            i++
+
+        ) {
+
+            doc.setPage(i);
+
+            const pageHeight =
+
+                doc.internal.pageSize.height;
+
+            doc.setDrawColor(220);
+
+            doc.line(
+
+                14,
+
+                pageHeight - 15,
+
+                196,
+
+                pageHeight - 15
+
+            );
+
+            doc.setFontSize(9);
+
+            doc.setTextColor(...secondaryColor);
+
+            doc.text(
+
+                "AI-First CRM HCP Dashboard",
+
+                14,
+
+                pageHeight - 8
+
+            );
+
+            doc.text(
+
+                `Page ${i} of ${pageCount}`,
+
+                170,
+
+                pageHeight - 8
+
+            );
+
+        }
+
+        //----------------------------------------------------
+        // Save PDF
+        //----------------------------------------------------
+
+        doc.save(
+
+            "dashboard_report.pdf"
+
+        );
+
+    };
+
     //-----------------------------------------------------
     // Loading
     //-----------------------------------------------------
@@ -563,6 +1376,20 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 }}
                             >
                                 Export CSV
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                startIcon={<PictureAsPdfIcon />}
+                                onClick={exportPDF}
+                                sx={{
+                                    ml: 2,
+                                    borderRadius: 2,
+                                    textTransform: "none",
+                                    fontWeight: 600
+                                }}
+                            >
+                                Export PDF
                             </Button>
 
                         </Box>
@@ -1067,7 +1894,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                     justifyContent: "flex-end",
                     alignItems: "center",
                     gap: 2,
-                    mb: 4
+                    mb: 4,
+                    mt: 4
                 }}
             >
 
@@ -1151,6 +1979,22 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     Export Dashboard Report
 
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    size="large"
+                    startIcon={<PictureAsPdfIcon />}
+                    onClick={exportPDF}
+                    sx={{
+                        borderRadius: 3,
+                        px: 4,
+                        py: 1.2,
+                        textTransform: "none",
+                        fontWeight: 600
+                    }}
+                >
+                    Export PDF
                 </Button>
 
             </Box>
