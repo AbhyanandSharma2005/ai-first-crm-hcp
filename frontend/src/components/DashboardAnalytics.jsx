@@ -244,6 +244,63 @@ function DashboardAnalytics({ onDataLoaded }) {
 
     }, []);
 
+    const exportCSV = () => {
+
+        const headers = [
+            "ID",
+            "Doctor",
+            "Product",
+            "Summary",
+            "Follow Up"
+        ];
+
+        const interactionsToExport = stats?.recent_interactions || [];
+
+        const escapeCSV = (value) => {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return `"${String(value).replace(/"/g, '""')}"`;
+
+        };
+
+        const rows = interactionsToExport.map(
+            (interaction) => [
+                escapeCSV(interaction.id),
+                escapeCSV(interaction.hcp_name),
+                escapeCSV(interaction.product),
+                escapeCSV(interaction.summary),
+                escapeCSV(interaction.follow_up)
+            ]
+        );
+
+        const csvContent = [
+            headers,
+            ...rows
+        ]
+            .map((row) => row.join(","))
+            .join("\n");
+
+        const blob = new Blob(
+            [csvContent],
+            { type: "text/csv;charset=utf-8;" }
+        );
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "dashboard_report.csv";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        window.URL.revokeObjectURL(url);
+
+    };
     //-----------------------------------------------------
     // Loading
     //-----------------------------------------------------
@@ -489,6 +546,23 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 }}
                             >
                                 Refresh
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="success"
+                                startIcon={<DownloadIcon />}
+                                onClick={exportCSV}
+                                sx={{
+                                    borderColor: "#86EFAC",
+                                    color: "#166534",
+                                    fontWeight: 700,
+                                    "&:hover": {
+                                        borderColor: "#4ADE80",
+                                        bgcolor: "rgba(240, 253, 244, 0.16)"
+                                    }
+                                }}
+                            >
+                                Export CSV
                             </Button>
 
                         </Box>
