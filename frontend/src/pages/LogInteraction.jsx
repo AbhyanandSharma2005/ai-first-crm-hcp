@@ -7,6 +7,7 @@ import {
   Grid,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -15,16 +16,14 @@ import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import InteractionForm from "../components/InteractionForm";
 import ChatBox from "../components/ChatBox";
 import InteractionHistory from "../components/InteractionHistory";
-
-const sectionCardSx = {
-  height: "100%",
-  borderRadius: 4,
-  border: "1px solid #E7ECF5",
-  boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
-  overflow: "hidden",
-};
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
+import { commonSpacing, commonTypography } from "../theme/theme";
 
 function SectionHeader({ icon, title, description, color }) {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
+
   return (
     <Box
       sx={{
@@ -41,8 +40,8 @@ function SectionHeader({ icon, title, description, color }) {
           display: "grid",
           placeItems: "center",
           flexShrink: 0,
-          borderRadius: 2.5,
-          bgcolor: `${color}16`,
+          borderRadius: 3,
+          bgcolor: isDark ? `${color}30` : `${color}16`,
           color,
         }}
       >
@@ -50,7 +49,7 @@ function SectionHeader({ icon, title, description, color }) {
       </Box>
 
       <Box>
-        <Typography variant="h6" fontWeight={750} color="#172033">
+        <Typography variant="h6" fontWeight={700} color={isDark ? "#F1F5F9" : "#172033"}>
           {title}
         </Typography>
 
@@ -63,8 +62,42 @@ function SectionHeader({ icon, title, description, color }) {
 }
 
 function LogInteraction() {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
+
+  const textPrimary = isDark ? "#F1F5F9" : "#172033";
+  const borderColor = isDark ? "#334155" : "#E7ECF5";
+  const chipBg = isDark ? "#1A2A4A" : "#EAF1FF";
+  const chipColor = isDark ? "#60A5FA" : "#2855D9";
+  const cardBg = isDark ? "#1E293B" : "#FFFFFF";
+
+  const sectionCardSx = {
+    height: "100%",
+    borderRadius: 4,
+    border: `1px solid ${borderColor}`,
+    boxShadow: 1,
+    overflow: "hidden",
+    backgroundColor: cardBg,
+    transition: "0.25s",
+    "&:hover": {
+      boxShadow: 4,
+    },
+  };
+
   return (
-    <Box sx={{ pb: 5 }}>
+    <Box 
+      sx={{ 
+        width: "100%",
+        maxWidth: 1600,
+        mx: "auto",
+        pb: 5,
+        backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
+        minHeight: "100vh",
+        p: commonSpacing.pagePadding,
+      }}
+    >
+      {/* Page Header */}
       <Box sx={{ mb: 4 }}>
         <Stack
           direction="row"
@@ -76,9 +109,9 @@ function LogInteraction() {
             label="HCP ACTIVITY"
             size="small"
             sx={{
-              bgcolor: "#EAF1FF",
-              color: "#2855D9",
-              borderRadius: 1.5,
+              bgcolor: chipBg,
+              color: chipColor,
+              borderRadius: 2,
               fontSize: 11,
               fontWeight: 800,
               letterSpacing: "0.09em",
@@ -89,23 +122,25 @@ function LogInteraction() {
         <Typography
           variant="h4"
           sx={{
-            color: "#172033",
-            fontWeight: 800,
-            letterSpacing: "-0.03em",
+            color: textPrimary,
+            ...commonTypography.pageTitle,
+            fontSize: { xs: "1.75rem", sm: "2rem", md: "2.125rem" },
           }}
         >
           Log an interaction
         </Typography>
 
         <Typography
+          variant="body1"
           color="text.secondary"
-          sx={{ mt: 1, maxWidth: 680, lineHeight: 1.7 }}
+          sx={{ mt: 0.5, maxWidth: 680, lineHeight: 1.7 }}
         >
           Capture meaningful HCP conversations, use AI to structure insights,
           and make every follow-up action clear to your field team.
         </Typography>
       </Box>
 
+      {/* Hero Card */}
       <Card
         sx={{
           mb: 4,
@@ -118,7 +153,7 @@ function LogInteraction() {
         }}
       >
         <CardContent sx={{ p: { xs: 3, md: 3.5 } }}>
-          <Typography variant="h6" fontWeight={750} sx={{ mb: 0.75 }}>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 0.75 }}>
             A better workflow for every field visit
           </Typography>
 
@@ -132,7 +167,9 @@ function LogInteraction() {
         </CardContent>
       </Card>
 
-      <Grid container spacing={3} alignItems="stretch">
+      {/* Main Content Grid */}
+      <Grid container spacing={commonSpacing.gridSpacing} alignItems="stretch">
+        {/* Structured Interaction Form */}
         <Grid item xs={12} lg={7}>
           <Card sx={sectionCardSx}>
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
@@ -148,6 +185,7 @@ function LogInteraction() {
           </Card>
         </Grid>
 
+        {/* AI Conversation Assistant */}
         <Grid item xs={12} lg={5}>
           <Card sx={sectionCardSx}>
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
@@ -163,6 +201,7 @@ function LogInteraction() {
           </Card>
         </Grid>
 
+        {/* Interaction History */}
         <Grid item xs={12}>
           <Card sx={sectionCardSx}>
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>

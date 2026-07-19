@@ -21,9 +21,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import TablePagination from "@mui/material/TablePagination";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 function RecentInteractionsTable({ interactions = [] }) {
   const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -68,6 +71,20 @@ function RecentInteractionsTable({ interactions = [] }) {
     page * rowsPerPage + rowsPerPage,
   );
 
+  // Theme colors
+  const textPrimary = isDark ? "#F1F5F9" : "#0F172A";
+  const textSecondary = isDark ? "#94A3B8" : "#475569";
+  const borderColor = isDark ? "#334155" : "#E2E8F0";
+  const cardBg = isDark ? "#1E293B" : "#FFFFFF";
+  const headerBg = isDark ? "#0F172A" : "#F8FAFD";
+  const rowHoverBg = isDark ? "#1E293B" : "#FAFCFF";
+  const emptyBg = isDark ? "#1E293B" : "#FAFBFD";
+  const emptyBorder = isDark ? "#334155" : "#D9E1F2";
+  const avatarBg = isDark ? "#1A2A4A" : "#EAF0FF";
+  const avatarColor = isDark ? "#60A5FA" : "#2855D9";
+  const chipBg = isDark ? "#1A2A4A" : "#EEF4FF";
+  const chipColor = isDark ? "#60A5FA" : "#2855D9";
+
   if (!interactions.length) {
     return (
       <Box
@@ -76,19 +93,19 @@ function RecentInteractionsTable({ interactions = [] }) {
           display: "grid",
           placeItems: "center",
           textAlign: "center",
-          border: "1px dashed #D9E1F2",
+          border: `1px dashed ${emptyBorder}`,
           borderRadius: 3,
-          bgcolor: "#FAFBFD",
+          bgcolor: emptyBg,
           px: 3,
           py: 4,
         }}
       >
         <Box>
           <EventNoteOutlinedIcon
-            sx={{ fontSize: 32, color: "#9AA8BA", mb: 1 }}
+            sx={{ fontSize: 32, color: textSecondary, mb: 1 }}
           />
 
-          <Typography fontWeight={700} color="#475569">
+          <Typography fontWeight={700} color={textPrimary}>
             No recent interactions
           </Typography>
 
@@ -108,6 +125,16 @@ function RecentInteractionsTable({ interactions = [] }) {
   // Responsive chip sizes
   const chipSize = isMobile ? "small" : "medium";
 
+  const headerCellSx = {
+    py: 1.5,
+    color: textSecondary,
+    fontSize: "0.72rem",
+    fontWeight: 800,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    borderColor: borderColor,
+  };
+
   return (
     <Box>
       {/* ============================================================
@@ -126,15 +153,27 @@ function RecentInteractionsTable({ interactions = [] }) {
           mb: 3,
           "& .MuiInputBase-root": {
             fontSize: isMobile ? "0.875rem" : "1rem",
+            color: textPrimary,
           },
           "& .MuiInputBase-input": {
             py: isMobile ? 1 : 1.5,
+          },
+          "& .MuiInputLabel-root": {
+            color: textSecondary,
+          },
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: borderColor,
+            },
+            "&:hover fieldset": {
+              borderColor: textSecondary,
+            },
           },
         }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ fontSize: isMobile ? 20 : 24 }} />
+              <SearchIcon sx={{ fontSize: isMobile ? 20 : 24, color: textSecondary }} />
             </InputAdornment>
           ),
         }}
@@ -148,32 +187,33 @@ function RecentInteractionsTable({ interactions = [] }) {
         variant="outlined"
         sx={{
           borderRadius: 3,
-          borderColor: "#E7ECF5",
+          borderColor: borderColor,
           overflowX: "auto",
+          backgroundColor: cardBg,
           "&::-webkit-scrollbar": {
             height: 6,
           },
           "&::-webkit-scrollbar-track": {
-            backgroundColor: "#F1F5F9",
+            backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
             borderRadius: 3,
           },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#CBD5E1",
+            backgroundColor: isDark ? "#334155" : "#CBD5E1",
             borderRadius: 3,
           },
           "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#94A3B8",
+            backgroundColor: isDark ? "#475569" : "#94A3B8",
           },
         }}
       >
         <Table sx={{ 
           minWidth: isMobile ? 500 : 650,
           "& .MuiTableCell-root": {
-            borderColor: "#E7ECF5",
+            borderColor: borderColor,
           }
         }}>
           <TableHead>
-            <TableRow sx={{ bgcolor: "#F8FAFD" }}>
+            <TableRow sx={{ bgcolor: headerBg }}>
               <TableCell sx={headerCellSx}>HCP</TableCell>
               {showProductColumn && (
                 <TableCell sx={headerCellSx}>Product</TableCell>
@@ -183,7 +223,7 @@ function RecentInteractionsTable({ interactions = [] }) {
                 <TableCell sx={headerCellSx}>Follow-up</TableCell>
               )}
               {showRecordColumn && (
-                <TableCell sx={headerCellSx} align="right">
+                <TableCell sx={{ ...headerCellSx, textAlign: "right" }}>
                   Record
                 </TableCell>
               )}
@@ -197,7 +237,7 @@ function RecentInteractionsTable({ interactions = [] }) {
                 hover
                 sx={{
                   "&:last-child td": { borderBottom: 0 },
-                  "&:hover": { bgcolor: "#FAFCFF" },
+                  "&:hover": { bgcolor: rowHoverBg },
                 }}
               >
                 <TableCell 
@@ -222,8 +262,8 @@ function RecentInteractionsTable({ interactions = [] }) {
                           md: 13,
                         },
                         fontWeight: 800,
-                        bgcolor: "#EAF0FF",
-                        color: "#2855D9",
+                        bgcolor: avatarBg,
+                        color: avatarColor,
                       }}
                     >
                       {(item.hcp_name || "H").charAt(0).toUpperCase()}
@@ -232,7 +272,7 @@ function RecentInteractionsTable({ interactions = [] }) {
                     <Box>
                       <Typography 
                         fontWeight={700} 
-                        color="#27364D"
+                        color={textPrimary}
                         sx={{
                           fontSize: isMobile ? "0.8rem" : "0.875rem"
                         }}
@@ -265,8 +305,8 @@ function RecentInteractionsTable({ interactions = [] }) {
                       }
                       size={chipSize}
                       sx={{
-                        bgcolor: "#EEF4FF",
-                        color: "#2855D9",
+                        bgcolor: chipBg,
+                        color: chipColor,
                         borderRadius: 1.5,
                         fontWeight: 700,
                         fontSize: isMobile ? "0.7rem" : "0.75rem",
@@ -283,7 +323,7 @@ function RecentInteractionsTable({ interactions = [] }) {
                 >
                   <Typography
                     variant="body2"
-                    color="#526176"
+                    color={textSecondary}
                     sx={{
                       display: "-webkit-box",
                       overflow: "hidden",
@@ -307,12 +347,12 @@ function RecentInteractionsTable({ interactions = [] }) {
                   <TableCell sx={{ px: isMobile ? 1.5 : 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                       <CalendarMonthOutlinedIcon
-                        sx={{ color: "#8A98AB", fontSize: isMobile ? 16 : 18 }}
+                        sx={{ color: textSecondary, fontSize: isMobile ? 16 : 18 }}
                       />
 
                       <Typography 
                         variant="body2" 
-                        color="#526176"
+                        color={textSecondary}
                         sx={{
                           fontSize: isMobile ? "0.75rem" : "0.875rem"
                         }}
@@ -334,8 +374,8 @@ function RecentInteractionsTable({ interactions = [] }) {
                       size={chipSize}
                       variant="outlined"
                       sx={{
-                        borderColor: "#D9E1F2",
-                        color: "#64748B",
+                        borderColor: borderColor,
+                        color: textSecondary,
                         fontWeight: 700,
                         fontSize: isMobile ? "0.65rem" : "0.75rem",
                       }}
@@ -374,6 +414,7 @@ function RecentInteractionsTable({ interactions = [] }) {
         onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={isMobile ? [5, 10, 20] : [5, 10, 20, 50]}
         sx={{
+          color: textSecondary,
           "& .MuiTablePagination-selectLabel": {
             fontSize: isMobile ? "0.75rem" : "0.875rem",
           },
@@ -382,10 +423,12 @@ function RecentInteractionsTable({ interactions = [] }) {
           },
           "& .MuiTablePagination-select": {
             fontSize: isMobile ? "0.75rem" : "0.875rem",
+            color: textPrimary,
           },
           "& .MuiTablePagination-actions": {
             "& .MuiIconButton-root": {
               padding: isMobile ? 0.5 : 1,
+              color: textSecondary,
             },
           },
         }}
@@ -409,15 +452,5 @@ function formatDate(value) {
     year: "numeric",
   }).format(date);
 }
-
-const headerCellSx = {
-  py: 1.5,
-  color: "#667085",
-  fontSize: "0.72rem",
-  fontWeight: 800,
-  letterSpacing: "0.06em",
-  textTransform: "uppercase",
-  borderColor: "#E7ECF5",
-};
 
 export default RecentInteractionsTable;

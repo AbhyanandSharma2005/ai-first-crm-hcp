@@ -17,9 +17,11 @@ import {
   Grid,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 const COLORS = [
   "#2855D9",
@@ -31,6 +33,10 @@ const COLORS = [
 ];
 
 function ProductChart({ products = {} }) {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
+
   const data = Object.entries(products)
     .map(([name, value]) => ({
       name,
@@ -40,6 +46,21 @@ function ProductChart({ products = {} }) {
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
+  // Theme-aware colors for Recharts
+  const chartColors = {
+    grid: isDark ? "#334155" : "#E8EDF5",
+    axis: isDark ? "#94A3B8" : "#718096",
+    tooltipBg: isDark ? "#1E293B" : "#172033",
+    tooltipText: isDark ? "#F1F5F9" : "#FFFFFF",
+    emptyBorder: isDark ? "#334155" : "#D9E1F2",
+    emptyBg: isDark ? "#1E293B" : "#FAFBFD",
+    emptyText: isDark ? "#94A3B8" : "#475569",
+    textPrimary: isDark ? "#F1F5F9" : "#27364D",
+    textSecondary: isDark ? "#94A3B8" : "#475569",
+    cardBg: isDark ? "#1E293B" : "#FFFFFF",
+    cardBorder: isDark ? "#334155" : "#E7ECF5",
+  };
+
   if (!data.length) {
     return (
       <Box
@@ -48,17 +69,17 @@ function ProductChart({ products = {} }) {
           display: "grid",
           placeItems: "center",
           textAlign: "center",
-          border: "1px dashed #D9E1F2",
+          border: `1px dashed ${chartColors.emptyBorder}`,
           borderRadius: 3,
-          bgcolor: "#FAFBFD",
+          bgcolor: chartColors.emptyBg,
           px: 3,
         }}
       >
         <Box>
           <BarChartRoundedIcon
-            sx={{ fontSize: 34, color: "#9AA8BA", mb: 1 }}
+            sx={{ fontSize: 34, color: chartColors.emptyText, mb: 1 }}
           />
-          <Typography fontWeight={700} color="#475569">
+          <Typography fontWeight={700} color={chartColors.emptyText}>
             No product analytics available
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -72,13 +93,14 @@ function ProductChart({ products = {} }) {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} lg={7}>
-        <Card sx={chartCardSx}>
+        <Card sx={chartCardSx(theme, isDark)}>
           <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
             <ChartHeader
               icon={<BarChartRoundedIcon />}
               color="#2855D9"
               title="Product performance"
               subtitle="Interactions by discussed product"
+              isDark={isDark}
             />
 
             <Box sx={{ height: 310, mt: 1 }}>
@@ -89,30 +111,29 @@ function ProductChart({ products = {} }) {
                 >
                   <CartesianGrid
                     vertical={false}
-                    stroke="#E8EDF5"
+                    stroke={chartColors.grid}
                     strokeDasharray="3 3"
                   />
-
                   <XAxis
                     dataKey="name"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "#718096", fontSize: 12 }}
+                    tick={{ fill: chartColors.axis, fontSize: 12 }}
                     interval={0}
                     angle={data.length > 4 ? -25 : 0}
                     textAnchor={data.length > 4 ? "end" : "middle"}
                     height={data.length > 4 ? 60 : 35}
                   />
-
                   <YAxis
                     allowDecimals={false}
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "#718096", fontSize: 12 }}
+                    tick={{ fill: chartColors.axis, fontSize: 12 }}
                   />
-
-                  <Tooltip content={<BarTooltip />} cursor={{ fill: "#F4F7FF" }} />
-
+                  <Tooltip 
+                    content={<BarTooltip isDark={isDark} />} 
+                    cursor={{ fill: isDark ? "#1E293B" : "#F4F7FF" }} 
+                  />
                   <Bar
                     dataKey="value"
                     name="Interactions"
@@ -128,13 +149,14 @@ function ProductChart({ products = {} }) {
       </Grid>
 
       <Grid item xs={12} lg={5}>
-        <Card sx={chartCardSx}>
+        <Card sx={chartCardSx(theme, isDark)}>
           <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
             <ChartHeader
               icon={<DonutLargeOutlinedIcon />}
               color="#10A683"
               title="Product share"
               subtitle={`${total} total interactions`}
+              isDark={isDark}
             />
 
             <Box
@@ -167,8 +189,7 @@ function ProductChart({ products = {} }) {
                       />
                     ))}
                   </Pie>
-
-                  <Tooltip content={<PieTooltip total={total} />} />
+                  <Tooltip content={<PieTooltip total={total} isDark={isDark} />} />
                 </PieChart>
               </ResponsiveContainer>
 
@@ -179,14 +200,10 @@ function ProductChart({ products = {} }) {
                   textAlign: "center",
                 }}
               >
-                <Typography variant="h5" fontWeight={800} color="#172033">
+                <Typography variant="h5" fontWeight={800} color={chartColors.textPrimary}>
                   {total}
                 </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  fontWeight={700}
-                >
+                <Typography variant="caption" color="text.secondary" fontWeight={700}>
                   TOTAL
                 </Typography>
               </Box>
@@ -195,7 +212,6 @@ function ProductChart({ products = {} }) {
             <Stack spacing={1} sx={{ mt: 1.5 }}>
               {data.map((item, index) => {
                 const percentage = ((item.value / total) * 100).toFixed(1);
-
                 return (
                   <Box
                     key={item.name}
@@ -206,14 +222,7 @@ function ProductChart({ products = {} }) {
                       gap: 1,
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        minWidth: 0,
-                      }}
-                    >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
                       <Box
                         sx={{
                           width: 9,
@@ -223,23 +232,12 @@ function ProductChart({ products = {} }) {
                           bgcolor: COLORS[index % COLORS.length],
                         }}
                       />
-
-                      <Typography
-                        variant="body2"
-                        fontWeight={650}
-                        color="#475569"
-                        noWrap
-                      >
+                      <Typography variant="body2" fontWeight={650} color={chartColors.textSecondary} noWrap>
                         {item.name}
                       </Typography>
                     </Box>
-
-                    <Typography
-                      variant="body2"
-                      color="#64748B"
-                      sx={{ flexShrink: 0 }}
-                    >
-                      <Box component="span" fontWeight={750} color="#27364D">
+                    <Typography variant="body2" color={chartColors.textSecondary} sx={{ flexShrink: 0 }}>
+                      <Box component="span" fontWeight={750} color={chartColors.textPrimary}>
                         {item.value}
                       </Box>{" "}
                       · {percentage}%
@@ -255,7 +253,7 @@ function ProductChart({ products = {} }) {
   );
 }
 
-function ChartHeader({ icon, color, title, subtitle }) {
+function ChartHeader({ icon, color, title, subtitle, isDark }) {
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
       <Box
@@ -265,15 +263,14 @@ function ChartHeader({ icon, color, title, subtitle }) {
           width: 40,
           height: 40,
           borderRadius: 2.25,
-          bgcolor: `${color}16`,
+          bgcolor: `${color}${isDark ? '30' : '16'}`,
           color,
         }}
       >
         {icon}
       </Box>
-
       <Box>
-        <Typography fontWeight={750} color="#27364D">
+        <Typography fontWeight={750} color={isDark ? "#F1F5F9" : "#27364D"}>
           {title}
         </Typography>
         <Typography variant="caption" color="text.secondary">
@@ -284,18 +281,17 @@ function ChartHeader({ icon, color, title, subtitle }) {
   );
 }
 
-function BarTooltip({ active, payload, label }) {
+function BarTooltip({ active, payload, label, isDark }) {
   if (!active || !payload?.length) return null;
-
   return (
     <Box
       sx={{
         px: 1.5,
         py: 1,
-        bgcolor: "#172033",
+        bgcolor: isDark ? "#1E293B" : "#172033",
         color: "#FFFFFF",
         borderRadius: 2,
-        boxShadow: "0 8px 18px rgba(15,23,42,.2)",
+        boxShadow: isDark ? '0 8px 18px rgba(0,0,0,0.4)' : '0 8px 18px rgba(15,23,42,.2)',
       }}
     >
       <Typography variant="caption" sx={{ color: "rgba(255,255,255,.7)" }}>
@@ -308,21 +304,19 @@ function BarTooltip({ active, payload, label }) {
   );
 }
 
-function PieTooltip({ active, payload, total }) {
+function PieTooltip({ active, payload, total, isDark }) {
   if (!active || !payload?.length) return null;
-
   const item = payload[0].payload;
   const percentage = ((item.value / total) * 100).toFixed(1);
-
   return (
     <Box
       sx={{
         px: 1.5,
         py: 1,
-        bgcolor: "#172033",
+        bgcolor: isDark ? "#1E293B" : "#172033",
         color: "#FFFFFF",
         borderRadius: 2,
-        boxShadow: "0 8px 18px rgba(15,23,42,.2)",
+        boxShadow: isDark ? '0 8px 18px rgba(0,0,0,0.4)' : '0 8px 18px rgba(15,23,42,.2)',
       }}
     >
       <Typography variant="caption" sx={{ color: "rgba(255,255,255,.7)" }}>
@@ -335,11 +329,12 @@ function PieTooltip({ active, payload, total }) {
   );
 }
 
-const chartCardSx = {
+const chartCardSx = (theme, isDark) => ({
   height: "100%",
   borderRadius: 4,
-  border: "1px solid #E7ECF5",
-  boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
-};
+  border: `1px solid ${isDark ? '#334155' : '#E7ECF5'}`,
+  boxShadow: isDark ? '0 8px 22px rgba(0,0,0,0.3)' : '0 8px 22px rgba(15, 23, 42, .05)',
+  backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+});
 
 export default ProductChart;

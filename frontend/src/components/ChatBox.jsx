@@ -1,277 +1,391 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Box,
+  Paper,
+  TextField,
+  IconButton,
+  Typography,
+  Avatar,
+  CircularProgress,
+  useTheme,
+  Chip,
+} from "@mui/material";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+
 import API from "../api/api";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 function ChatBox() {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
 
-    const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
-    const [chatMessages, setChatMessages] = useState([]);
+  // Theme colors
+  const textPrimary = isDark ? "#F1F5F9" : "#172033";
+  const textSecondary = isDark ? "#94A3B8" : "#475569";
+  const borderColor = isDark ? "#334155" : "#E2E8F0";
+  const userMessageBg = isDark ? "#1E293B" : "#F1F5F9";
+  const aiMessageBg = isDark ? "#1A2A4A" : "#EAF0FF";
+  const cardBg = isDark ? "#0F172A" : "#FFFFFF";
 
-    const [loading, setLoading] = useState(false);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
 
-
-    const sendMessage = async () => {
-
+  const sendMessage = async () => {
     if (!message.trim()) {
-        return;
+      return;
     }
 
     const userMessage = {
-        sender: "You",
-        text: message
+      sender: "You",
+      text: message,
+      isUser: true,
     };
 
-    setChatMessages((previous) => [
-        ...previous,
-        userMessage
-    ]);
-
+    setChatMessages((previous) => [...previous, userMessage]);
     const currentMessage = message;
-
     setMessage("");
-
     setLoading(true);
 
     try {
+      const response = await API.post("/chat/", {
+        session_id: "frontend-session",
+        message: currentMessage,
+      });
 
-        const response = await API.post(
-            "/chat/",
-            {
-                session_id: "frontend-session",
-                message: currentMessage
-            }
-        );
+      console.log("Chat Response:", response.data);
 
-        console.log("Chat Response:", response.data);
+      let aiResponse = "";
 
-        let aiResponse = "";
+      if (response.data.response) {
+        aiResponse = response.data.response;
+      } else if (response.data.final_response) {
+        aiResponse = response.data.final_response;
+      } else if (response.data.message) {
+        aiResponse = response.data.message;
+      } else {
+        aiResponse = JSON.stringify(response.data);
+      }
 
-        if (response.data.response) {
+      const aiMessage = {
+        sender: "AI Assistant",
+        text: aiResponse,
+        isUser: false,
+      };
 
-            aiResponse = response.data.response;
-
-        }
-
-        else if (response.data.final_response) {
-
-            aiResponse = response.data.final_response;
-
-        }
-
-        else if (response.data.message) {
-
-            aiResponse = response.data.message;
-
-        }
-
-        else {
-
-            aiResponse = JSON.stringify(response.data);
-
-        }
-
-        const aiMessage = {
-
-            sender: "AI Assistant",
-
-            text: aiResponse
-
-        };
-
-        setChatMessages((previous) => [
-
-            ...previous,
-
-            aiMessage
-
-        ]);
-
+      setChatMessages((previous) => [...previous, aiMessage]);
+    } catch (error) {
+      console.error("Chat API Error:", error);
+      setChatMessages((previous) => [
+        ...previous,
+        {
+          sender: "AI Assistant",
+          text:
+            error.response?.data?.message ||
+            "Unable to connect with AI service.",
+          isUser: false,
+          isError: true,
+        },
+      ]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    catch (error) {
-
-        console.error("Chat API Error:", error);
-
-        setChatMessages((previous) => [
-
-            ...previous,
-
-            {
-
-                sender: "AI Assistant",
-
-                text:
-                    error.response?.data?.message ||
-                    "Unable to connect with AI service."
-
-            }
-
-        ]);
-
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
     }
+  };
 
-    finally {
+  const getInitials = (sender) => {
+    if (sender === "You") return "Y";
+    return "AI";
+  };
 
-        setLoading(false);
-
+  const getAvatarColor = (sender) => {
+    if (sender === "You") {
+      return isDark ? "#475569" : "#94A3B8";
     }
+    return "#8B5CF6";
+  };
 
-};
+  const getMessageBg = (sender) => {
+    if (sender === "You") {
+      return userMessageBg;
+    }
+    return aiMessageBg;
+  };
 
+  const getMessageColor = (sender) => {
+    if (sender === "You") {
+      return textPrimary;
+    }
+    return isDark ? "#A78BFA" : "#7C3AED";
+  };
 
-
-    return (
-
-        <div
-            style={{
-                border: "1px solid #ccc",
-                padding: "20px",
-                borderRadius: "10px"
-            }}
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: 500,
+        border: `1px solid ${borderColor}`,
+        borderRadius: 3,
+        overflow: "hidden",
+        backgroundColor: cardBg,
+      }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: `1px solid ${borderColor}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          backgroundColor: isDark ? "#0F172A" : "#FAFBFD",
+        }}
+      >
+        <Avatar
+          sx={{
+            width: 32,
+            height: 32,
+            bgcolor: "#8B5CF6",
+            color: "#FFFFFF",
+          }}
         >
+          <SmartToyOutlinedIcon fontSize="small" />
+        </Avatar>
+        <Box>
+          <Typography variant="subtitle2" fontWeight={700} color={textPrimary}>
+            AI Assistant
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Ask about HCP interactions
+          </Typography>
+        </Box>
+        <Chip
+          label="Online"
+          size="small"
+          sx={{
+            ml: "auto",
+            bgcolor: isDark ? "#065F46" : "#DCFCE7",
+            color: isDark ? "#6EE7B7" : "#166534",
+            fontWeight: 600,
+            fontSize: "0.65rem",
+          }}
+        />
+      </Box>
 
-            <h3>
-                AI CRM Assistant
-            </h3>
-
-
-
-            <div
-                style={{
-                    height: "300px",
-                    overflowY: "auto",
-                    border: "1px solid #ddd",
-                    padding: "10px",
-                    marginBottom: "15px"
-                }}
-            >
-
-                {
-                    chatMessages.map(
-
-                        (msg, index) => (
-
-                            <div
-                                key={index}
-                                style={{
-                                    marginBottom: "12px"
-                                }}
-                            >
-
-                                <strong>
-
-                                    {msg.sender}
-
-                                </strong>
-
-                                <br />
-
-                                <span>
-
-                                    {msg.text}
-
-                                </span>
-
-                            </div>
-
-                        )
-
-                    )
-                }
-
-                {
-
-                    loading && (
-
-                        <p>
-
-                            <em>
-
-                                AI Assistant is typing...
-
-                            </em>
-
-                        </p>
-
-                    )
-
-                }
-
-            </div>
-
-
-
-            <input
-
-                type="text"
-
-                placeholder="Ask AI CRM Assistant..."
-
-                value={message}
-
-                onChange={(e) =>
-
-                    setMessage(e.target.value)
-
-                }
-
-                onKeyDown={(e) => {
-
-                    if (e.key === "Enter") {
-
-                        sendMessage();
-
-                    }
-
-                }}
-
-                disabled={loading}
-
-                style={{
-
-                    width: "80%",
-
-                    padding: "10px"
-
-                }}
-
+      {/* Messages */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 1.5,
+          "&::-webkit-scrollbar": {
+            width: 4,
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: isDark ? "#334155" : "#CBD5E1",
+            borderRadius: 10,
+          },
+        }}
+      >
+        {chatMessages.length === 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              color: "text.secondary",
+              textAlign: "center",
+              p: 3,
+            }}
+          >
+            <SmartToyOutlinedIcon
+              sx={{ fontSize: 48, color: isDark ? "#334155" : "#CBD5E1", mb: 2 }}
             />
+            <Typography variant="body1" fontWeight={600} color={textPrimary}>
+              Start a conversation
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Ask about HCP interactions or get AI assistance
+            </Typography>
+          </Box>
+        )}
 
-
-
-            <button
-
-                onClick={sendMessage}
-
-                disabled={loading}
-
-                style={{
-
-                    padding: "10px",
-
-                    marginLeft: "10px"
-
+        {chatMessages.map((msg, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: "flex",
+              justifyContent: msg.sender === "You" ? "flex-end" : "flex-start",
+              gap: 1.5,
+            }}
+          >
+            {msg.sender !== "You" && (
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: "#8B5CF6",
+                  color: "#FFFFFF",
+                  alignSelf: "flex-end",
                 }}
+              >
+                <SmartToyOutlinedIcon fontSize="small" />
+              </Avatar>
+            )}
 
+            <Box
+              sx={{
+                maxWidth: "80%",
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: getMessageBg(msg.sender),
+                border: `1px solid ${borderColor}`,
+                color: msg.isError ? "#EF4444" : textPrimary,
+              }}
             >
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                {msg.text}
+              </Typography>
+            </Box>
 
-                {
+            {msg.sender === "You" && (
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: getAvatarColor(msg.sender),
+                  color: "#FFFFFF",
+                  alignSelf: "flex-end",
+                }}
+              >
+                <PersonOutlinedIcon fontSize="small" />
+              </Avatar>
+            )}
+          </Box>
+        ))}
 
-                    loading
+        {loading && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: 1 }}>
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: "#8B5CF6",
+                color: "#FFFFFF",
+              }}
+            >
+              <SmartToyOutlinedIcon fontSize="small" />
+            </Avatar>
+            <Box
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: aiMessageBg,
+                border: `1px solid ${borderColor}`,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <CircularProgress size={16} color="primary" />
+              <Typography variant="body2" color="text.secondary">
+                AI is thinking...
+              </Typography>
+            </Box>
+          </Box>
+        )}
 
-                        ? "Sending..."
+        <div ref={messagesEndRef} />
+      </Box>
 
-                        : "Send"
-
-                }
-
-            </button>
-
-        </div>
-
-    );
-
+      {/* Input */}
+      <Box
+        sx={{
+          p: 2,
+          borderTop: `1px solid ${borderColor}`,
+          display: "flex",
+          gap: 1,
+          backgroundColor: isDark ? "#0F172A" : "#FAFBFD",
+        }}
+      >
+        <TextField
+          fullWidth
+          placeholder="Ask AI CRM Assistant..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+          size="small"
+          multiline
+          maxRows={3}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2.5,
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              "& fieldset": {
+                borderColor: borderColor,
+              },
+              "&:hover fieldset": {
+                borderColor: isDark ? "#475569" : "#94A3B8",
+              },
+            },
+            "& .MuiInputBase-input": {
+              color: textPrimary,
+            },
+          }}
+        />
+        <IconButton
+          onClick={sendMessage}
+          disabled={loading || !message.trim()}
+          sx={{
+            bgcolor: "#2855D9",
+            color: "#FFFFFF",
+            borderRadius: 2.5,
+            "&:hover": {
+              bgcolor: "#1F46BA",
+            },
+            "&.Mui-disabled": {
+              bgcolor: isDark ? "#334155" : "#E2E8F0",
+              color: isDark ? "#475569" : "#94A3B8",
+            },
+          }}
+        >
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            <SendRoundedIcon />
+          )}
+        </IconButton>
+      </Box>
+    </Box>
+  );
 }
 
 export default ChatBox;

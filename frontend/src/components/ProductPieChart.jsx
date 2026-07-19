@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 const chartColors = [
   "#2855D9",
@@ -20,6 +21,8 @@ const chartColors = [
 
 function ProductPieChart({ products = {} }) {
   const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -41,6 +44,14 @@ function ProductPieChart({ products = {} }) {
   const chartWidth = isMobile ? 260 : isTablet ? 280 : 300;
   const chartHeight = isMobile ? 220 : isTablet ? 240 : 260;
 
+  // Theme colors
+  const emptyBorderColor = isDark ? "#334155" : "#D9E1F2";
+  const emptyBgColor = isDark ? "#1E293B" : "#FAFBFD";
+  const emptyTextColor = isDark ? "#94A3B8" : "#475569";
+  const textPrimaryColor = isDark ? "#F1F5F9" : "#0F172A";
+  const textSecondaryColor = isDark ? "#94A3B8" : "#475569";
+  const dividerColor = isDark ? "#334155" : "#E7ECF5";
+
   if (!pieData.length) {
     return (
       <Box
@@ -49,18 +60,18 @@ function ProductPieChart({ products = {} }) {
           display: "grid",
           placeItems: "center",
           textAlign: "center",
-          border: "1px dashed #D9E1F2",
+          border: `1px dashed ${emptyBorderColor}`,
           borderRadius: 3,
-          bgcolor: "#FAFBFD",
+          bgcolor: emptyBgColor,
           px: 3,
         }}
       >
         <Box>
           <DonutLargeOutlinedIcon
-            sx={{ color: "#9AA8BA", fontSize: 32, mb: 1 }}
+            sx={{ color: emptyTextColor, fontSize: 32, mb: 1 }}
           />
 
-          <Typography fontWeight={700} color="#475569">
+          <Typography fontWeight={700} color={emptyTextColor}>
             No product activity yet
           </Typography>
 
@@ -109,7 +120,7 @@ function ProductPieChart({ products = {} }) {
               faded: {
                 innerRadius: isMobile ? 45 : 55,
                 additionalRadius: -8,
-                color: "#DCE4EF",
+                color: isDark ? "#334155" : "#DCE4EF",
               },
             },
           ]}
@@ -130,7 +141,7 @@ function ProductPieChart({ products = {} }) {
           <Typography
             variant="h4"
             fontWeight={800}
-            color="#172033"
+            color={textPrimaryColor}
             lineHeight={1}
             sx={{
               fontSize: {
@@ -153,7 +164,7 @@ function ProductPieChart({ products = {} }) {
       </Box>
 
       <Box sx={{ width: { xs: "100%", md: 245 } }}>
-        <Typography fontWeight={750} color="#27364D" sx={{ mb: 0.5 }}>
+        <Typography fontWeight={750} color={textPrimaryColor} sx={{ mb: 0.5 }}>
           Product activity
         </Typography>
 
@@ -161,7 +172,7 @@ function ProductPieChart({ products = {} }) {
           Distribution by discussed product.
         </Typography>
 
-        <Divider sx={{ borderColor: "#E7ECF5", mb: 1.25 }} />
+        <Divider sx={{ borderColor: dividerColor, mb: 1.25 }} />
 
         <Stack spacing={1.25}>
           {pieData.map((item) => {
@@ -198,7 +209,7 @@ function ProductPieChart({ products = {} }) {
                   <Typography
                     variant="body2"
                     fontWeight={650}
-                    color="#475569"
+                    color={isDark ? "#94A3B8" : "#475569"}
                     noWrap
                   >
                     {item.label}
@@ -207,10 +218,10 @@ function ProductPieChart({ products = {} }) {
 
                 <Typography
                   variant="body2"
-                  color="#64748B"
+                  color={isDark ? "#94A3B8" : "#64748B"}
                   sx={{ flexShrink: 0 }}
                 >
-                  <Box component="span" fontWeight={750} color="#27364D">
+                  <Box component="span" fontWeight={750} color={textPrimaryColor}>
                     {item.value}
                   </Box>{" "}
                   · {percentage}%

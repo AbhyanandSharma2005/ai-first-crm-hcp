@@ -22,6 +22,7 @@ import {
 } from "@mui/icons-material";
 
 import API from "../api/api";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 //-----------------------------------------------------
 // TopDoctorsChart Component
@@ -29,6 +30,8 @@ import API from "../api/api";
 
 function TopDoctorsChart() {
     const theme = useTheme();
+    const { mode } = useCustomTheme();
+    const isDark = mode === 'dark';
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     //-----------------------------------------------------
@@ -46,6 +49,14 @@ function TopDoctorsChart() {
     // Responsive bar height
     const barHeight = isMobile ? 24 : 28;
     const maxDisplayItems = isMobile ? 5 : 10;
+
+    // Theme colors
+    const cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    const borderColor = isDark ? "#334155" : "#E2E8F0";
+    const textPrimary = isDark ? "#F1F5F9" : "#0F172A";
+    const textSecondary = isDark ? "#94A3B8" : "#475569";
+    const dividerColor = isDark ? "#334155" : "#E2E8F0";
+    const barBgColor = isDark ? "#334155" : "#F1F5F9";
 
     //-----------------------------------------------------
     // Fetch Top Doctors
@@ -213,9 +224,10 @@ function TopDoctorsChart() {
 
                     borderRadius: 4,
 
-                    border: "1px solid #E2E8F0",
+                    border: `1px solid ${borderColor}`,
 
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
+                    backgroundColor: cardBg,
 
                 }}
 
@@ -245,7 +257,7 @@ function TopDoctorsChart() {
 
                             fontWeight={700}
 
-                            color="#0F172A"
+                            color={textPrimary}
 
                         >
 
@@ -265,7 +277,7 @@ function TopDoctorsChart() {
 
                     </Box>
 
-                    <Divider sx={{ mb: 3 }} />
+                    <Divider sx={{ mb: 3, borderColor: dividerColor }} />
 
                     {[1, 2, 3, 4, 5].map((item) => (
                         <Box key={item} sx={{ mb: 3 }}>
@@ -273,11 +285,12 @@ function TopDoctorsChart() {
                                 variant="text"
                                 width="30%"
                                 height={24}
+                                sx={{ bgcolor: isDark ? '#334155' : undefined }}
                             />
                             <Skeleton
                                 variant="rounded"
                                 height={barHeight}
-                                sx={{ mt: 0.5 }}
+                                sx={{ mt: 0.5, bgcolor: isDark ? '#334155' : undefined }}
                             />
                         </Box>
                     ))}
@@ -306,9 +319,10 @@ function TopDoctorsChart() {
 
                     borderRadius: 4,
 
-                    border: "1px solid #E2E8F0",
+                    border: `1px solid ${borderColor}`,
 
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
+                    backgroundColor: cardBg,
 
                 }}
 
@@ -338,7 +352,7 @@ function TopDoctorsChart() {
 
                             fontWeight={700}
 
-                            color="#0F172A"
+                            color={textPrimary}
 
                         >
 
@@ -358,7 +372,7 @@ function TopDoctorsChart() {
 
                     </Box>
 
-                    <Divider sx={{ mb: 3 }} />
+                    <Divider sx={{ mb: 3, borderColor: dividerColor }} />
 
                     <Alert
 
@@ -396,9 +410,10 @@ function TopDoctorsChart() {
 
                     borderRadius: 4,
 
-                    border: "1px solid #E2E8F0",
+                    border: `1px solid ${borderColor}`,
 
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
+                    backgroundColor: cardBg,
 
                 }}
 
@@ -428,7 +443,7 @@ function TopDoctorsChart() {
 
                             fontWeight={700}
 
-                            color="#0F172A"
+                            color={textPrimary}
 
                         >
 
@@ -448,7 +463,7 @@ function TopDoctorsChart() {
 
                     </Box>
 
-                    <Divider sx={{ mb: 3 }} />
+                    <Divider sx={{ mb: 3, borderColor: dividerColor }} />
 
                     <Alert
 
@@ -484,19 +499,19 @@ function TopDoctorsChart() {
 
                 borderRadius: 4,
 
-                border: "1px solid #E2E8F0",
+                border: `1px solid ${borderColor}`,
 
-                background:
+                background: isDark
+                    ? "linear-gradient(180deg, #1E293B 0%, #0F172A 100%)"
+                    : "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
 
-                    "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
-
-                boxShadow: "0 8px 24px rgba(15,23,42,0.08)",
+                boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
 
                 transition: "0.25s",
 
                 "&:hover": {
 
-                    boxShadow: "0 12px 30px rgba(15,23,42,0.15)"
+                    boxShadow: isDark ? '0 12px 30px rgba(0,0,0,0.4)' : '0 12px 30px rgba(15,23,42,0.15)'
 
                 }
 
@@ -533,7 +548,7 @@ function TopDoctorsChart() {
 
                             fontWeight={700}
 
-                            color="#0F172A"
+                            color={textPrimary}
                             sx={{
                                 fontSize: isMobile ? "1rem" : "1.25rem"
                             }}
@@ -569,7 +584,7 @@ function TopDoctorsChart() {
 
                 </Box>
 
-                <Divider sx={{ mb: 3 }} />
+                <Divider sx={{ mb: 3, borderColor: dividerColor }} />
 
                 <Box sx={{ mt: 2 }}>
                     {data.map((doctor, index) => {
@@ -616,7 +631,7 @@ function TopDoctorsChart() {
                                         <Typography
                                             variant="body2"
                                             fontWeight={600}
-                                            color="#0F172A"
+                                            color={textPrimary}
                                             sx={{
                                                 fontSize: isMobile ? "0.75rem" : "0.875rem",
                                                 letterSpacing: 0.3
@@ -642,7 +657,7 @@ function TopDoctorsChart() {
                                     sx={{
                                         width: "100%",
                                         height: barHeight,
-                                        backgroundColor: "#F1F5F9",
+                                        backgroundColor: barBgColor,
                                         borderRadius: 8,
                                         overflow: "hidden",
                                         position: "relative",
@@ -699,7 +714,7 @@ function TopDoctorsChart() {
                     sx={{
                         mt: 3,
                         pt: 2,
-                        borderTop: "1px solid #E2E8F0",
+                        borderTop: `1px solid ${dividerColor}`,
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -708,13 +723,13 @@ function TopDoctorsChart() {
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <PersonIcon sx={{ color: "#94A3B8", fontSize: 16 }} />
+                        <PersonIcon sx={{ color: textSecondary, fontSize: 16 }} />
                         <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
-                            Top performer: <strong>{data[0]?.doctor}</strong>
+                            Top performer: <strong style={{ color: textPrimary }}>{data[0]?.doctor}</strong>
                         </Typography>
                     </Box>
                     <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
-                        Total: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
+                        Total: <strong style={{ color: textPrimary }}>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
                     </Typography>
                 </Box>
 

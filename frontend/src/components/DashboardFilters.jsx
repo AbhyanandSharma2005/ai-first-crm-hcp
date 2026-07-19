@@ -59,8 +59,8 @@ function DashboardFilters({ onApply }) {
                     md: 3,
                 },
                 borderRadius: 3,
-                border: "1px solid #E7ECF5",
-                background: "#FFFFFF",
+                border: `1px solid ${theme.palette.divider}`,
+                backgroundColor: theme.palette.background.paper,
             }}
         >
 
@@ -90,6 +90,19 @@ function DashboardFilters({ onApply }) {
                         size="small"
                         fullWidth
                         placeholder="Filter by product"
+                        sx={{
+                            "& .MuiInputLabel-root": {
+                                color: theme.palette.text.secondary,
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: theme.palette.divider,
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: theme.palette.text.secondary,
+                                },
+                            },
+                        }}
                     />
                 </Grid>
 
@@ -109,6 +122,19 @@ function DashboardFilters({ onApply }) {
                         size="small"
                         fullWidth
                         placeholder="Filter by doctor"
+                        sx={{
+                            "& .MuiInputLabel-root": {
+                                color: theme.palette.text.secondary,
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: theme.palette.divider,
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: theme.palette.text.secondary,
+                                },
+                            },
+                        }}
                     />
                 </Grid>
 
@@ -128,6 +154,19 @@ function DashboardFilters({ onApply }) {
                         }
                         size="small"
                         fullWidth
+                        sx={{
+                            "& .MuiInputLabel-root": {
+                                color: theme.palette.text.secondary,
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: theme.palette.divider,
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: theme.palette.text.secondary,
+                                },
+                            },
+                        }}
                     >
 
                         <MenuItem value="">
@@ -204,8 +243,8 @@ function DashboardFilters({ onApply }) {
                                     xs: 1,
                                     sm: 0.75,
                                 },
-                                color: "#64748B",
-                                borderColor: "#D9E1F2",
+                                color: theme.palette.text.secondary,
+                                borderColor: theme.palette.divider,
                             }}
                         >
                             Clear

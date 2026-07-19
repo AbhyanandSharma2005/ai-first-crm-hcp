@@ -22,6 +22,7 @@ import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
 import API from "../api/api";
+import { commonSpacing } from "../theme/theme";
 
 function Metrics() {
   const [metrics, setMetrics] = useState(null);
@@ -69,7 +70,11 @@ function Metrics() {
       sx={{
         borderRadius: 4,
         border: "1px solid #E7ECF5",
-        boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
+        boxShadow: 1,
+        transition: "0.25s",
+        "&:hover": {
+          boxShadow: 4,
+        },
       }}
     >
       <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
@@ -88,9 +93,9 @@ function Metrics() {
               sx={{
                 display: "grid",
                 placeItems: "center",
-                width: 46,
-                height: 46,
-                borderRadius: 2.5,
+                width: 44,
+                height: 44,
+                borderRadius: 3,
                 bgcolor: "#E9FBF6",
                 color: "#10A683",
               }}
@@ -99,7 +104,7 @@ function Metrics() {
             </Box>
 
             <Box>
-              <Typography variant="h6" fontWeight={750} color="#172033">
+              <Typography variant="h6" fontWeight={700} color="#172033">
                 Application metrics
               </Typography>
 
@@ -117,7 +122,8 @@ function Metrics() {
                 sx={{
                   color: "#64748B",
                   bgcolor: "#F5F7FB",
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  borderRadius: 2,
                 }}
               />
             )}
@@ -135,6 +141,9 @@ function Metrics() {
                 )
               }
               sx={{
+                borderRadius: 3,
+                textTransform: "none",
+                fontWeight: 700,
                 borderColor: "#D9E1F2",
                 color: "#475569",
                 bgcolor: "#FFFFFF",
@@ -154,6 +163,11 @@ function Metrics() {
                 color="inherit"
                 size="small"
                 onClick={() => fetchMetrics(true)}
+                sx={{
+                  borderRadius: 3,
+                  textTransform: "none",
+                  fontWeight: 700,
+                }}
               >
                 Retry
               </Button>
@@ -166,7 +180,7 @@ function Metrics() {
         {loading ? (
           <MetricsSkeleton />
         ) : metrics ? (
-          <Grid container spacing={2}>
+          <Grid container spacing={commonSpacing.gridSpacing}>
             <Grid item xs={12} sm={6} lg={4}>
               <MetricCard
                 label="Total interactions"
@@ -227,7 +241,7 @@ function Metrics() {
               <Card
                 sx={{
                   height: "100%",
-                  borderRadius: 3,
+                  borderRadius: 4,
                   color: "#FFFFFF",
                   background:
                     "linear-gradient(135deg, #172554 0%, #2855D9 100%)",
@@ -301,13 +315,14 @@ function MetricCard({
     <Card
       sx={{
         height: "100%",
-        borderRadius: 3,
+        borderRadius: 4,
         border: "1px solid #E7ECF5",
         background,
+        boxShadow: 1,
         transition: "transform .2s ease, box-shadow .2s ease",
         "&:hover": {
           transform: "translateY(-3px)",
-          boxShadow: "0 12px 24px rgba(15,23,42,.09)",
+          boxShadow: 4,
         },
       }}
     >
@@ -326,7 +341,7 @@ function MetricCard({
               placeItems: "center",
               width: 40,
               height: 40,
-              borderRadius: 2.25,
+              borderRadius: 3,
               color,
               bgcolor: "#FFFFFFA8",
             }}
@@ -341,13 +356,14 @@ function MetricCard({
               sx={{
                 color: "#078564",
                 bgcolor: "#D9F9EE",
-                fontWeight: 750,
+                fontWeight: 700,
+                borderRadius: 2,
               }}
             />
           )}
         </Box>
 
-        <Typography variant="body2" color="#64748B">
+        <Typography variant="subtitle2" color="#64748B">
           {label}
         </Typography>
 
@@ -380,12 +396,12 @@ function MetricsSkeleton() {
           <Card
             sx={{
               minHeight: 180,
-              borderRadius: 3,
+              borderRadius: 4,
               border: "1px solid #E7ECF5",
             }}
           >
             <CardContent>
-              <Skeleton variant="rounded" width={40} height={40} />
+              <Skeleton variant="rounded" width={40} height={40} sx={{ borderRadius: 3 }} />
               <Skeleton width="55%" sx={{ mt: 3 }} />
               <Skeleton width="38%" height={40} />
               <Skeleton width="75%" />

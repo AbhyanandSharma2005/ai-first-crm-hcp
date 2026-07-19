@@ -18,19 +18,37 @@ import {
   TableRow,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
 import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
 
 import API from "../api/api";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
+import { commonSpacing } from "../theme/theme";
 
 function SearchHCP() {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
+
   const [doctorName, setDoctorName] = useState("");
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const textPrimary = isDark ? "#F1F5F9" : "#172033";
+  const textSecondary = isDark ? "#94A3B8" : "#475569";
+  const borderColor = isDark ? "#334155" : "#E7ECF5";
+  const cardBg = isDark ? "#1E293B" : "#FFFFFF";
+  const headerBg = isDark ? "#0F172A" : "#F8FAFD";
+  const rowHoverBg = isDark ? "#1E293B" : "#FAFCFF";
+  const emptyBg = isDark ? "#1E293B" : "#FAFBFD";
+  const emptyBorder = isDark ? "#334155" : "#D9E1F2";
+  const avatarBg = isDark ? "#1A2A4A" : "#EAF0FF";
+  const avatarColor = isDark ? "#60A5FA" : "#2855D9";
 
   const searchDoctor = async () => {
     const query = doctorName.trim();
@@ -74,12 +92,27 @@ function SearchHCP() {
     if (event.key === "Enter") searchDoctor();
   };
 
+  const headerCellSx = {
+    py: 1.5,
+    color: isDark ? "#94A3B8" : "#667085",
+    fontSize: "0.72rem",
+    fontWeight: 800,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    borderColor: borderColor,
+  };
+
   return (
     <Card
       sx={{
         borderRadius: 4,
-        border: "1px solid #E7ECF5",
-        boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
+        border: `1px solid ${borderColor}`,
+        boxShadow: 1,
+        backgroundColor: cardBg,
+        transition: "0.25s",
+        "&:hover": {
+          boxShadow: 4,
+        },
       }}
     >
       <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
@@ -94,18 +127,18 @@ function SearchHCP() {
           <Avatar
             variant="rounded"
             sx={{
-              width: 46,
-              height: 46,
-              borderRadius: 2.5,
-              bgcolor: "#EAF0FF",
-              color: "#2855D9",
+              width: 44,
+              height: 44,
+              borderRadius: 3,
+              bgcolor: avatarBg,
+              color: avatarColor,
             }}
           >
             <PersonSearchOutlinedIcon />
           </Avatar>
 
           <Box>
-            <Typography variant="h6" fontWeight={750} color="#172033">
+            <Typography variant="h6" fontWeight={700} color={textPrimary}>
               Search healthcare professionals
             </Typography>
 
@@ -133,14 +166,26 @@ function SearchHCP() {
             size="medium"
             sx={{
               "& .MuiOutlinedInput-root": {
-                bgcolor: "#FFFFFF",
+                bgcolor: isDark ? '#0F172A' : '#FFFFFF',
                 borderRadius: 2.5,
+                "& fieldset": {
+                  borderColor: borderColor,
+                },
+                "&:hover fieldset": {
+                  borderColor: isDark ? '#475569' : '#94A3B8',
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: textSecondary,
+              },
+              "& .MuiInputBase-input": {
+                color: textPrimary,
               },
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchRoundedIcon sx={{ color: "#718096" }} />
+                  <SearchRoundedIcon sx={{ color: isDark ? "#94A3B8" : "#718096" }} />
                 </InputAdornment>
               ),
             }}
@@ -158,9 +203,12 @@ function SearchHCP() {
               )
             }
             sx={{
+              borderRadius: 3,
+              px: 3,
+              py: 1.25,
+              textTransform: "none",
+              fontWeight: 700,
               minWidth: { xs: "100%", sm: 140 },
-              px: 2.5,
-              borderRadius: 2.5,
               bgcolor: "#2855D9",
               boxShadow: "0 8px 16px rgba(40,85,217,.2)",
               "&:hover": { bgcolor: "#1F46BA" },
@@ -176,9 +224,9 @@ function SearchHCP() {
             sx={{
               mb: 3,
               borderRadius: 2.5,
-              border: "1px solid #B8D4FF",
-              bgcolor: "#F2F8FF",
-              color: "#255FA8",
+              border: `1px solid ${isDark ? '#334155' : '#B8D4FF'}`,
+              bgcolor: isDark ? '#1A2A4A' : '#F2F8FF',
+              color: isDark ? '#60A5FA' : '#255FA8',
             }}
           >
             {error}
@@ -192,16 +240,16 @@ function SearchHCP() {
               alignItems: "center",
               justifyContent: "center",
               minHeight: 160,
-              border: "1px dashed #D9E1F2",
+              border: `1px dashed ${emptyBorder}`,
               borderRadius: 3,
-              bgcolor: "#FAFBFD",
+              bgcolor: emptyBg,
               textAlign: "center",
               px: 3,
             }}
           >
             <Box>
-              <SearchRoundedIcon sx={{ color: "#A0AEC0", fontSize: 30, mb: 1 }} />
-              <Typography fontWeight={650} color="#475569">
+              <SearchRoundedIcon sx={{ color: isDark ? "#475569" : "#A0AEC0", fontSize: 30, mb: 1 }} />
+              <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"}>
                 Search your HCP directory
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -217,11 +265,11 @@ function SearchHCP() {
               textAlign: "center",
               py: 5,
               borderRadius: 3,
-              bgcolor: "#FAFBFD",
-              border: "1px dashed #D9E1F2",
+              bgcolor: emptyBg,
+              border: `1px dashed ${emptyBorder}`,
             }}
           >
-            <Typography fontWeight={700} color="#475569">
+            <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"}>
               No matching HCPs found
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -249,6 +297,10 @@ function SearchHCP() {
                 size="small"
                 color="primary"
                 variant="outlined"
+                sx={{
+                  fontWeight: 700,
+                  borderRadius: 2,
+                }}
               />
             </Box>
 
@@ -257,13 +309,14 @@ function SearchHCP() {
               variant="outlined"
               sx={{
                 borderRadius: 3,
-                borderColor: "#E7ECF5",
+                borderColor: borderColor,
                 overflowX: "auto",
+                backgroundColor: cardBg,
               }}
             >
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: "#F8FAFD" }}>
+                  <TableRow sx={{ bgcolor: headerBg }}>
                     <TableCell sx={headerCellSx}>HCP</TableCell>
                     <TableCell sx={headerCellSx}>Specialization</TableCell>
                     <TableCell sx={headerCellSx}>Hospital</TableCell>
@@ -278,7 +331,7 @@ function SearchHCP() {
                       hover
                       sx={{
                         "&:last-child td": { borderBottom: 0 },
-                        "&:hover": { bgcolor: "#FAFCFF" },
+                        "&:hover": { bgcolor: rowHoverBg },
                       }}
                     >
                       <TableCell sx={{ py: 1.75 }}>
@@ -289,29 +342,30 @@ function SearchHCP() {
                               height: 34,
                               fontSize: 13,
                               fontWeight: 700,
-                              bgcolor: "#EAF0FF",
-                              color: "#2855D9",
+                              bgcolor: avatarBg,
+                              color: avatarColor,
+                              borderRadius: 3,
                             }}
                           >
                             {(doctor.name || "H").charAt(0).toUpperCase()}
                           </Avatar>
 
-                          <Typography fontWeight={650} color="#26354D">
+                          <Typography fontWeight={700} color={textPrimary}>
                             {doctor.name || "—"}
                           </Typography>
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ color: "#526176" }}>
+                      <TableCell sx={{ color: isDark ? "#94A3B8" : "#526176" }}>
                         {doctor.specialization || "Not specified"}
                       </TableCell>
 
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                           <LocalHospitalOutlinedIcon
-                            sx={{ color: "#8A98AB", fontSize: 18 }}
+                            sx={{ color: isDark ? "#475569" : "#8A98AB", fontSize: 18 }}
                           />
-                          <Typography variant="body2" color="#526176">
+                          <Typography variant="body2" color={isDark ? "#94A3B8" : "#526176"}>
                             {doctor.hospital || "Not specified"}
                           </Typography>
                         </Box>
@@ -322,9 +376,10 @@ function SearchHCP() {
                           label={`#${doctor.id}`}
                           size="small"
                           sx={{
-                            bgcolor: "#F1F5F9",
-                            color: "#526176",
-                            fontWeight: 650,
+                            bgcolor: isDark ? '#1E293B' : '#F1F5F9',
+                            color: isDark ? '#94A3B8' : '#526176',
+                            fontWeight: 700,
+                            borderRadius: 2,
                           }}
                         />
                       </TableCell>
@@ -339,15 +394,5 @@ function SearchHCP() {
     </Card>
   );
 }
-
-const headerCellSx = {
-  py: 1.5,
-  color: "#667085",
-  fontSize: "0.72rem",
-  fontWeight: 800,
-  letterSpacing: "0.06em",
-  textTransform: "uppercase",
-  borderColor: "#E7ECF5",
-};
 
 export default SearchHCP;

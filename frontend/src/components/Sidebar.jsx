@@ -10,6 +10,8 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
@@ -38,6 +40,8 @@ const menuItems = [
 ];
 
 function Sidebar() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
   return (
@@ -46,17 +50,37 @@ function Sidebar() {
       sx={{
         width: drawerWidth,
         flexShrink: 0,
-        display: { xs: "none", md: "block" },
+        display: {
+          xs: "none",
+          md: "block",
+        },
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
           border: "none",
-          borderRight: "1px solid #E8EDF5",
-          background: "#FFFFFF",
+          borderRight: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.background.paper,
           px: 1.5,
+          top: "72px",
+          height: "calc(100vh - 72px)",
+          overflowY: "auto",
+          "&::-webkit-scrollbar": {
+            width: 4,
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: theme.palette.divider,
+            borderRadius: 10,
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: theme.palette.text.disabled,
+          },
         },
       }}
     >
+      {/* Logo Section */}
       <Box sx={{ px: 1.5, pt: 3, pb: 2.5 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
           <Avatar
@@ -64,9 +88,9 @@ function Sidebar() {
             sx={{
               width: 42,
               height: 42,
-              borderRadius: 2.5,
-              bgcolor: "#2855D9",
-              boxShadow: "0 8px 18px rgba(40,85,217,.25)",
+              borderRadius: 3,
+              bgcolor: theme.palette.primary.main,
+              boxShadow: `0 8px 18px ${theme.palette.primary.main}40`,
             }}
           >
             <AutoAwesomeRoundedIcon fontSize="small" />
@@ -75,27 +99,28 @@ function Sidebar() {
           <Box>
             <Typography
               fontWeight={800}
-              color="#172033"
+              color={theme.palette.text.primary}
               sx={{ letterSpacing: "-0.02em", lineHeight: 1.2 }}
             >
               AI First CRM
             </Typography>
 
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" color={theme.palette.text.secondary}>
               HCP Intelligence
             </Typography>
           </Box>
         </Box>
       </Box>
 
-      <Divider sx={{ borderColor: "#EDF0F5" }} />
+      <Divider sx={{ borderColor: theme.palette.divider }} />
 
+      {/* Menu Section */}
       <Box sx={{ px: 1.5, pt: 3 }}>
         <Typography
           variant="caption"
           sx={{
             px: 1.5,
-            color: "#98A2B3",
+            color: theme.palette.text.secondary,
             fontWeight: 800,
             fontSize: "0.68rem",
             letterSpacing: "0.1em",
@@ -121,23 +146,23 @@ function Sidebar() {
                     minHeight: 46,
                     px: 1.5,
                     borderRadius: 2.5,
-                    color: isActive ? "#2855D9" : "#526176",
+                    color: isActive ? theme.palette.primary.main : theme.palette.text.secondary,
                     transition: "all .2s ease",
                     "& .MuiListItemIcon-root": {
                       minWidth: 38,
-                      color: isActive ? "#2855D9" : "#7A879A",
+                      color: isActive ? theme.palette.primary.main : theme.palette.text.disabled,
                     },
                     "&.Mui-selected": {
-                      bgcolor: "#EAF0FF",
+                      backgroundColor: theme.palette.primary.main + "20",
                       "&:hover": {
-                        bgcolor: "#E0E9FF",
+                        backgroundColor: theme.palette.primary.main + "30",
                       },
                     },
                     "&:hover": {
-                      bgcolor: "#F5F7FB",
-                      color: "#2855D9",
+                      backgroundColor: theme.palette.action.hover,
+                      color: theme.palette.primary.main,
                       "& .MuiListItemIcon-root": {
-                        color: "#2855D9",
+                        color: theme.palette.primary.main,
                       },
                     },
                   }}
@@ -158,13 +183,14 @@ function Sidebar() {
         </List>
       </Box>
 
+      {/* Bottom Section */}
       <Box sx={{ mt: "auto", p: 1.5, pb: 2.5 }}>
         <Box
           sx={{
             p: 2,
             borderRadius: 3,
-            bgcolor: "#F5F7FF",
-            border: "1px solid #E2E9FF",
+            bgcolor: theme.palette.primary.main + "10",
+            border: `1px solid ${theme.palette.primary.main}20`,
           }}
         >
           <Chip
@@ -172,20 +198,21 @@ function Sidebar() {
             size="small"
             sx={{
               mb: 1,
-              bgcolor: "#E1EAFE",
-              color: "#2855D9",
+              bgcolor: theme.palette.primary.main + "20",
+              color: theme.palette.primary.main,
               fontWeight: 700,
+              borderRadius: 2,
               fontSize: 11,
             }}
           />
 
-          <Typography variant="body2" fontWeight={700} color="#27364D">
+          <Typography variant="body2" fontWeight={700} color={theme.palette.text.primary}>
             HCP intelligence hub
           </Typography>
 
           <Typography
             variant="caption"
-            color="text.secondary"
+            color={theme.palette.text.secondary}
             sx={{ display: "block", mt: 0.5, lineHeight: 1.5 }}
           >
             Capture interactions and turn field data into action.

@@ -25,34 +25,14 @@ import DashboardAnalytics from "../components/DashboardAnalytics";
 import LoadingCards from "../components/LoadingCards";
 import SearchHCP from "../components/SearchHCP";
 import Metrics from "../components/Metrics";
-
-const cardStyles = [
-  {
-    icon: <PeopleAltOutlinedIcon />,
-    accent: "#2F6BFF",
-    background: "linear-gradient(135deg, #EEF4FF 0%, #F9FBFF 100%)",
-  },
-  {
-    icon: <EventNoteOutlinedIcon />,
-    accent: "#11A683",
-    background: "linear-gradient(135deg, #E9FBF6 0%, #FBFFFE 100%)",
-  },
-  {
-    icon: <SmartToyOutlinedIcon />,
-    accent: "#8B5CF6",
-    background: "linear-gradient(135deg, #F4F0FF 0%, #FCFBFF 100%)",
-  },
-  {
-    icon: <TrendingUpOutlinedIcon />,
-    accent: "#F59E0B",
-    background: "linear-gradient(135deg, #FFF7E8 0%, #FFFCF5 100%)",
-  },
-];
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
+import { commonSpacing, commonTypography } from "../theme/theme";
 
 function Dashboard() {
   const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const [metrics, setMetrics] = useState(null);
   const [dashboardStats, setDashboardStats] = useState(null);
@@ -89,11 +69,7 @@ function Dashboard() {
     return (
       <Box
         sx={{
-          p: {
-            xs: 2,
-            sm: 3,
-            md: 4,
-          },
+          p: commonSpacing.pagePadding,
         }}
       >
         <LoadingCards />
@@ -131,23 +107,59 @@ function Dashboard() {
     },
   ];
 
+  const getCardStyles = () => {
+    const isDark = mode === 'dark';
+    return [
+      {
+        icon: <PeopleAltOutlinedIcon />,
+        accent: "#2F6BFF",
+        background: isDark 
+          ? "linear-gradient(135deg, #1A2A4A 0%, #1E2D5A 100%)" 
+          : "linear-gradient(135deg, #EEF4FF 0%, #F9FBFF 100%)",
+      },
+      {
+        icon: <EventNoteOutlinedIcon />,
+        accent: "#11A683",
+        background: isDark 
+          ? "linear-gradient(135deg, #0D2E26 0%, #1A3D33 100%)" 
+          : "linear-gradient(135deg, #E9FBF6 0%, #FBFFFE 100%)",
+      },
+      {
+        icon: <SmartToyOutlinedIcon />,
+        accent: "#8B5CF6",
+        background: isDark 
+          ? "linear-gradient(135deg, #2A1A4A 0%, #3A1D5A 100%)" 
+          : "linear-gradient(135deg, #F4F0FF 0%, #FCFBFF 100%)",
+      },
+      {
+        icon: <TrendingUpOutlinedIcon />,
+        accent: "#F59E0B",
+        background: isDark 
+          ? "linear-gradient(135deg, #3D2A0D 0%, #4A331A 100%)" 
+          : "linear-gradient(135deg, #FFF7E8 0%, #FFFCF5 100%)",
+      },
+    ];
+  };
+
+  const cardStyles = getCardStyles();
+
   return (
     <Box
       sx={{
-        p: {
-          xs: 2,
-          sm: 3,
-          md: 4,
-        },
+        width: "100%",
+        maxWidth: 1600,
+        mx: "auto",
+        p: commonSpacing.pagePadding,
         pb: 5,
+        backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
+        minHeight: "100vh",
       }}
     >
-      {/* ============================================================
-      Header Section
-      ============================================================ */}
+      {/* Page Header */}
       <Box
         sx={{
           display: "flex",
+          flexWrap: "wrap",
           flexDirection: {
             xs: "column",
             md: "row",
@@ -166,26 +178,10 @@ function Dashboard() {
       >
         <Box>
           <Typography
-            variant="overline"
+            variant="h4"
             sx={{
-              color: "#2F6BFF",
-              fontWeight: 800,
-              letterSpacing: "0.12em",
-              fontSize: {
-                xs: "0.65rem",
-                sm: "0.75rem",
-              },
-            }}
-          >
-            HCP COMMAND CENTER
-          </Typography>
-
-          <Typography
-            sx={{
-              color: "#172033",
-              fontWeight: 800,
-              mt: 0.25,
-              letterSpacing: "-0.03em",
+              color: theme.palette.text.primary,
+              ...commonTypography.pageTitle,
               fontSize: {
                 xs: "1.5rem",
                 sm: "1.75rem",
@@ -197,13 +193,11 @@ function Dashboard() {
           </Typography>
 
           <Typography
+            variant="body1"
             color="text.secondary"
             sx={{
-              mt: 0.75,
-              fontSize: {
-                xs: "0.875rem",
-                sm: "1rem",
-              },
+              mb: 0,
+              mt: 0.5,
             }}
           >
             Monitor field activity, healthcare professionals, and CRM insights.
@@ -230,11 +224,13 @@ function Dashboard() {
           <Chip
             label={`Updated ${lastUpdated.toLocaleTimeString()}`}
             variant="outlined"
+            size="small"
             sx={{
-              borderColor: "#D9E1F2",
-              bgcolor: "#FFFFFF",
-              color: "#5D6B82",
-              fontWeight: 600,
+              borderColor: theme.palette.divider,
+              bgcolor: theme.palette.background.paper,
+              color: theme.palette.text.secondary,
+              fontWeight: 700,
+              borderRadius: 2,
               width: {
                 xs: "100%",
                 sm: "auto",
@@ -249,9 +245,12 @@ function Dashboard() {
             disabled={refreshing}
             fullWidth={isMobile}
             sx={{
-              borderColor: "#D9E1F2",
-              color: "#334155",
-              bgcolor: "#FFFFFF",
+              borderRadius: 3,
+              textTransform: "none",
+              fontWeight: 700,
+              borderColor: theme.palette.divider,
+              color: theme.palette.text.primary,
+              bgcolor: theme.palette.background.paper,
               width: {
                 xs: "100%",
                 sm: "auto",
@@ -263,9 +262,7 @@ function Dashboard() {
         </Stack>
       </Box>
 
-      {/* ============================================================
-      Hero Card
-      ============================================================ */}
+      {/* Hero Card */}
       <Card
         sx={{
           mb: {
@@ -273,14 +270,11 @@ function Dashboard() {
             md: 4,
           },
           overflow: "hidden",
-          borderRadius: {
-            xs: 3,
-            md: 4,
-          },
+          borderRadius: 4,
           color: "#FFFFFF",
           background:
             "radial-gradient(circle at 88% 15%, rgba(122, 164, 255, .48), transparent 28%), linear-gradient(125deg, #14213D 0%, #1D4ED8 100%)",
-          boxShadow: "0 18px 34px rgba(30, 64, 175, 0.22)",
+          boxShadow: `0 18px 34px ${theme.palette.primary.main}40`,
         }}
       >
         <CardContent
@@ -295,6 +289,7 @@ function Dashboard() {
           <Box
             sx={{
               display: "flex",
+              flexWrap: "wrap",
               justifyContent: "space-between",
               alignItems: {
                 xs: "flex-start",
@@ -307,7 +302,14 @@ function Dashboard() {
               gap: 3,
             }}
           >
-            <Box sx={{ maxWidth: 650 }}>
+            <Box
+              sx={{
+                maxWidth: {
+                  xs: "100%",
+                  md: 650,
+                },
+              }}
+            >
               <Chip
                 label="AI-enabled workflow"
                 size="small"
@@ -316,10 +318,12 @@ function Dashboard() {
                   color: "#DCE8FF",
                   bgcolor: "rgba(255,255,255,.13)",
                   fontWeight: 700,
+                  borderRadius: 2,
                 }}
               />
 
               <Typography
+                variant="h5"
                 sx={{
                   fontWeight: 800,
                   mb: 1,
@@ -334,6 +338,7 @@ function Dashboard() {
               </Typography>
 
               <Typography
+                variant="body2"
                 sx={{
                   color: "rgba(255,255,255,.82)",
                   lineHeight: 1.7,
@@ -353,22 +358,19 @@ function Dashboard() {
               to="/log-interaction"
               variant="contained"
               startIcon={<AddOutlinedIcon />}
-              fullWidth={isMobile}
+              fullWidth
               sx={{
+                borderRadius: 3,
+                px: 3,
+                py: 1.25,
+                textTransform: "none",
+                fontWeight: 700,
                 flexShrink: 0,
                 bgcolor: "#FFFFFF",
-                color: "#1D4ED8",
-                px: {
-                  xs: 2,
-                  md: 2.5,
-                },
-                py: {
-                  xs: 1,
-                  md: 1.25,
-                },
+                color: theme.palette.primary.main,
                 width: {
                   xs: "100%",
-                  md: "auto",
+                  sm: "auto",
                 },
                 "&:hover": {
                   bgcolor: "#EAF1FF",
@@ -381,19 +383,10 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* ============================================================
-      KPI Cards - Responsive Grid Layout
-      Desktop: 4 cards/row (lg)
-      Tablet: 2 cards/row (md)
-      Mobile: 1 card/row (xs)
-      ============================================================ */}
+      {/* KPI Cards */}
       <Grid 
         container 
-        spacing={{
-          xs: 2,
-          sm: 2.5,
-          md: 2.5,
-        }} 
+        spacing={commonSpacing.gridSpacing}
         sx={{ 
           mb: {
             xs: 3,
@@ -416,17 +409,17 @@ function Dashboard() {
               <Card
                 sx={{
                   height: "100%",
-                  borderRadius: {
-                    xs: 3,
-                    sm: 3.5,
-                    md: 3.5,
-                  },
-                  border: "1px solid #E7ECF5",
+                  borderRadius: 4,
+                  border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
+                  boxShadow: 1,
                   transition: "transform .2s ease, box-shadow .2s ease",
                   "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: "0 14px 28px rgba(15, 23, 42, .10)",
+                    transform: {
+                      xs: "none",
+                      md: "translateY(-4px)",
+                    },
+                    boxShadow: 4,
                   },
                 }}
               >
@@ -450,20 +443,16 @@ function Dashboard() {
                       sx={{
                         bgcolor: `${style.accent}18`,
                         color: style.accent,
-                        width: {
-                          xs: 40,
-                          sm: 46,
-                        },
-                        height: {
-                          xs: 40,
-                          sm: 46,
-                        },
+                        width: 44,
+                        height: 44,
+                        borderRadius: 3,
                       }}
                     >
                       {style.icon}
                     </Avatar>
 
                     <Typography
+                      variant="caption"
                       sx={{
                         color: style.accent,
                         fontWeight: 700,
@@ -478,6 +467,7 @@ function Dashboard() {
                   </Box>
 
                   <Typography
+                    variant="subtitle2"
                     color="text.secondary"
                     sx={{
                       fontSize: {
@@ -490,10 +480,11 @@ function Dashboard() {
                   </Typography>
 
                   <Typography
+                    variant="h4"
                     sx={{
                       mt: 0.75,
                       mb: 0.5,
-                      color: "#172033",
+                      color: theme.palette.text.primary,
                       fontWeight: 800,
                       textTransform:
                         card.title === "Application" ||
@@ -512,6 +503,7 @@ function Dashboard() {
                   </Typography>
 
                   <Typography
+                    variant="caption"
                     color="text.secondary"
                     sx={{
                       fontSize: {
@@ -529,41 +521,38 @@ function Dashboard() {
         })}
       </Grid>
 
-      {/* ============================================================
-      Dashboard Analytics Component
-      ============================================================ */}
-      <DashboardAnalytics
-        onDataLoaded={(data) => {
-          setDashboardStats(data);
-          setLastUpdated(new Date());
-        }}
-      />
-
-      {/* ============================================================
-      Search HCP Component
-      ============================================================ */}
+      {/* Dashboard Analytics */}
       <Box
         sx={{
-          mt: {
-            xs: 3,
-            sm: 4,
-            md: 5,
-          },
+          width: "100%",
+          mt: commonSpacing.sectionSpacing,
+          mb: commonSpacing.sectionSpacing,
+        }}
+      >
+        <DashboardAnalytics
+          onDataLoaded={(data) => {
+            console.log("✅ Dashboard Analytics data loaded:", data);
+            setDashboardStats(data);
+            setLastUpdated(new Date());
+          }}
+        />
+      </Box>
+
+      {/* Search HCP */}
+      <Box
+        sx={{
+          width: "100%",
+          mt: commonSpacing.sectionSpacing,
         }}
       >
         <SearchHCP />
       </Box>
 
-      {/* ============================================================
-      Metrics Component
-      ============================================================ */}
+      {/* Metrics */}
       <Box
         sx={{
-          mt: {
-            xs: 3,
-            sm: 4,
-            md: 5,
-          },
+          width: "100%",
+          mt: commonSpacing.sectionSpacing,
         }}
       >
         <Metrics />

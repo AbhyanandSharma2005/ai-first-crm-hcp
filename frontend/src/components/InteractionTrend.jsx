@@ -8,7 +8,7 @@ import {
     Box,
     Button,
     useMediaQuery,
-    useTheme
+    useTheme,
 } from "@mui/material";
 
 import {
@@ -23,20 +23,28 @@ import {
 } from "recharts";
 
 import API from "../api/api";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 function InteractionTrend() {
     const theme = useTheme();
+    const { mode } = useCustomTheme();
+    const isDark = mode === 'dark';
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
     const [loading, setLoading] = useState(true);
-
     const [error, setError] = useState("");
-
     const [chartData, setChartData] = useState([]);
 
     // Responsive chart height
     const chartHeight = isMobile ? 280 : isTablet ? 320 : 380;
+
+    // Theme colors
+    const cardBg = isDark ? "#1E293B" : "#FFFFFF";
+    const borderColor = isDark ? "#334155" : "#E2E8F0";
+    const textPrimary = isDark ? "#F1F5F9" : "#0F172A";
+    const gridColor = isDark ? "#334155" : "#E2E8F0";
+    const axisColor = isDark ? "#94A3B8" : "#64748B";
 
     const fetchTrend = async () => {
 
@@ -129,8 +137,9 @@ function InteractionTrend() {
                 sx={{
                     mt: 4,
                     borderRadius: 3,
-                    border: "1px solid #E2E8F0",
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                    border: `1px solid ${borderColor}`,
+                    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
+                    backgroundColor: cardBg,
                 }}
             >
 
@@ -164,8 +173,9 @@ function InteractionTrend() {
                 sx={{
                     mt: 4,
                     borderRadius: 3,
-                    border: "1px solid #E2E8F0",
-                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                    border: `1px solid ${borderColor}`,
+                    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
+                    backgroundColor: cardBg,
                 }}
             >
 
@@ -206,9 +216,11 @@ function InteractionTrend() {
             sx={{
                 mt: 4,
                 borderRadius: 3,
-                border: "1px solid #E2E8F0",
-                background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
-                boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
+                border: `1px solid ${borderColor}`,
+                background: isDark
+                    ? "linear-gradient(180deg, #1E293B 0%, #0F172A 100%)"
+                    : "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+                boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(15,23,42,0.08)',
             }}
         >
 
@@ -217,7 +229,7 @@ function InteractionTrend() {
                 <Typography
                     variant="h6"
                     fontWeight={700}
-                    color="#0F172A"
+                    color={textPrimary}
                     gutterBottom
                 >
 
@@ -266,30 +278,38 @@ function InteractionTrend() {
 
                                 <CartesianGrid
                                     strokeDasharray="3 3"
-                                    stroke="#E2E8F0"
+                                    stroke={gridColor}
                                 />
 
                                 <XAxis
                                     dataKey="month"
-                                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                                    tick={{ fontSize: isMobile ? 10 : 12, fill: axisColor }}
                                     interval={isMobile ? 1 : 0}
+                                    stroke={axisColor}
                                 />
 
                                 <YAxis
-                                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                                    tick={{ fontSize: isMobile ? 10 : 12, fill: axisColor }}
+                                    stroke={axisColor}
                                 />
 
                                 <Tooltip
                                     contentStyle={{
                                         borderRadius: 8,
-                                        border: "1px solid #E2E8F0",
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                                        border: `1px solid ${borderColor}`,
+                                        boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
+                                        backgroundColor: cardBg,
+                                        color: textPrimary,
+                                    }}
+                                    labelStyle={{
+                                        color: textPrimary,
                                     }}
                                 />
 
                                 <Legend
                                     wrapperStyle={{
-                                        fontSize: isMobile ? 10 : 12
+                                        fontSize: isMobile ? 10 : 12,
+                                        color: textPrimary,
                                     }}
                                 />
 

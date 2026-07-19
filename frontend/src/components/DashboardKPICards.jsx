@@ -8,7 +8,8 @@ import {
     Typography,
     Skeleton,
     Alert,
-    Divider
+    Divider,
+    useTheme,
 } from "@mui/material";
 
 import {
@@ -19,12 +20,15 @@ import {
 } from "@mui/icons-material";
 
 import API from "../api/api";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
 //-----------------------------------------------------
 // DashboardKPICards Component
 //-----------------------------------------------------
 
 function DashboardKPICards() {
+    const theme = useTheme();
+    const { mode } = useCustomTheme();
 
     //-----------------------------------------------------
     // State
@@ -123,6 +127,27 @@ function DashboardKPICards() {
         return () => clearInterval(interval);
 
     }, []);
+
+    // Get card colors based on theme
+    const getCardGradients = () => {
+        const isDark = mode === 'dark';
+        return {
+            today: isDark 
+                ? "linear-gradient(135deg, #0D2847 0%, #1A3D6B 100%)"
+                : "linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)",
+            completed: isDark
+                ? "linear-gradient(135deg, #0D2E26 0%, #1A4D3D 100%)"
+                : "linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%)",
+            products: isDark
+                ? "linear-gradient(135deg, #2D1A4A 0%, #4A2D6B 100%)"
+                : "linear-gradient(135deg, #6A1B9A 0%, #AB47BC 100%)",
+            average: isDark
+                ? "linear-gradient(135deg, #3D1A0D 0%, #6B3320 100%)"
+                : "linear-gradient(135deg, #E65100 0%, #FFA726 100%)",
+        };
+    };
+
+    const gradients = getCardGradients();
 
     //-----------------------------------------------------
     // Loading State
@@ -254,9 +279,7 @@ function DashboardKPICards() {
 
             icon: <TodayIcon sx={{ fontSize: 40 }} />,
 
-            color: "#1565C0",
-
-            gradient: "linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)",
+            gradient: gradients.today,
 
             description: "Follow-ups scheduled for today"
 
@@ -272,9 +295,7 @@ function DashboardKPICards() {
 
             icon: <CheckCircleIcon sx={{ fontSize: 40 }} />,
 
-            color: "#2E7D32",
-
-            gradient: "linear-gradient(135deg, #2E7D32 0%, #66BB6A 100%)",
+            gradient: gradients.completed,
 
             description: "Follow-ups completed"
 
@@ -290,9 +311,7 @@ function DashboardKPICards() {
 
             icon: <CategoryIcon sx={{ fontSize: 40 }} />,
 
-            color: "#6A1B9A",
-
-            gradient: "linear-gradient(135deg, #6A1B9A 0%, #AB47BC 100%)",
+            gradient: gradients.products,
 
             description: "Distinct products in CRM"
 
@@ -308,9 +327,7 @@ function DashboardKPICards() {
 
             icon: <PeopleIcon sx={{ fontSize: 40 }} />,
 
-            color: "#E65100",
-
-            gradient: "linear-gradient(135deg, #E65100 0%, #FFA726 100%)",
+            gradient: gradients.average,
 
             description: "Average per healthcare professional",
 
@@ -364,7 +381,7 @@ function DashboardKPICards() {
 
                             color: "#FFFFFF",
 
-                            boxShadow: 6,
+                            boxShadow: theme.shadows[6],
 
                             transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
 
@@ -372,7 +389,7 @@ function DashboardKPICards() {
 
                                 transform: "translateY(-6px)",
 
-                                boxShadow: 12
+                                boxShadow: theme.shadows[12]
 
                             },
 
