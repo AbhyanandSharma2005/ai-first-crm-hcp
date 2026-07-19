@@ -16,7 +16,9 @@ from schemas import (
     DashboardStats,
     DashboardKPI,
     MonthlyInteraction,
-    MonthlyInteractionResponse
+    MonthlyInteractionResponse,
+    TopDoctor,
+    TopDoctorsResponse
 )
 from utils.logger import logger
 from typing import Optional
@@ -519,6 +521,138 @@ def dashboard_kpi(
             success=False,
 
             message="Failed to retrieve dashboard KPI.",
+
+            data=None,
+
+            error=str(e)
+
+        )
+
+
+# ==========================================================
+# Top Doctors
+# ==========================================================
+
+@router.get(
+
+    "/top-doctors",
+
+    response_model=APIResponse[TopDoctorsResponse],
+
+    summary="Top Doctors",
+
+    description="Returns the top 10 doctors with the most interactions.",
+
+    responses={
+
+        200: {
+
+            "description": "Top doctors retrieved successfully."
+
+        },
+
+        500: {
+
+            "description": "Internal server error."
+
+        }
+
+    }
+
+)
+def get_top_doctors(
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info("Fetching top doctors.")
+
+    try:
+
+        # =====================================================
+        # Query Top Doctors
+        # =====================================================
+
+        result = (
+
+            db.query(
+
+                Interaction.hcp_name,
+
+                func.count(Interaction.id)
+
+                    .label("count")
+
+            )
+
+            .group_by(
+
+                Interaction.hcp_name
+
+            )
+
+            .order_by(
+
+                func.count(Interaction.id).desc()
+
+            )
+
+            .limit(10)
+
+            .all()
+
+        )
+
+        # =====================================================
+        # Build Response
+        # =====================================================
+
+        doctors = [
+
+            TopDoctor(
+
+                doctor=row.hcp_name,
+
+                interactions=row.count
+
+            )
+
+            for row in result
+
+        ]
+
+        # =====================================================
+        # Response
+        # =====================================================
+
+        logger.info("Top doctors fetched successfully.")
+
+        return APIResponse(
+
+            success=True,
+
+            message="Top doctors fetched.",
+
+            data=TopDoctorsResponse(
+
+                doctors=doctors
+
+            ),
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        logger.exception("Failed to fetch top doctors.")
+
+        return APIResponse[TopDoctorsResponse](
+
+            success=False,
+
+            message="Failed to retrieve top doctors.",
 
             data=None,
 

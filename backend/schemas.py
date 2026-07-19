@@ -195,6 +195,19 @@ class DashboardKPI(BaseModel):
 
 
 # ==========================================================
+# TOP DOCTORS SCHEMAS
+# ==========================================================
+
+class TopDoctor(BaseModel):
+    doctor: str
+    interactions: int
+
+
+class TopDoctorsResponse(BaseModel):
+    doctors: list[TopDoctor]
+
+
+# ==========================================================
 # CHAT SCHEMAS
 # ==========================================================
 

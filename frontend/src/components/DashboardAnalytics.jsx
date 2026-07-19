@@ -30,6 +30,7 @@ import DashboardKPICards from "./DashboardKPICards";
 import ProductPieChart from "./ProductPieChart";
 import InteractionTrend from "./InteractionTrend";
 import RecentInteractionsTable from "./RecentInteractionsTable";
+import TopDoctorsChart from "./TopDoctorsChart";
 
 function DashboardAnalytics({ onDataLoaded }) {
 
@@ -1577,6 +1578,28 @@ function DashboardAnalytics({ onDataLoaded }) {
                 </Grid>
 
             </Grid>
+
+            {/* =========================================================
+            Top Doctors Chart
+        ========================================================== */}
+
+            <Grid
+                container
+                spacing={3}
+                sx={{ mb: 4 }}
+            >
+
+                <Grid
+                    item
+                    xs={12}
+                >
+
+                    <TopDoctorsChart />
+
+                </Grid>
+
+            </Grid>
+
             {/* =========================================================
             Analytics Overview
         ========================================================== */}
