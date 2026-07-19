@@ -224,6 +224,34 @@ class ProductLeaderboardResponse(BaseModel):
 
 
 # ==========================================================
+# DOCTOR ACTIVITY HEATMAP SCHEMAS
+# ==========================================================
+
+class DoctorHeatmapItem(BaseModel):
+
+    doctor: str
+
+    monday: int
+
+    tuesday: int
+
+    wednesday: int
+
+    thursday: int
+
+    friday: int
+
+    saturday: int
+
+    sunday: int
+
+
+class DoctorHeatmapResponse(BaseModel):
+
+    heatmap: list[DoctorHeatmapItem]
+
+
+# ==========================================================
 # CHAT SCHEMAS
 # ==========================================================
 
