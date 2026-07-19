@@ -26,6 +26,8 @@ from schemas import (
 )
 from utils.logger import logger
 from typing import Optional
+import json
+from services.redis_service import redis_service
 
 
 
@@ -67,6 +69,36 @@ def get_dashboard_stats(
     logger.info("Fetching dashboard statistics.")
 
     try:
+        # =====================================================
+        # Check Redis Cache
+        # =====================================================
+        
+        cache_key = (
+            f"dashboard:"
+            f"{product if product else 'none'}:"
+            f"{doctor if doctor else 'none'}:"
+            f"{month if month else 'none'}"
+        )
+
+        cached_data = redis_service.get(cache_key)
+
+        if cached_data:
+            logger.info(
+                "Dashboard statistics served from Redis."
+            )
+
+            # Parse the cached JSON data
+            if isinstance(cached_data, str):
+                cached_data = json.loads(cached_data)
+            
+            dashboard = DashboardStats(**cached_data)
+
+            return APIResponse[DashboardStats](
+                success=True,
+                message="Dashboard statistics retrieved successfully (cached).",
+                data=dashboard,
+                error=None
+            )
 
         # =====================================================
         # Total HCPs
@@ -131,7 +163,7 @@ def get_dashboard_stats(
         )
 
         # =====================================================
-        # Response
+        # Build Dashboard
         # =====================================================
 
         dashboard = DashboardStats(
@@ -140,6 +172,35 @@ def get_dashboard_stats(
             products=dict(product_counter),
             recent_interactions=recent_interactions
         )
+
+        # =====================================================
+        # Cache in Redis
+        # =====================================================
+        
+        dashboard_dict = dashboard.model_dump(
+            mode="json"
+        )
+
+        # Convert datetime objects to strings for JSON serialization
+        # Recent interactions contain date objects that need to be serialized
+        for interaction in dashboard_dict.get("recent_interactions", []):
+            if "follow_up" in interaction and interaction["follow_up"]:
+                # Already serialized by model_dump with mode="json"
+                pass
+
+        redis_service.set(
+            key=cache_key,
+            value=dashboard_dict,
+            expire=60
+        )
+
+        logger.info(
+            "Dashboard statistics cached for 60 seconds."
+        )
+
+        # =====================================================
+        # Response
+        # =====================================================
 
         logger.info("Dashboard statistics fetched successfully.")
 

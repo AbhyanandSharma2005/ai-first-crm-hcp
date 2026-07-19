@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -13,6 +13,7 @@ from schemas import (
 
 from utils.logger import logger
 from websocket_manager import manager
+from services.redis_service import redis_service
 
 
 router = APIRouter(
@@ -62,6 +63,7 @@ router = APIRouter(
 )
 def create_interaction(
     interaction: InteractionCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
 
@@ -93,15 +95,22 @@ def create_interaction(
             f"Interaction created successfully. ID={new_interaction.id}"
         )
 
+        # Invalidate dashboard cache
+        try:
+            redis_service.delete_pattern("dashboard:*")
+            logger.info("Dashboard cache cleared after interaction creation.")
+        except Exception as cache_error:
+            logger.error(f"Failed to clear dashboard cache: {cache_error}")
+
         # Broadcast dashboard update to all connected WebSocket clients
-        import asyncio
-        asyncio.create_task(
-            manager.broadcast({
+        background_tasks.add_task(
+            manager.broadcast,
+            {
                 "event": "dashboard_updated",
                 "type": "interaction_created",
                 "interaction_id": new_interaction.id,
                 "message": "New interaction created"
-            })
+            }
         )
 
         return APIResponse[InteractionResponse](
@@ -253,6 +262,7 @@ def get_interactions(
 )
 def delete_interaction(
     interaction_id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
 
@@ -292,15 +302,22 @@ def delete_interaction(
 
         logger.info(f"Interaction {interaction_id} deleted successfully.")
 
+        # Invalidate dashboard cache
+        try:
+            redis_service.delete_pattern("dashboard:*")
+            logger.info("Dashboard cache cleared after interaction deletion.")
+        except Exception as cache_error:
+            logger.error(f"Failed to clear dashboard cache: {cache_error}")
+
         # Broadcast dashboard update to all connected WebSocket clients
-        import asyncio
-        asyncio.create_task(
-            manager.broadcast({
+        background_tasks.add_task(
+            manager.broadcast,
+            {
                 "event": "dashboard_updated",
                 "type": "interaction_deleted",
                 "interaction_id": interaction_id,
                 "message": "Interaction deleted"
-            })
+            }
         )
 
         return APIResponse[dict](
@@ -359,6 +376,7 @@ def delete_interaction(
 def update_interaction(
     interaction_id: int,
     interaction_data: InteractionCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
 
@@ -404,15 +422,22 @@ def update_interaction(
 
         logger.info(f"Interaction {interaction_id} updated successfully.")
 
+        # Invalidate dashboard cache
+        try:
+            redis_service.delete_pattern("dashboard:*")
+            logger.info("Dashboard cache cleared after interaction update.")
+        except Exception as cache_error:
+            logger.error(f"Failed to clear dashboard cache: {cache_error}")
+
         # Broadcast dashboard update to all connected WebSocket clients
-        import asyncio
-        asyncio.create_task(
-            manager.broadcast({
+        background_tasks.add_task(
+            manager.broadcast,
+            {
                 "event": "dashboard_updated",
                 "type": "interaction_updated",
                 "interaction_id": interaction_id,
                 "message": "Interaction updated"
-            })
+            }
         )
 
         return APIResponse[InteractionResponse](

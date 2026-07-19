@@ -12,6 +12,8 @@ from schemas import (
 )
 
 from utils.logger import logger
+from services.redis_service import redis_service
+from websocket_manager import manager
 
 
 router = APIRouter(
@@ -132,6 +134,24 @@ def edit_interaction(
 
         logger.info(
             f"Interaction ID={interaction_id} updated successfully."
+        )
+
+        # Invalidate dashboard cache
+        try:
+            redis_service.delete_pattern("dashboard:*")
+            logger.info("Dashboard cache cleared after interaction edit.")
+        except Exception as cache_error:
+            logger.error(f"Failed to clear dashboard cache: {cache_error}")
+
+        # Broadcast dashboard update to all connected WebSocket clients
+        import asyncio
+        asyncio.create_task(
+            manager.broadcast({
+                "event": "dashboard_updated",
+                "type": "interaction_updated",
+                "interaction_id": interaction_id,
+                "message": "Interaction updated via edit endpoint"
+            })
         )
 
         return APIResponse[InteractionResponse](
