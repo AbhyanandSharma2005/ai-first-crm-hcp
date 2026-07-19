@@ -208,6 +208,22 @@ class TopDoctorsResponse(BaseModel):
 
 
 # ==========================================================
+# PRODUCT LEADERBOARD SCHEMAS
+# ==========================================================
+
+class ProductLeaderboardItem(BaseModel):
+
+    product: str
+
+    interactions: int
+
+
+class ProductLeaderboardResponse(BaseModel):
+
+    leaderboard: list[ProductLeaderboardItem]
+
+
+# ==========================================================
 # CHAT SCHEMAS
 # ==========================================================
 

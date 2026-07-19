@@ -18,7 +18,9 @@ from schemas import (
     MonthlyInteraction,
     MonthlyInteractionResponse,
     TopDoctor,
-    TopDoctorsResponse
+    TopDoctorsResponse,
+    ProductLeaderboardItem,
+    ProductLeaderboardResponse
 )
 from utils.logger import logger
 from typing import Optional
@@ -653,6 +655,154 @@ def get_top_doctors(
             success=False,
 
             message="Failed to retrieve top doctors.",
+
+            data=None,
+
+            error=str(e)
+
+        )
+
+
+# ==========================================================
+# Product Leaderboard
+# ==========================================================
+
+@router.get(
+
+    "/product-leaderboard",
+
+    operation_id="getProductLeaderboard",
+
+    response_model=APIResponse[ProductLeaderboardResponse],
+
+    summary="Product Leaderboard",
+
+    description="Returns products ranked by interaction count.",
+
+    responses={
+
+        200: {
+
+            "description": "Product leaderboard retrieved successfully."
+
+        },
+
+        500: {
+
+            "description": "Internal server error."
+
+        }
+
+    }
+
+)
+def get_product_leaderboard(
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info(
+
+        "Fetching product leaderboard."
+
+    )
+
+    try:
+
+        # =====================================================
+        # Query Product Leaderboard
+        # =====================================================
+
+        result = (
+
+            db.query(
+
+                Interaction.product,
+
+                func.count(
+
+                    Interaction.id
+
+                ).label("count")
+
+            )
+
+            .group_by(
+
+                Interaction.product
+
+            )
+
+            .order_by(
+
+                func.count(
+
+                    Interaction.id
+
+                ).desc()
+
+            )
+
+            .limit(10)
+
+            .all()
+
+        )
+
+        # =====================================================
+        # Build Response
+        # =====================================================
+
+        leaderboard = [
+
+            ProductLeaderboardItem(
+
+                product=row.product or "Unknown",
+
+                interactions=row.count
+
+            )
+
+            for row in result
+
+        ]
+
+        # =====================================================
+        # Response
+        # =====================================================
+
+        logger.info("Product leaderboard fetched successfully.")
+
+        return APIResponse[ProductLeaderboardResponse](
+
+            success=True,
+
+            message="Product leaderboard fetched successfully.",
+
+            data=ProductLeaderboardResponse(
+
+                leaderboard=leaderboard
+
+            ),
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        logger.exception(
+
+            "Failed to fetch product leaderboard."
+
+        )
+
+        return APIResponse[ProductLeaderboardResponse](
+
+            success=False,
+
+            message="Failed to fetch product leaderboard.",
 
             data=None,
 

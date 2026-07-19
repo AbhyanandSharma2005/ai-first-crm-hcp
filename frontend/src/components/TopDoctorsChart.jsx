@@ -8,19 +8,16 @@ import {
     Skeleton,
     Alert,
     Chip,
-    Divider
+    Divider,
+    Avatar,
+    LinearProgress
 } from "@mui/material";
 
 import {
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    CartesianGrid,
-    Cell
-} from "recharts";
+    Person as PersonIcon,
+    EmojiEvents as TrophyIcon,
+    TrendingUp as TrendingUpIcon
+} from "@mui/icons-material";
 
 import API from "../api/api";
 
@@ -39,6 +36,8 @@ function TopDoctorsChart() {
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState("");
+
+    const [maxValue, setMaxValue] = useState(0);
 
     //-----------------------------------------------------
     // Fetch Top Doctors
@@ -64,7 +63,14 @@ function TopDoctorsChart() {
 
             ) {
 
-                setData(response.data.data.doctors);
+                const doctorsData = response.data.data.doctors;
+                setData(doctorsData);
+                
+                // Calculate max value for progress bars
+                if (doctorsData.length > 0) {
+                    const max = Math.max(...doctorsData.map(d => d.interactions));
+                    setMaxValue(max);
+                }
 
             }
 
@@ -131,84 +137,54 @@ function TopDoctorsChart() {
     }, []);
 
     //-----------------------------------------------------
-    // Colors for bars (gradient effect)
+    // Get Color based on index
     //-----------------------------------------------------
 
-    const colors = [
-        "#1976D2",
-        "#2196F3",
-        "#42A5F5",
-        "#64B5F6",
-        "#90CAF9",
-        "#1565C0",
-        "#0D47A1",
-        "#1E88E5",
-        "#4FC3F7",
-        "#29B6F6"
-    ];
+    const getBarColor = (index) => {
+        const colors = [
+            "#2563EB", // Blue
+            "#7C3AED", // Purple
+            "#059669", // Emerald
+            "#DC2626", // Red
+            "#D97706", // Amber
+            "#0891B2", // Cyan
+            "#4F46E5", // Indigo
+            "#DB2777", // Pink
+            "#65A30D", // Lime
+            "#9333EA"  // Violet
+        ];
+        return colors[index % colors.length];
+    };
 
     //-----------------------------------------------------
-    // Custom Tooltip
+    // Get Gradient Color
     //-----------------------------------------------------
 
-    const CustomTooltip = ({ active, payload, label }) => {
+    const getGradientColor = (index) => {
+        const gradients = [
+            "linear-gradient(90deg, #2563EB 0%, #60A5FA 100%)",
+            "linear-gradient(90deg, #7C3AED 0%, #A78BFA 100%)",
+            "linear-gradient(90deg, #059669 0%, #34D399 100%)",
+            "linear-gradient(90deg, #DC2626 0%, #F87171 100%)",
+            "linear-gradient(90deg, #D97706 0%, #FBBF24 100%)",
+            "linear-gradient(90deg, #0891B2 0%, #67E8F9 100%)",
+            "linear-gradient(90deg, #4F46E5 0%, #818CF8 100%)",
+            "linear-gradient(90deg, #DB2777 0%, #F472B6 100%)",
+            "linear-gradient(90deg, #65A30D 0%, #A3E635 100%)",
+            "linear-gradient(90deg, #9333EA 0%, #C084FC 100%)"
+        ];
+        return gradients[index % gradients.length];
+    };
 
-        if (active && payload && payload.length) {
+    //-----------------------------------------------------
+    // Get Medal Emoji
+    //-----------------------------------------------------
 
-            return (
-
-                <Box
-
-                    sx={{
-
-                        bgcolor: "white",
-
-                        p: 2,
-
-                        borderRadius: 2,
-
-                        boxShadow: 3,
-
-                        border: "1px solid #E2E8F0"
-
-                    }}
-
-                >
-
-                    <Typography
-
-                        variant="subtitle2"
-
-                        fontWeight={700}
-
-                        color="primary"
-
-                    >
-
-                        {label}
-
-                    </Typography>
-
-                    <Typography
-
-                        variant="body2"
-
-                        color="text.secondary"
-
-                    >
-
-                        Interactions: <strong>{payload[0].value}</strong>
-
-                    </Typography>
-
-                </Box>
-
-            );
-
-        }
-
+    const getMedal = (index) => {
+        if (index === 0) return "🥇";
+        if (index === 1) return "🥈";
+        if (index === 2) return "🥉";
         return null;
-
     };
 
     //-----------------------------------------------------
@@ -281,15 +257,20 @@ function TopDoctorsChart() {
 
                     <Divider sx={{ mb: 3 }} />
 
-                    <Skeleton
-
-                        variant="rounded"
-
-                        height={280}
-
-                        sx={{ borderRadius: 2 }}
-
-                    />
+                    {[1, 2, 3, 4, 5].map((item) => (
+                        <Box key={item} sx={{ mb: 3 }}>
+                            <Skeleton
+                                variant="text"
+                                width="30%"
+                                height={24}
+                            />
+                            <Skeleton
+                                variant="rounded"
+                                height={32}
+                                sx={{ mt: 0.5 }}
+                            />
+                        </Box>
+                    ))}
 
                 </CardContent>
 
@@ -531,141 +512,191 @@ function TopDoctorsChart() {
 
                 >
 
-                    <Typography
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                        <Typography
 
-                        variant="h6"
+                            variant="h6"
 
-                        fontWeight={700}
+                            fontWeight={700}
 
-                        color="#0F172A"
+                            color="#0F172A"
 
-                    >
+                        >
 
-                        Top Doctors
+                            Top Doctors
 
-                    </Typography>
+                        </Typography>
+                    </Box>
 
-                    <Chip
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Chip
 
-                        size="small"
+                            size="small"
 
-                        label={`${data.length} Doctors`}
+                            label={`${data.length} Doctors`}
 
-                        color="primary"
+                            color="primary"
 
-                        variant="outlined"
+                            variant="outlined"
 
-                    />
+                        />
+                        <Chip
+                            size="small"
+                            icon={<TrendingUpIcon />}
+                            label="Leaderboard"
+                            color="success"
+                            variant="filled"
+                            sx={{ fontWeight: 600 }}
+                        />
+                    </Box>
 
                 </Box>
 
                 <Divider sx={{ mb: 3 }} />
 
-                <ResponsiveContainer
+                <Box sx={{ mt: 2 }}>
+                    {data.map((doctor, index) => {
+                        const percentage = maxValue > 0 
+                            ? (doctor.interactions / maxValue) * 100 
+                            : 0;
+                        const medal = getMedal(index);
+                        const color = getBarColor(index);
+                        const gradient = getGradientColor(index);
 
-                    width="100%"
+                        return (
+                            <Box
+                                key={index}
+                                sx={{
+                                    mb: 3.5,
+                                    "&:last-child": { mb: 0 }
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        mb: 0.5
+                                    }}
+                                >
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                        {medal && (
+                                            <Typography sx={{ fontSize: 20 }}>
+                                                {medal}
+                                            </Typography>
+                                        )}
+                                        <Avatar
+                                            sx={{
+                                                width: 28,
+                                                height: 28,
+                                                bgcolor: color,
+                                                fontSize: 12,
+                                                fontWeight: 700
+                                            }}
+                                        >
+                                            {doctor.doctor.charAt(0)}
+                                        </Avatar>
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight={600}
+                                            color="#0F172A"
+                                            sx={{
+                                                fontSize: "0.875rem",
+                                                letterSpacing: 0.3
+                                            }}
+                                        >
+                                            {doctor.doctor}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight={700}
+                                            color="#2563EB"
+                                            sx={{ fontSize: "0.875rem" }}
+                                        >
+                                            {doctor.interactions} interactions
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        width: "100%",
+                                        height: 28,
+                                        backgroundColor: "#F1F5F9",
+                                        borderRadius: 8,
+                                        overflow: "hidden",
+                                        position: "relative",
+                                        boxShadow: "inset 0 2px 4px rgba(0,0,0,0.05)"
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            height: "100%",
+                                            width: `${Math.max(percentage, 2)}%`,
+                                            background: gradient,
+                                            borderRadius: 8,
+                                            transition: "width 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "flex-end",
+                                            pr: percentage > 15 ? 1.5 : 0,
+                                            position: "relative",
+                                            "&::after": percentage > 15 ? {
+                                                content: '""',
+                                                position: "absolute",
+                                                right: 0,
+                                                top: 0,
+                                                height: "100%",
+                                                width: 20,
+                                                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2))",
+                                                borderRadius: "0 8px 8px 0"
+                                            } : {}
+                                        }}
+                                    >
+                                        {percentage > 15 && (
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "white",
+                                                    fontWeight: 700,
+                                                    fontSize: "0.65rem",
+                                                    letterSpacing: 0.5,
+                                                    textShadow: "0 1px 2px rgba(0,0,0,0.2)"
+                                                }}
+                                            >
+                                                {Math.round(percentage)}%
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </Box>
+                            </Box>
+                        );
+                    })}
+                </Box>
 
-                    height={350}
-
+                {/* Footer Stats */}
+                <Box
+                    sx={{
+                        mt: 3,
+                        pt: 2,
+                        borderTop: "1px solid #E2E8F0",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}
                 >
-
-                    <BarChart
-
-                        data={data}
-
-                        layout="vertical"
-
-                        margin={{
-
-                            top: 10,
-
-                            right: 30,
-
-                            left: 40,
-
-                            bottom: 10
-
-                        }}
-
-                    >
-
-                        <CartesianGrid
-
-                            strokeDasharray="3 3"
-
-                            horizontal={false}
-
-                        />
-
-                        <XAxis
-
-                            type="number"
-
-                            tick={{ fontSize: 12 }}
-
-                        />
-
-                        <YAxis
-
-                            type="category"
-
-                            dataKey="doctor"
-
-                            tick={{ fontSize: 12 }}
-
-                            width={100}
-
-                        />
-
-                        <Tooltip
-
-                            content={<CustomTooltip />}
-
-                            cursor={{ fill: "rgba(25, 118, 210, 0.1)" }}
-
-                        />
-
-                        <Bar
-
-                            dataKey="interactions"
-
-                            fill="#1976d2"
-
-                            radius={[0, 4, 4, 0]}
-
-                            barSize={20}
-
-                            label={{
-
-                                position: "right",
-
-                                fontSize: 12,
-
-                                fill: "#4A5568",
-
-                                fontWeight: 600
-
-                            }}
-
-                        >
-
-                            {data.map((entry, index) => (
-
-                                <Cell
-
-                                    key={`cell-${index}`}
-
-                                    fill={colors[index % colors.length]}
-
-                                />
-
-                            ))}
-
-                        </Bar>
-
-                    </BarChart>
-
-                </ResponsiveContainer>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <PersonIcon sx={{ color: "#94A3B8", fontSize: 16 }} />
+                        <Typography variant="caption" color="text.secondary">
+                            Top performer: <strong>{data[0]?.doctor}</strong>
+                        </Typography>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                        Total interactions: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
+                    </Typography>
+                </Box>
 
             </CardContent>
 

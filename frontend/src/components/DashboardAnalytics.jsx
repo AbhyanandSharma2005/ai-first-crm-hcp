@@ -31,6 +31,7 @@ import ProductPieChart from "./ProductPieChart";
 import InteractionTrend from "./InteractionTrend";
 import RecentInteractionsTable from "./RecentInteractionsTable";
 import TopDoctorsChart from "./TopDoctorsChart";
+import ProductLeaderboard from "./ProductLeaderboard";
 
 function DashboardAnalytics({ onDataLoaded }) {
 
@@ -1601,6 +1602,14 @@ function DashboardAnalytics({ onDataLoaded }) {
             </Grid>
 
             {/* =========================================================
+            Product Leaderboard
+        ========================================================== */}
+
+            <Box sx={{ mt: 4 }}>
+                <ProductLeaderboard />
+            </Box>
+
+            {/* =========================================================
             Analytics Overview
         ========================================================== */}
 
@@ -1609,7 +1618,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                 fontWeight={700}
                 sx={{
                     color: "#0F172A",
-                    mb: 3
+                    mb: 3,
+                    mt: 4
                 }}
             >
                 Analytics Overview
