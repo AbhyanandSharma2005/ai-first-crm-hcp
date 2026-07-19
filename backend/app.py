@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import WebSocket, WebSocketDisconnect
 
 from routes import interaction
 from routes import chat
@@ -25,6 +26,12 @@ from database import get_db
 from models import Interaction, HCP
 
 from fastapi import Depends
+
+from websocket_manager import manager
+
+import asyncio
+import json
+from datetime import datetime
 
 
 # ==========================================================
@@ -308,10 +315,6 @@ def version():
 # Metrics
 # ==========================================================
 
-# ==========================================================
-# Metrics
-# ==========================================================
-
 @app.get(
 
     "/metrics",
@@ -394,3 +397,113 @@ def metrics(
             "error": str(e)
 
         }
+
+
+# ==========================================================
+# WebSocket Endpoint
+# ==========================================================
+
+@app.websocket("/ws/dashboard")
+async def dashboard_socket(
+
+    websocket: WebSocket
+
+):
+
+    """
+    WebSocket endpoint for real-time dashboard updates.
+    
+    Clients can connect to this endpoint to receive live updates
+    about dashboard statistics, KPIs, and other real-time data.
+    
+    The connection remains open until the client disconnects.
+    """
+    
+    logger.info("New WebSocket connection attempt for dashboard.")
+
+    await manager.connect(websocket)
+
+    try:
+
+        # Send initial connection success message
+        await websocket.send_json({
+            "type": "connection",
+            "status": "connected",
+            "message": "Connected to dashboard WebSocket"
+        })
+
+        logger.info("WebSocket connection established successfully.")
+
+        # Keep connection alive with timeout mechanism
+        while True:
+            try:
+                # Wait for message with 30 second timeout
+                data = await asyncio.wait_for(
+                    websocket.receive_text(),
+                    timeout=30
+                )
+
+                logger.debug(f"WebSocket message received: {data}")
+                
+                # Handle different message types
+                try:
+                    message = json.loads(data)
+                    
+                    if message.get("type") == "ping":
+                        # Respond to ping with pong
+                        await websocket.send_json({
+                            "type": "pong",
+                            "timestamp": datetime.now().isoformat()
+                        })
+                        logger.debug("Pong sent to client")
+                        
+                    elif message.get("type") == "pong":
+                        # Client responded to our ping
+                        logger.debug("Pong received from client")
+                        
+                    elif message.get("type") == "client_connected":
+                        # Client handshake
+                        logger.info(f"Client connected: {message.get('client', 'unknown')}")
+                        
+                    else:
+                        logger.info(f"Unknown message type: {message.get('type', 'unknown')}")
+                        
+                except json.JSONDecodeError:
+                    logger.warning("Invalid JSON received from client")
+                    # Send error response
+                    await websocket.send_json({
+                        "type": "error",
+                        "message": "Invalid JSON format"
+                    })
+
+            except asyncio.TimeoutError:
+                # Send ping to client to keep connection alive
+                try:
+                    await websocket.send_json({
+                        "type": "ping",
+                        "timestamp": datetime.now().isoformat()
+                    })
+                    logger.debug("Ping sent to client")
+                except Exception as e:
+                    logger.error(f"Failed to send ping: {e}")
+                    break
+
+    except WebSocketDisconnect:
+
+        logger.info("WebSocket client disconnected.")
+
+        manager.disconnect(websocket)
+
+    except Exception as e:
+
+        logger.exception(f"WebSocket error: {e}")
+
+        try:
+
+            await websocket.close()
+
+        except:
+
+            pass
+
+        manager.disconnect(websocket)
