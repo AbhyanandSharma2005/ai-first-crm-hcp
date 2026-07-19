@@ -24,6 +24,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import API from "../api/api";
+import useDashboardSocket from "../hooks/useDashboardSocket";
 
 import DashboardFilters from "./DashboardFilters";
 import DashboardKPICards from "./DashboardKPICards";
@@ -32,6 +33,7 @@ import InteractionTrend from "./InteractionTrend";
 import RecentInteractionsTable from "./RecentInteractionsTable";
 import TopDoctorsChart from "./TopDoctorsChart";
 import ProductLeaderboard from "./ProductLeaderboard";
+import DoctorHeatmap from "./DoctorHeatmap";
 
 function DashboardAnalytics({ onDataLoaded }) {
 
@@ -206,6 +208,39 @@ function DashboardAnalytics({ onDataLoaded }) {
         }
 
     };
+
+    //-----------------------------------------------------
+    // WebSocket Connection for Real-time Updates
+    //-----------------------------------------------------
+
+    const handleWebSocketUpdate = (data) => {
+        console.log("📡 WebSocket update received:", data);
+        
+        // Refresh both dashboard stats and monthly trend
+        fetchDashboardStats();
+        fetchMonthlyTrend();
+        
+        // Update last updated timestamp
+        setLastUpdated(new Date().toLocaleTimeString());
+    };
+
+    // Connect to WebSocket and get connection status
+    const isConnected = useDashboardSocket(
+        handleWebSocketUpdate,
+        {
+            reconnectInterval: 3000,
+            autoConnect: true
+        }
+    );
+
+    // Log WebSocket connection status
+    useEffect(() => {
+        if (isConnected) {
+            console.log("✅ Dashboard WebSocket connected and listening for updates");
+        } else {
+            console.log("🔴 Dashboard WebSocket disconnected");
+        }
+    }, [isConnected]);
 
     //-----------------------------------------------------
     // Initial Load
@@ -1328,6 +1363,20 @@ function DashboardAnalytics({ onDataLoaded }) {
                             }}
                         >
 
+                            {/* Connection Status Chip */}
+                            <Chip
+                                label={isConnected ? "Live" : "Offline"}
+                                color={isConnected ? "success" : "error"}
+                                sx={{
+                                    fontWeight: 600,
+                                    "& .MuiChip-label": {
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5
+                                    }
+                                }}
+                            />
+
                             <Chip
                                 icon={<AccessTimeIcon />}
                                 label={`Updated : ${lastUpdated || "--"}`}
@@ -1607,6 +1656,14 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Box sx={{ mt: 4 }}>
                 <ProductLeaderboard />
+            </Box>
+
+            {/* =========================================================
+            Doctor Activity Heatmap
+        ========================================================== */}
+
+            <Box sx={{ mt: 4 }}>
+                <DoctorHeatmap />
             </Box>
 
             {/* =========================================================
