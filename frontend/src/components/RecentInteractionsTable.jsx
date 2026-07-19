@@ -12,6 +12,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
@@ -21,9 +23,13 @@ import Highlighter from "react-highlight-words";
 import TablePagination from "@mui/material/TablePagination";
 
 function RecentInteractionsTable({ interactions = [] }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(isMobile ? 5 : 10);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -37,6 +43,11 @@ function RecentInteractionsTable({ interactions = [] }) {
   useEffect(() => {
     setPage(0);
   }, [interactions]);
+
+  // Update rows per page on mobile
+  useEffect(() => {
+    setRowsPerPage(isMobile ? 5 : 10);
+  }, [isMobile]);
 
   const keyword = searchTerm.trim().toLowerCase();
 
@@ -69,6 +80,7 @@ function RecentInteractionsTable({ interactions = [] }) {
           borderRadius: 3,
           bgcolor: "#FAFBFD",
           px: 3,
+          py: 4,
         }}
       >
         <Box>
@@ -88,27 +100,49 @@ function RecentInteractionsTable({ interactions = [] }) {
     );
   }
 
+  // Responsive table columns - hide some columns on mobile
+  const showProductColumn = !isMobile;
+  const showFollowupColumn = !isMobile;
+  const showRecordColumn = !isTablet;
+
+  // Responsive chip sizes
+  const chipSize = isMobile ? "small" : "medium";
+
   return (
     <Box>
+      {/* ============================================================
+      Responsive Search Field
+      ============================================================ */}
       <TextField
         fullWidth
-        size="small"
-        placeholder="Search doctor, product or summary..."
+        size={isMobile ? "small" : "medium"}
+        placeholder={isMobile ? "Search..." : "Search doctor, product or summary..."}
         value={searchTerm}
         onChange={(event) => {
           setSearchTerm(event.target.value);
           setPage(0);
         }}
-        sx={{ mb: 3 }}
+        sx={{ 
+          mb: 3,
+          "& .MuiInputBase-root": {
+            fontSize: isMobile ? "0.875rem" : "1rem",
+          },
+          "& .MuiInputBase-input": {
+            py: isMobile ? 1 : 1.5,
+          },
+        }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon />
+              <SearchIcon sx={{ fontSize: isMobile ? 20 : 24 }} />
             </InputAdornment>
           ),
         }}
       />
 
+      {/* ============================================================
+      Responsive Table
+      ============================================================ */}
       <TableContainer
         component={Paper}
         variant="outlined"
@@ -116,18 +150,43 @@ function RecentInteractionsTable({ interactions = [] }) {
           borderRadius: 3,
           borderColor: "#E7ECF5",
           overflowX: "auto",
+          "&::-webkit-scrollbar": {
+            height: 6,
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#F1F5F9",
+            borderRadius: 3,
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#CBD5E1",
+            borderRadius: 3,
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "#94A3B8",
+          },
         }}
       >
-        <Table sx={{ minWidth: 760 }}>
+        <Table sx={{ 
+          minWidth: isMobile ? 500 : 650,
+          "& .MuiTableCell-root": {
+            borderColor: "#E7ECF5",
+          }
+        }}>
           <TableHead>
             <TableRow sx={{ bgcolor: "#F8FAFD" }}>
               <TableCell sx={headerCellSx}>HCP</TableCell>
-              <TableCell sx={headerCellSx}>Product</TableCell>
-              <TableCell sx={headerCellSx}>Interaction summary</TableCell>
-              <TableCell sx={headerCellSx}>Follow-up</TableCell>
-              <TableCell sx={headerCellSx} align="right">
-                Record
-              </TableCell>
+              {showProductColumn && (
+                <TableCell sx={headerCellSx}>Product</TableCell>
+              )}
+              <TableCell sx={headerCellSx}>Summary</TableCell>
+              {showFollowupColumn && (
+                <TableCell sx={headerCellSx}>Follow-up</TableCell>
+              )}
+              {showRecordColumn && (
+                <TableCell sx={headerCellSx} align="right">
+                  Record
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
 
@@ -141,13 +200,27 @@ function RecentInteractionsTable({ interactions = [] }) {
                   "&:hover": { bgcolor: "#FAFCFF" },
                 }}
               >
-                <TableCell sx={{ py: 1.75 }}>
+                <TableCell 
+                  sx={{ 
+                    py: isMobile ? 1.5 : 1.75,
+                    px: isMobile ? 1.5 : 2,
+                  }}
+                >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
                     <Avatar
                       sx={{
-                        width: 36,
-                        height: 36,
-                        fontSize: 13,
+                        width: {
+                          xs: 32,
+                          md: 36,
+                        },
+                        height: {
+                          xs: 32,
+                          md: 36,
+                        },
+                        fontSize: {
+                          xs: 11,
+                          md: 13,
+                        },
                         fontWeight: 800,
                         bgcolor: "#EAF0FF",
                         color: "#2855D9",
@@ -157,7 +230,13 @@ function RecentInteractionsTable({ interactions = [] }) {
                     </Avatar>
 
                     <Box>
-                      <Typography fontWeight={700} color="#27364D">
+                      <Typography 
+                        fontWeight={700} 
+                        color="#27364D"
+                        sx={{
+                          fontSize: isMobile ? "0.8rem" : "0.875rem"
+                        }}
+                      >
                         <Highlighter
                           searchWords={[searchTerm]}
                           autoEscape
@@ -165,33 +244,43 @@ function RecentInteractionsTable({ interactions = [] }) {
                         />
                       </Typography>
 
-                      <Typography variant="caption" color="text.secondary">
-                        Healthcare professional
-                      </Typography>
+                      {!isMobile && (
+                        <Typography variant="caption" color="text.secondary">
+                          Healthcare professional
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 </TableCell>
 
-                <TableCell>
-                  <Chip
-                    label={
-                      <Highlighter
-                        searchWords={[searchTerm]}
-                        autoEscape
-                        textToHighlight={item.product || "Not specified"}
-                      />
-                    }
-                    size="small"
-                    sx={{
-                      bgcolor: "#EEF4FF",
-                      color: "#2855D9",
-                      borderRadius: 1.5,
-                      fontWeight: 700,
-                    }}
-                  />
-                </TableCell>
+                {showProductColumn && (
+                  <TableCell sx={{ px: isMobile ? 1.5 : 2 }}>
+                    <Chip
+                      label={
+                        <Highlighter
+                          searchWords={[searchTerm]}
+                          autoEscape
+                          textToHighlight={item.product || "Not specified"}
+                        />
+                      }
+                      size={chipSize}
+                      sx={{
+                        bgcolor: "#EEF4FF",
+                        color: "#2855D9",
+                        borderRadius: 1.5,
+                        fontWeight: 700,
+                        fontSize: isMobile ? "0.7rem" : "0.75rem",
+                      }}
+                    />
+                  </TableCell>
+                )}
 
-                <TableCell sx={{ maxWidth: 320 }}>
+                <TableCell 
+                  sx={{ 
+                    maxWidth: isMobile ? 150 : 320,
+                    px: isMobile ? 1.5 : 2,
+                  }}
+                >
                   <Typography
                     variant="body2"
                     color="#526176"
@@ -199,8 +288,9 @@ function RecentInteractionsTable({ interactions = [] }) {
                       display: "-webkit-box",
                       overflow: "hidden",
                       WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 2,
+                      WebkitLineClamp: isMobile ? 2 : 2,
                       lineHeight: 1.55,
+                      fontSize: isMobile ? "0.75rem" : "0.875rem",
                     }}
                   >
                     <Highlighter
@@ -213,41 +303,58 @@ function RecentInteractionsTable({ interactions = [] }) {
                   </Typography>
                 </TableCell>
 
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                    <CalendarMonthOutlinedIcon
-                      sx={{ color: "#8A98AB", fontSize: 18 }}
-                    />
-
-                    <Typography variant="body2" color="#526176">
-                      <Highlighter
-                        searchWords={[searchTerm]}
-                        autoEscape
-                        textToHighlight={formatDate(item.follow_up)}
+                {showFollowupColumn && (
+                  <TableCell sx={{ px: isMobile ? 1.5 : 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <CalendarMonthOutlinedIcon
+                        sx={{ color: "#8A98AB", fontSize: isMobile ? 16 : 18 }}
                       />
-                    </Typography>
-                  </Box>
-                </TableCell>
 
-                <TableCell align="right">
-                  <Chip
-                    label={`#${item.id ?? "\u2014"}`}
-                    size="small"
-                    variant="outlined"
-                    sx={{
-                      borderColor: "#D9E1F2",
-                      color: "#64748B",
-                      fontWeight: 700,
-                    }}
-                  />
-                </TableCell>
+                      <Typography 
+                        variant="body2" 
+                        color="#526176"
+                        sx={{
+                          fontSize: isMobile ? "0.75rem" : "0.875rem"
+                        }}
+                      >
+                        <Highlighter
+                          searchWords={[searchTerm]}
+                          autoEscape
+                          textToHighlight={formatDate(item.follow_up)}
+                        />
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                )}
+
+                {showRecordColumn && (
+                  <TableCell align="right" sx={{ px: isMobile ? 1.5 : 2 }}>
+                    <Chip
+                      label={`#${item.id ?? "\u2014"}`}
+                      size={chipSize}
+                      variant="outlined"
+                      sx={{
+                        borderColor: "#D9E1F2",
+                        color: "#64748B",
+                        fontWeight: 700,
+                        fontSize: isMobile ? "0.65rem" : "0.75rem",
+                      }}
+                    />
+                  </TableCell>
+                )}
               </TableRow>
             ))}
 
             {filteredInteractions.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                  No interactions found.
+                <TableCell 
+                  colSpan={showRecordColumn ? 5 : (showFollowupColumn ? 4 : 3)} 
+                  align="center" 
+                  sx={{ py: 4 }}
+                >
+                  <Typography color="text.secondary">
+                    No interactions found matching your search.
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}
@@ -255,6 +362,9 @@ function RecentInteractionsTable({ interactions = [] }) {
         </Table>
       </TableContainer>
 
+      {/* ============================================================
+      Responsive Pagination
+      ============================================================ */}
       <TablePagination
         component="div"
         count={filteredInteractions.length}
@@ -262,7 +372,23 @@ function RecentInteractionsTable({ interactions = [] }) {
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 20, 50]}
+        rowsPerPageOptions={isMobile ? [5, 10, 20] : [5, 10, 20, 50]}
+        sx={{
+          "& .MuiTablePagination-selectLabel": {
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          },
+          "& .MuiTablePagination-displayedRows": {
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          },
+          "& .MuiTablePagination-select": {
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          },
+          "& .MuiTablePagination-actions": {
+            "& .MuiIconButton-root": {
+              padding: isMobile ? 0.5 : 1,
+            },
+          },
+        }}
       />
     </Box>
   );

@@ -10,7 +10,9 @@ import {
     Chip,
     Divider,
     Avatar,
-    LinearProgress
+    LinearProgress,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 
 import {
@@ -26,6 +28,9 @@ import API from "../api/api";
 //-----------------------------------------------------
 
 function ProductLeaderboard() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
     //-----------------------------------------------------
     // State
@@ -38,6 +43,17 @@ function ProductLeaderboard() {
     const [error, setError] = useState("");
 
     const [maxValue, setMaxValue] = useState(0);
+
+    // Responsive settings
+    const barHeight = isMobile ? 20 : isTablet ? 24 : 28;
+    const maxDisplayItems = isMobile ? 5 : 10;
+    const itemSpacing = isMobile ? 2 : isTablet ? 2.5 : 3.5;
+    const avatarSize = isMobile ? 20 : isTablet ? 24 : 28;
+    const avatarFontSize = isMobile ? 9 : isTablet ? 10 : 12;
+    const productNameSize = isMobile ? "0.7rem" : isTablet ? "0.8rem" : "0.875rem";
+    const interactionCountSize = isMobile ? "0.7rem" : isTablet ? "0.8rem" : "0.875rem";
+    const percentageLabelSize = isMobile ? "0.5rem" : isTablet ? "0.55rem" : "0.65rem";
+    const medalSize = isMobile ? 14 : isTablet ? 16 : 20;
 
     //-----------------------------------------------------
     // Fetch Product Leaderboard
@@ -68,11 +84,13 @@ function ProductLeaderboard() {
             ) {
 
                 const leaderboardData = response.data.data.leaderboard;
-                setData(leaderboardData);
+                // Limit items on mobile for better display
+                const displayData = isMobile ? leaderboardData.slice(0, 5) : leaderboardData;
+                setData(displayData);
                 
                 // Calculate max value for progress bars
-                if (leaderboardData.length > 0) {
-                    const max = Math.max(...leaderboardData.map(d => d.interactions));
+                if (displayData.length > 0) {
+                    const max = Math.max(...displayData.map(d => d.interactions));
                     setMaxValue(max);
                 }
 
@@ -122,7 +140,7 @@ function ProductLeaderboard() {
 
         fetchLeaderboard();
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Auto Refresh (every 30 seconds)
@@ -138,7 +156,7 @@ function ProductLeaderboard() {
 
         return () => clearInterval(interval);
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Get Gradient Color based on index
@@ -254,7 +272,7 @@ function ProductLeaderboard() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <TrophyIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -262,6 +280,9 @@ function ProductLeaderboard() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -285,15 +306,15 @@ function ProductLeaderboard() {
                     <Divider sx={{ mb: 3 }} />
 
                     {[1, 2, 3, 4, 5].map((item) => (
-                        <Box key={item} sx={{ mb: 3 }}>
+                        <Box key={item} sx={{ mb: itemSpacing }}>
                             <Skeleton
                                 variant="text"
-                                width="30%"
-                                height={24}
+                                width={isMobile ? "40%" : "30%"}
+                                height={isMobile ? 18 : 24}
                             />
                             <Skeleton
                                 variant="rounded"
-                                height={32}
+                                height={barHeight}
                                 sx={{ mt: 0.5 }}
                             />
                         </Box>
@@ -350,7 +371,7 @@ function ProductLeaderboard() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <TrophyIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -358,6 +379,9 @@ function ProductLeaderboard() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -443,7 +467,7 @@ function ProductLeaderboard() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <TrophyIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -451,6 +475,9 @@ function ProductLeaderboard() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -539,14 +566,18 @@ function ProductLeaderboard() {
 
                         alignItems: "center",
 
-                        mb: 2
+                        mb: 2,
+
+                        flexWrap: "wrap",
+
+                        gap: 1
 
                     }}
 
                 >
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                        <TrophyIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                         <Typography
 
                             variant="h6"
@@ -554,6 +585,9 @@ function ProductLeaderboard() {
                             fontWeight={700}
 
                             color="#0F172A"
+                            sx={{
+                                fontSize: isMobile ? "1rem" : "1.25rem"
+                            }}
 
                         >
 
@@ -580,7 +614,7 @@ function ProductLeaderboard() {
                             label="Top Products"
                             color="success"
                             variant="filled"
-                            sx={{ fontWeight: 600 }}
+                            sx={{ fontWeight: 600, display: isMobile ? "none" : "inline-flex" }}
                         />
                     </Box>
 
@@ -602,7 +636,7 @@ function ProductLeaderboard() {
                             <Box
                                 key={index}
                                 sx={{
-                                    mb: 3.5,
+                                    mb: itemSpacing,
                                     "&:last-child": { mb: 0 }
                                 }}
                             >
@@ -611,21 +645,21 @@ function ProductLeaderboard() {
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
-                                        mb: 0.5
+                                        mb: isMobile ? 0.25 : 0.5
                                     }}
                                 >
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 0.75 : 1.5 }}>
                                         {medal && (
-                                            <Typography sx={{ fontSize: 20 }}>
+                                            <Typography sx={{ fontSize: medalSize }}>
                                                 {medal}
                                             </Typography>
                                         )}
                                         <Avatar
                                             sx={{
-                                                width: 28,
-                                                height: 28,
+                                                width: avatarSize,
+                                                height: avatarSize,
                                                 bgcolor: productColor,
-                                                fontSize: 12,
+                                                fontSize: avatarFontSize,
                                                 fontWeight: 700,
                                                 color: "white"
                                             }}
@@ -637,28 +671,30 @@ function ProductLeaderboard() {
                                             fontWeight={600}
                                             color="#0F172A"
                                             sx={{
-                                                fontSize: "0.875rem",
+                                                fontSize: productNameSize,
                                                 letterSpacing: 0.3
                                             }}
                                         >
-                                            {product.product}
+                                            {isMobile && product.product.length > 12 
+                                                ? product.product.substring(0, 12) + "..." 
+                                                : product.product}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 0.5 : 2 }}>
                                         <Typography
                                             variant="body2"
                                             fontWeight={700}
                                             color="#2563EB"
-                                            sx={{ fontSize: "0.875rem" }}
+                                            sx={{ fontSize: interactionCountSize }}
                                         >
-                                            {product.interactions} interactions
+                                            {product.interactions}
                                         </Typography>
                                     </Box>
                                 </Box>
                                 <Box
                                     sx={{
                                         width: "100%",
-                                        height: 28,
+                                        height: barHeight,
                                         backgroundColor: "#F1F5F9",
                                         borderRadius: 8,
                                         overflow: "hidden",
@@ -696,7 +732,7 @@ function ProductLeaderboard() {
                                                 sx={{
                                                     color: "white",
                                                     fontWeight: 700,
-                                                    fontSize: "0.65rem",
+                                                    fontSize: percentageLabelSize,
                                                     letterSpacing: 0.5,
                                                     textShadow: "0 1px 2px rgba(0,0,0,0.2)"
                                                 }}
@@ -714,22 +750,24 @@ function ProductLeaderboard() {
                 {/* Footer Stats */}
                 <Box
                     sx={{
-                        mt: 3,
-                        pt: 2,
+                        mt: isMobile ? 2 : 3,
+                        pt: isMobile ? 1.5 : 2,
                         borderTop: "1px solid #E2E8F0",
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "center"
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <ProductIcon sx={{ color: "#94A3B8", fontSize: 16 }} />
-                        <Typography variant="caption" color="text.secondary">
-                            Top product: <strong>{data[0]?.product}</strong>
+                        <ProductIcon sx={{ color: "#94A3B8", fontSize: isMobile ? 14 : 16 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
+                            Top: <strong>{data[0]?.product}</strong>
                         </Typography>
                     </Box>
-                    <Typography variant="caption" color="text.secondary">
-                        Total interactions: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
+                        Total: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
                     </Typography>
                 </Box>
 
