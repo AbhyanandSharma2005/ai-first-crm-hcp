@@ -17,7 +17,9 @@ import {
     Chip,
     Divider,
     Tooltip,
-    Avatar
+    Avatar,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 
 import {
@@ -34,6 +36,9 @@ import API from "../api/api";
 //-----------------------------------------------------
 
 function DoctorHeatmap() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
     //-----------------------------------------------------
     // State
@@ -46,6 +51,9 @@ function DoctorHeatmap() {
     const [error, setError] = useState("");
 
     const [maxValue, setMaxValue] = useState(0);
+
+    // Responsive settings
+    const maxDisplayRows = isMobile ? 5 : 10;
 
     //-----------------------------------------------------
     // Fetch Heatmap Data
@@ -76,11 +84,13 @@ function DoctorHeatmap() {
             ) {
 
                 const heatmapData = response.data.data.heatmap;
-                setData(heatmapData);
+                // Limit rows on mobile for better display
+                const displayData = isMobile ? heatmapData.slice(0, 5) : heatmapData;
+                setData(displayData);
 
                 // Calculate max value for color intensity
                 let max = 0;
-                heatmapData.forEach(row => {
+                displayData.forEach(row => {
                     const values = [
                         row.monday,
                         row.tuesday,
@@ -141,7 +151,7 @@ function DoctorHeatmap() {
 
         fetchHeatmap();
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Auto Refresh (every 30 seconds)
@@ -157,7 +167,7 @@ function DoctorHeatmap() {
 
         return () => clearInterval(interval);
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Color Helper with Gradient
@@ -279,7 +289,7 @@ function DoctorHeatmap() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <CalendarIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <CalendarIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -287,6 +297,9 @@ function DoctorHeatmap() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -313,7 +326,7 @@ function DoctorHeatmap() {
 
                         variant="rounded"
 
-                        height={300}
+                        height={isMobile ? 200 : 300}
 
                         sx={{ borderRadius: 2 }}
 
@@ -370,7 +383,7 @@ function DoctorHeatmap() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <CalendarIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <CalendarIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -378,6 +391,9 @@ function DoctorHeatmap() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -463,7 +479,7 @@ function DoctorHeatmap() {
                     >
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <CalendarIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                            <CalendarIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                             <Typography
 
                                 variant="h6"
@@ -471,6 +487,9 @@ function DoctorHeatmap() {
                                 fontWeight={700}
 
                                 color="#0F172A"
+                                sx={{
+                                    fontSize: isMobile ? "1rem" : "1.25rem"
+                                }}
 
                             >
 
@@ -518,6 +537,12 @@ function DoctorHeatmap() {
     //-----------------------------------------------------
 
     const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
+    // Show all days on all devices with horizontal scroll on mobile
+    const displayDays = days;
+
+    // Calculate min width based on device
+    const minTableWidth = isMobile ? 600 : 650;
 
     return (
 
@@ -573,7 +598,7 @@ function DoctorHeatmap() {
                 >
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <WhatshotIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                        <WhatshotIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                         <Typography
 
                             variant="h6"
@@ -581,6 +606,9 @@ function DoctorHeatmap() {
                             fontWeight={700}
 
                             color="#0F172A"
+                            sx={{
+                                fontSize: isMobile ? "1rem" : "1.25rem"
+                            }}
 
                         >
 
@@ -607,7 +635,7 @@ function DoctorHeatmap() {
                             label="Weekly Activity"
                             color="success"
                             variant="filled"
-                            sx={{ fontWeight: 600 }}
+                            sx={{ fontWeight: 600, display: isMobile ? "none" : "inline-flex" }}
                         />
                     </Box>
 
@@ -615,12 +643,12 @@ function DoctorHeatmap() {
 
                 <Divider sx={{ mb: 3 }} />
 
-                {/* Legend */}
+                {/* Legend - Show on all devices */}
                 <Box
                     sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 2,
+                        gap: { xs: 1, sm: 2 },
                         mb: 2,
                         flexWrap: "wrap"
                     }}
@@ -629,28 +657,28 @@ function DoctorHeatmap() {
                         Activity Level:
                     </Typography>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Box sx={{ width: 20, height: 20, bgcolor: "#F1F5F9", borderRadius: 0.5 }} />
-                        <Typography variant="caption" color="text.secondary">0</Typography>
+                        <Box sx={{ width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 }, bgcolor: "#F1F5F9", borderRadius: 0.5 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" } }}>0</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Box sx={{ width: 20, height: 20, bgcolor: "#DBEAFE", borderRadius: 0.5 }} />
-                        <Typography variant="caption" color="text.secondary">Low</Typography>
+                        <Box sx={{ width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 }, bgcolor: "#DBEAFE", borderRadius: 0.5 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" } }}>Low</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Box sx={{ width: 20, height: 20, bgcolor: "#93C5FD", borderRadius: 0.5 }} />
-                        <Typography variant="caption" color="text.secondary">Medium</Typography>
+                        <Box sx={{ width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 }, bgcolor: "#93C5FD", borderRadius: 0.5 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" } }}>Medium</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Box sx={{ width: 20, height: 20, bgcolor: "#60A5FA", borderRadius: 0.5 }} />
-                        <Typography variant="caption" color="text.secondary">High</Typography>
+                        <Box sx={{ width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 }, bgcolor: "#60A5FA", borderRadius: 0.5 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" } }}>High</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Box sx={{ width: 20, height: 20, bgcolor: "#2563EB", borderRadius: 0.5 }} />
-                        <Typography variant="caption" color="text.secondary">Very High</Typography>
+                        <Box sx={{ width: { xs: 16, sm: 20 }, height: { xs: 16, sm: 20 }, bgcolor: "#2563EB", borderRadius: 0.5 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" } }}>Very High</Typography>
                     </Box>
                 </Box>
 
-                {/* Heatmap Table */}
+                {/* Heatmap Table with Horizontal Scroll on Mobile */}
                 <TableContainer
 
                     component={Paper}
@@ -663,7 +691,23 @@ function DoctorHeatmap() {
 
                         boxShadow: "none",
 
-                        overflowX: "auto"
+                        overflowX: "auto",
+
+                        // Custom scrollbar styling
+                        "&::-webkit-scrollbar": {
+                            height: 6,
+                        },
+                        "&::-webkit-scrollbar-track": {
+                            backgroundColor: "#F1F5F9",
+                            borderRadius: 3,
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                            backgroundColor: "#CBD5E1",
+                            borderRadius: 3,
+                        },
+                        "&::-webkit-scrollbar-thumb:hover": {
+                            backgroundColor: "#94A3B8",
+                        },
 
                     }}
 
@@ -673,13 +717,13 @@ function DoctorHeatmap() {
 
                         sx={{
 
-                            minWidth: 650,
+                            minWidth: minTableWidth,
 
                             "& .MuiTableCell-root": {
 
                                 borderBottom: "1px solid #E2E8F0",
 
-                                py: 1.5
+                                py: isMobile ? 1 : 1.5
 
                             }
 
@@ -707,9 +751,9 @@ function DoctorHeatmap() {
 
                                         color: "#0F172A",
 
-                                        fontSize: "0.875rem",
+                                        fontSize: isMobile ? "0.75rem" : "0.875rem",
 
-                                        width: 180,
+                                        width: isMobile ? 100 : 180,
 
                                         position: "sticky",
 
@@ -717,20 +761,22 @@ function DoctorHeatmap() {
 
                                         bgcolor: "#F8FAFC",
 
-                                        zIndex: 2
+                                        zIndex: 2,
+
+                                        minWidth: isMobile ? 100 : 180,
 
                                     }}
 
                                 >
 
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                        <PersonIcon sx={{ fontSize: 16, color: "#64748B" }} />
-                                        Doctor
+                                        <PersonIcon sx={{ fontSize: isMobile ? 14 : 16, color: "#64748B" }} />
+                                        {!isMobile && "Doctor"}
                                     </Box>
 
                                 </TableCell>
 
-                                {days.map((day, index) => (
+                                {displayDays.map((day, index) => (
 
                                     <TableCell
 
@@ -744,13 +790,15 @@ function DoctorHeatmap() {
 
                                             color: "#0F172A",
 
-                                            fontSize: "0.75rem",
+                                            fontSize: isMobile ? "0.65rem" : "0.75rem",
 
                                             textTransform: "uppercase",
 
                                             letterSpacing: 0.5,
 
-                                            minWidth: 80
+                                            minWidth: isMobile ? 60 : 80,
+
+                                            px: isMobile ? 0.5 : 1
 
                                         }}
 
@@ -774,7 +822,7 @@ function DoctorHeatmap() {
 
                                         color: "#0F172A",
 
-                                        fontSize: "0.75rem",
+                                        fontSize: isMobile ? "0.65rem" : "0.75rem",
 
                                         textTransform: "uppercase",
 
@@ -782,13 +830,13 @@ function DoctorHeatmap() {
 
                                         bgcolor: "#F1F5F9",
 
-                                        minWidth: 100
+                                        minWidth: isMobile ? 60 : 100
 
                                     }}
 
                                 >
 
-                                    Total
+                                    {isMobile ? "Tot" : "Total"}
 
                                 </TableCell>
 
@@ -830,7 +878,7 @@ function DoctorHeatmap() {
 
                                                 color: "#0F172A",
 
-                                                fontSize: "0.875rem",
+                                                fontSize: isMobile ? "0.75rem" : "0.875rem",
 
                                                 position: "sticky",
 
@@ -838,7 +886,11 @@ function DoctorHeatmap() {
 
                                                 bgcolor: "#FFFFFF",
 
-                                                zIndex: 1
+                                                zIndex: 1,
+
+                                                px: isMobile ? 1 : 2,
+
+                                                minWidth: isMobile ? 100 : 180,
 
                                             }}
 
@@ -847,21 +899,23 @@ function DoctorHeatmap() {
                                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                                                 <Avatar
                                                     sx={{
-                                                        width: 28,
-                                                        height: 28,
+                                                        width: isMobile ? 24 : 28,
+                                                        height: isMobile ? 24 : 28,
                                                         bgcolor: ["#2563EB", "#7C3AED", "#059669", "#DC2626", "#D97706"][rowIndex % 5],
-                                                        fontSize: 11,
+                                                        fontSize: isMobile ? 10 : 11,
                                                         fontWeight: 700
                                                     }}
                                                 >
                                                     {row.doctor.charAt(0)}
                                                 </Avatar>
-                                                {row.doctor}
+                                                {isMobile && row.doctor.length > 10 
+                                                    ? row.doctor.substring(0, 10) + "..." 
+                                                    : row.doctor}
                                             </Box>
 
                                         </TableCell>
 
-                                        {days.map((day) => {
+                                        {displayDays.map((day) => {
 
                                             const value = row[day];
 
@@ -881,9 +935,13 @@ function DoctorHeatmap() {
 
                                                         fontWeight: value > 0 ? 700 : 400,
 
-                                                        fontSize: "0.875rem",
+                                                        fontSize: isMobile ? "0.75rem" : "0.875rem",
 
                                                         borderRadius: 0,
+
+                                                        px: isMobile ? 0.5 : 1,
+
+                                                        minWidth: isMobile ? 60 : 80,
 
                                                         transition: "all 0.2s",
 
@@ -931,9 +989,11 @@ function DoctorHeatmap() {
 
                                                 color: "#2563EB",
 
-                                                fontSize: "0.875rem",
+                                                fontSize: isMobile ? "0.75rem" : "0.875rem",
 
-                                                bgcolor: "#F8FAFC"
+                                                bgcolor: "#F8FAFC",
+
+                                                minWidth: isMobile ? 60 : 100,
 
                                             }}
 
@@ -970,20 +1030,20 @@ function DoctorHeatmap() {
                 >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <PersonIcon sx={{ color: "#94A3B8", fontSize: 16 }} />
-                        <Typography variant="caption" color="text.secondary">
-                            Most active doctor: <strong>{data[0]?.doctor}</strong>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
+                            Most active: <strong>{data[0]?.doctor}</strong>
                         </Typography>
                     </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Typography variant="caption" color="text.secondary">
-                            Total interactions: <strong>{data.reduce((sum, d) => sum + getDoctorTotal(d), 0)}</strong>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 1 : 2 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
+                            Total: <strong>{data.reduce((sum, d) => sum + getDoctorTotal(d), 0)}</strong>
                         </Typography>
                         <Chip
                             size="small"
-                            label="Updated in real-time"
+                            label="Live"
                             color="info"
                             variant="outlined"
-                            sx={{ fontSize: "0.625rem" }}
+                            sx={{ fontSize: isMobile ? "0.5rem" : "0.625rem" }}
                         />
                     </Box>
                 </Box>

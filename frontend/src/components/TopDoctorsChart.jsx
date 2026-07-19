@@ -10,7 +10,9 @@ import {
     Chip,
     Divider,
     Avatar,
-    LinearProgress
+    LinearProgress,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 
 import {
@@ -26,6 +28,8 @@ import API from "../api/api";
 //-----------------------------------------------------
 
 function TopDoctorsChart() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     //-----------------------------------------------------
     // State
@@ -38,6 +42,10 @@ function TopDoctorsChart() {
     const [error, setError] = useState("");
 
     const [maxValue, setMaxValue] = useState(0);
+
+    // Responsive bar height
+    const barHeight = isMobile ? 24 : 28;
+    const maxDisplayItems = isMobile ? 5 : 10;
 
     //-----------------------------------------------------
     // Fetch Top Doctors
@@ -64,11 +72,13 @@ function TopDoctorsChart() {
             ) {
 
                 const doctorsData = response.data.data.doctors;
-                setData(doctorsData);
+                // Limit items on mobile for better display
+                const displayData = isMobile ? doctorsData.slice(0, 5) : doctorsData;
+                setData(displayData);
                 
                 // Calculate max value for progress bars
-                if (doctorsData.length > 0) {
-                    const max = Math.max(...doctorsData.map(d => d.interactions));
+                if (displayData.length > 0) {
+                    const max = Math.max(...displayData.map(d => d.interactions));
                     setMaxValue(max);
                 }
 
@@ -118,7 +128,7 @@ function TopDoctorsChart() {
 
         fetchDoctors();
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Auto Refresh (every 30 seconds)
@@ -134,7 +144,7 @@ function TopDoctorsChart() {
 
         return () => clearInterval(interval);
 
-    }, []);
+    }, [isMobile]);
 
     //-----------------------------------------------------
     // Get Color based on index
@@ -266,7 +276,7 @@ function TopDoctorsChart() {
                             />
                             <Skeleton
                                 variant="rounded"
-                                height={32}
+                                height={barHeight}
                                 sx={{ mt: 0.5 }}
                             />
                         </Box>
@@ -506,14 +516,17 @@ function TopDoctorsChart() {
 
                         alignItems: "center",
 
-                        mb: 2
+                        mb: 2,
+
+                        flexWrap: "wrap",
+                        gap: 1
 
                     }}
 
                 >
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <TrophyIcon sx={{ color: "#2563EB", fontSize: 28 }} />
+                        <TrophyIcon sx={{ color: "#2563EB", fontSize: isMobile ? 24 : 28 }} />
                         <Typography
 
                             variant="h6"
@@ -521,6 +534,9 @@ function TopDoctorsChart() {
                             fontWeight={700}
 
                             color="#0F172A"
+                            sx={{
+                                fontSize: isMobile ? "1rem" : "1.25rem"
+                            }}
 
                         >
 
@@ -547,7 +563,7 @@ function TopDoctorsChart() {
                             label="Leaderboard"
                             color="success"
                             variant="filled"
-                            sx={{ fontWeight: 600 }}
+                            sx={{ fontWeight: 600, display: isMobile ? "none" : "inline-flex" }}
                         />
                     </Box>
 
@@ -568,7 +584,7 @@ function TopDoctorsChart() {
                             <Box
                                 key={index}
                                 sx={{
-                                    mb: 3.5,
+                                    mb: isMobile ? 2.5 : 3.5,
                                     "&:last-child": { mb: 0 }
                                 }}
                             >
@@ -580,18 +596,18 @@ function TopDoctorsChart() {
                                         mb: 0.5
                                     }}
                                 >
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 1 : 1.5 }}>
                                         {medal && (
-                                            <Typography sx={{ fontSize: 20 }}>
+                                            <Typography sx={{ fontSize: isMobile ? 16 : 20 }}>
                                                 {medal}
                                             </Typography>
                                         )}
                                         <Avatar
                                             sx={{
-                                                width: 28,
-                                                height: 28,
+                                                width: isMobile ? 24 : 28,
+                                                height: isMobile ? 24 : 28,
                                                 bgcolor: color,
-                                                fontSize: 12,
+                                                fontSize: isMobile ? 10 : 12,
                                                 fontWeight: 700
                                             }}
                                         >
@@ -602,28 +618,30 @@ function TopDoctorsChart() {
                                             fontWeight={600}
                                             color="#0F172A"
                                             sx={{
-                                                fontSize: "0.875rem",
+                                                fontSize: isMobile ? "0.75rem" : "0.875rem",
                                                 letterSpacing: 0.3
                                             }}
                                         >
-                                            {doctor.doctor}
+                                            {isMobile && doctor.doctor.length > 15 
+                                                ? doctor.doctor.substring(0, 15) + "..." 
+                                                : doctor.doctor}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? 1 : 2 }}>
                                         <Typography
                                             variant="body2"
                                             fontWeight={700}
                                             color="#2563EB"
-                                            sx={{ fontSize: "0.875rem" }}
+                                            sx={{ fontSize: isMobile ? "0.75rem" : "0.875rem" }}
                                         >
-                                            {doctor.interactions} interactions
+                                            {doctor.interactions}
                                         </Typography>
                                     </Box>
                                 </Box>
                                 <Box
                                     sx={{
                                         width: "100%",
-                                        height: 28,
+                                        height: barHeight,
                                         backgroundColor: "#F1F5F9",
                                         borderRadius: 8,
                                         overflow: "hidden",
@@ -661,7 +679,7 @@ function TopDoctorsChart() {
                                                 sx={{
                                                     color: "white",
                                                     fontWeight: 700,
-                                                    fontSize: "0.65rem",
+                                                    fontSize: isMobile ? "0.55rem" : "0.65rem",
                                                     letterSpacing: 0.5,
                                                     textShadow: "0 1px 2px rgba(0,0,0,0.2)"
                                                 }}
@@ -684,17 +702,19 @@ function TopDoctorsChart() {
                         borderTop: "1px solid #E2E8F0",
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "center"
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <PersonIcon sx={{ color: "#94A3B8", fontSize: 16 }} />
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
                             Top performer: <strong>{data[0]?.doctor}</strong>
                         </Typography>
                     </Box>
-                    <Typography variant="caption" color="text.secondary">
-                        Total interactions: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? "0.6rem" : "0.75rem" }}>
+                        Total: <strong>{data.reduce((sum, d) => sum + d.interactions, 0)}</strong>
                     </Typography>
                 </Box>
 

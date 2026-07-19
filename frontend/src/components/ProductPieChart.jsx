@@ -3,6 +3,8 @@ import {
   Divider,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import DonutLargeOutlinedIcon from "@mui/icons-material/DonutLargeOutlined";
 import { PieChart } from "@mui/x-charts/PieChart";
@@ -17,6 +19,10 @@ const chartColors = [
 ];
 
 function ProductPieChart({ products = {} }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const pieData = Object.entries(products)
     .map(([label, value], id) => ({
       id,
@@ -30,6 +36,10 @@ function ProductPieChart({ products = {} }) {
     (total, item) => total + item.value,
     0
   );
+
+  // Responsive chart dimensions
+  const chartWidth = isMobile ? 260 : isTablet ? 280 : 300;
+  const chartHeight = isMobile ? 220 : isTablet ? 240 : 260;
 
   if (!pieData.length) {
     return (
@@ -74,22 +84,22 @@ function ProductPieChart({ products = {} }) {
     >
       <Box
         sx={{
-          width: { xs: "100%", sm: 300 },
-          height: 260,
+          width: { xs: "100%", sm: chartWidth },
+          height: chartHeight,
           position: "relative",
           display: "grid",
           placeItems: "center",
         }}
       >
         <PieChart
-          width={300}
-          height={260}
+          width={chartWidth}
+          height={chartHeight}
           hideLegend
           series={[
             {
               data: pieData,
-              innerRadius: 63,
-              outerRadius: 102,
+              innerRadius: isMobile ? 50 : 63,
+              outerRadius: isMobile ? 85 : 102,
               paddingAngle: 3,
               cornerRadius: 5,
               highlightScope: {
@@ -97,7 +107,7 @@ function ProductPieChart({ products = {} }) {
                 highlighted: "item",
               },
               faded: {
-                innerRadius: 55,
+                innerRadius: isMobile ? 45 : 55,
                 additionalRadius: -8,
                 color: "#DCE4EF",
               },
@@ -122,6 +132,12 @@ function ProductPieChart({ products = {} }) {
             fontWeight={800}
             color="#172033"
             lineHeight={1}
+            sx={{
+              fontSize: {
+                xs: "1.5rem",
+                sm: "2rem",
+              },
+            }}
           >
             {totalInteractions}
           </Typography>

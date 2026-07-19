@@ -6,7 +6,9 @@ import {
     Typography,
     CircularProgress,
     Box,
-    Button
+    Button,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 
 import {
@@ -23,12 +25,18 @@ import {
 import API from "../api/api";
 
 function InteractionTrend() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState("");
 
     const [chartData, setChartData] = useState([]);
+
+    // Responsive chart height
+    const chartHeight = isMobile ? 280 : isTablet ? 320 : 380;
 
     const fetchTrend = async () => {
 
@@ -120,7 +128,9 @@ function InteractionTrend() {
             <Card
                 sx={{
                     mt: 4,
-                    borderRadius: 3
+                    borderRadius: 3,
+                    border: "1px solid #E2E8F0",
+                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
                 }}
             >
 
@@ -153,7 +163,9 @@ function InteractionTrend() {
             <Card
                 sx={{
                     mt: 4,
-                    borderRadius: 3
+                    borderRadius: 3,
+                    border: "1px solid #E2E8F0",
+                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
                 }}
             >
 
@@ -194,15 +206,18 @@ function InteractionTrend() {
             sx={{
                 mt: 4,
                 borderRadius: 3,
-                boxShadow: 3
+                border: "1px solid #E2E8F0",
+                background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
+                boxShadow: "0 8px 24px rgba(15,23,42,0.08)"
             }}
         >
 
             <CardContent>
 
                 <Typography
-                    variant="h5"
-                    fontWeight="bold"
+                    variant="h6"
+                    fontWeight={700}
+                    color="#0F172A"
                     gutterBottom
                 >
 
@@ -218,6 +233,7 @@ function InteractionTrend() {
 
                         <Typography
                             color="text.secondary"
+                            sx={{ py: 3, textAlign: "center" }}
                         >
 
                             No interaction data available.
@@ -234,35 +250,56 @@ function InteractionTrend() {
 
                             width="100%"
 
-                            height={350}
+                            height={chartHeight}
 
                         >
 
                             <LineChart
                                 data={chartData}
+                                margin={{
+                                    top: 10,
+                                    right: 20,
+                                    left: 10,
+                                    bottom: 10
+                                }}
                             >
 
                                 <CartesianGrid
                                     strokeDasharray="3 3"
+                                    stroke="#E2E8F0"
                                 />
 
                                 <XAxis
                                     dataKey="month"
+                                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                                    interval={isMobile ? 1 : 0}
                                 />
 
-                                <YAxis />
+                                <YAxis
+                                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                                />
 
-                                <Tooltip />
+                                <Tooltip
+                                    contentStyle={{
+                                        borderRadius: 8,
+                                        border: "1px solid #E2E8F0",
+                                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                                    }}
+                                />
 
-                                <Legend />
+                                <Legend
+                                    wrapperStyle={{
+                                        fontSize: isMobile ? 10 : 12
+                                    }}
+                                />
 
                                 <Line
                                     type="monotone"
                                     dataKey="count"
                                     name="Interactions"
                                     stroke="#1976d2"
-                                    strokeWidth={3}
-                                    activeDot={{ r: 8 }}
+                                    strokeWidth={isMobile ? 2 : 3}
+                                    activeDot={{ r: isMobile ? 6 : 8 }}
                                 />
 
                             </LineChart>
