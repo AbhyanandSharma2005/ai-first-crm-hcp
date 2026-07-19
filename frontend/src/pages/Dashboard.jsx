@@ -9,6 +9,8 @@ import {
   Grid,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
@@ -48,6 +50,10 @@ const cardStyles = [
 ];
 
 function Dashboard() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const [metrics, setMetrics] = useState(null);
   const [dashboardStats, setDashboardStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,7 +87,15 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <Box sx={{ py: 3 }}>
+      <Box
+        sx={{
+          p: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          },
+        }}
+      >
         <LoadingCards />
       </Box>
     );
@@ -118,15 +132,36 @@ function Dashboard() {
   ];
 
   return (
-    <Box sx={{ pb: 5 }}>
+    <Box
+      sx={{
+        p: {
+          xs: 2,
+          sm: 3,
+          md: 4,
+        },
+        pb: 5,
+      }}
+    >
+      {/* ============================================================
+      Header Section
+      ============================================================ */}
       <Box
         sx={{
           display: "flex",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
+          alignItems: {
+            xs: "flex-start",
+            md: "center",
+          },
           justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          flexDirection: { xs: "column", sm: "row" },
           gap: 2,
-          mb: 4,
+          mb: {
+            xs: 3,
+            md: 4,
+          },
         }}
       >
         <Box>
@@ -136,29 +171,62 @@ function Dashboard() {
               color: "#2F6BFF",
               fontWeight: 800,
               letterSpacing: "0.12em",
+              fontSize: {
+                xs: "0.65rem",
+                sm: "0.75rem",
+              },
             }}
           >
             HCP COMMAND CENTER
           </Typography>
 
           <Typography
-            variant="h4"
             sx={{
               color: "#172033",
               fontWeight: 800,
               mt: 0.25,
               letterSpacing: "-0.03em",
+              fontSize: {
+                xs: "1.5rem",
+                sm: "1.75rem",
+                md: "2.125rem",
+              },
             }}
           >
             Dashboard
           </Typography>
 
-          <Typography color="text.secondary" sx={{ mt: 0.75 }}>
+          <Typography
+            color="text.secondary"
+            sx={{
+              mt: 0.75,
+              fontSize: {
+                xs: "0.875rem",
+                sm: "1rem",
+              },
+            }}
+          >
             Monitor field activity, healthcare professionals, and CRM insights.
           </Typography>
         </Box>
 
-        <Stack direction="row" spacing={1.25} alignItems="center">
+        <Stack
+          direction={{
+            xs: "column",
+            sm: "row",
+          }}
+          spacing={1.25}
+          alignItems={{
+            xs: "stretch",
+            sm: "center",
+          }}
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "auto",
+            },
+          }}
+        >
           <Chip
             label={`Updated ${lastUpdated.toLocaleTimeString()}`}
             variant="outlined"
@@ -167,6 +235,10 @@ function Dashboard() {
               bgcolor: "#FFFFFF",
               color: "#5D6B82",
               fontWeight: 600,
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
             }}
           />
 
@@ -175,10 +247,15 @@ function Dashboard() {
             startIcon={<RefreshOutlinedIcon />}
             onClick={() => fetchMetrics(true)}
             disabled={refreshing}
+            fullWidth={isMobile}
             sx={{
               borderColor: "#D9E1F2",
               color: "#334155",
               bgcolor: "#FFFFFF",
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
             }}
           >
             {refreshing ? "Refreshing" : "Refresh"}
@@ -186,24 +263,47 @@ function Dashboard() {
         </Stack>
       </Box>
 
+      {/* ============================================================
+      Hero Card
+      ============================================================ */}
       <Card
         sx={{
-          mb: 4,
+          mb: {
+            xs: 3,
+            md: 4,
+          },
           overflow: "hidden",
-          borderRadius: 4,
+          borderRadius: {
+            xs: 3,
+            md: 4,
+          },
           color: "#FFFFFF",
           background:
             "radial-gradient(circle at 88% 15%, rgba(122, 164, 255, .48), transparent 28%), linear-gradient(125deg, #14213D 0%, #1D4ED8 100%)",
           boxShadow: "0 18px 34px rgba(30, 64, 175, 0.22)",
         }}
       >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+        <CardContent
+          sx={{
+            p: {
+              xs: 2.5,
+              sm: 3,
+              md: 4,
+            },
+          }}
+        >
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: { xs: "flex-start", md: "center" },
-              flexDirection: { xs: "column", md: "row" },
+              alignItems: {
+                xs: "flex-start",
+                md: "center",
+              },
+              flexDirection: {
+                xs: "column",
+                md: "row",
+              },
               gap: 3,
             }}
           >
@@ -219,11 +319,30 @@ function Dashboard() {
                 }}
               />
 
-              <Typography variant="h5" fontWeight={800} sx={{ mb: 1 }}>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  mb: 1,
+                  fontSize: {
+                    xs: "1.125rem",
+                    sm: "1.25rem",
+                    md: "1.5rem",
+                  },
+                }}
+              >
                 Make every HCP interaction more valuable.
               </Typography>
 
-              <Typography sx={{ color: "rgba(255,255,255,.82)", lineHeight: 1.7 }}>
+              <Typography
+                sx={{
+                  color: "rgba(255,255,255,.82)",
+                  lineHeight: 1.7,
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "1rem",
+                  },
+                }}
+              >
                 Log meetings, extract AI-assisted insights, and keep your
                 follow-up actions visible to the whole field team.
               </Typography>
@@ -234,12 +353,23 @@ function Dashboard() {
               to="/log-interaction"
               variant="contained"
               startIcon={<AddOutlinedIcon />}
+              fullWidth={isMobile}
               sx={{
                 flexShrink: 0,
                 bgcolor: "#FFFFFF",
                 color: "#1D4ED8",
-                px: 2.5,
-                py: 1.25,
+                px: {
+                  xs: 2,
+                  md: 2.5,
+                },
+                py: {
+                  xs: 1,
+                  md: 1.25,
+                },
+                width: {
+                  xs: "100%",
+                  md: "auto",
+                },
                 "&:hover": {
                   bgcolor: "#EAF1FF",
                 },
@@ -251,16 +381,46 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
+      {/* ============================================================
+      KPI Cards - Responsive Grid Layout
+      Desktop: 4 cards/row (lg)
+      Tablet: 2 cards/row (md)
+      Mobile: 1 card/row (xs)
+      ============================================================ */}
+      <Grid 
+        container 
+        spacing={{
+          xs: 2,
+          sm: 2.5,
+          md: 2.5,
+        }} 
+        sx={{ 
+          mb: {
+            xs: 3,
+            md: 4,
+          }
+        }}
+      >
         {cards.map((card, index) => {
           const style = cardStyles[index];
 
           return (
-            <Grid item xs={12} sm={6} lg={3} key={card.title}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={6}
+              lg={3}
+              key={card.title}
+            >
               <Card
                 sx={{
                   height: "100%",
-                  borderRadius: 3.5,
+                  borderRadius: {
+                    xs: 3,
+                    sm: 3.5,
+                    md: 3.5,
+                  },
                   border: "1px solid #E7ECF5",
                   background: style.background,
                   transition: "transform .2s ease, box-shadow .2s ease",
@@ -270,7 +430,14 @@ function Dashboard() {
                   },
                 }}
               >
-                <CardContent sx={{ p: 2.5 }}>
+                <CardContent
+                  sx={{
+                    p: {
+                      xs: 2,
+                      sm: 2.5,
+                    },
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",
@@ -283,27 +450,46 @@ function Dashboard() {
                       sx={{
                         bgcolor: `${style.accent}18`,
                         color: style.accent,
-                        width: 46,
-                        height: 46,
+                        width: {
+                          xs: 40,
+                          sm: 46,
+                        },
+                        height: {
+                          xs: 40,
+                          sm: 46,
+                        },
                       }}
                     >
                       {style.icon}
                     </Avatar>
 
                     <Typography
-                      variant="caption"
-                      sx={{ color: style.accent, fontWeight: 700 }}
+                      sx={{
+                        color: style.accent,
+                        fontWeight: 700,
+                        fontSize: {
+                          xs: "0.65rem",
+                          sm: "0.75rem",
+                        },
+                      }}
                     >
                       {card.trend}
                     </Typography>
                   </Box>
 
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    color="text.secondary"
+                    sx={{
+                      fontSize: {
+                        xs: "0.75rem",
+                        sm: "0.875rem",
+                      },
+                    }}
+                  >
                     {card.title}
                   </Typography>
 
                   <Typography
-                    variant="h4"
                     sx={{
                       mt: 0.75,
                       mb: 0.5,
@@ -314,12 +500,26 @@ function Dashboard() {
                         card.title === "Environment"
                           ? "capitalize"
                           : "none",
+                      fontSize: {
+                        xs: "1.5rem",
+                        sm: "1.75rem",
+                        md: "2rem",
+                        lg: "2.125rem",
+                      },
                     }}
                   >
                     {card.value}
                   </Typography>
 
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    color="text.secondary"
+                    sx={{
+                      fontSize: {
+                        xs: "0.65rem",
+                        sm: "0.75rem",
+                      },
+                    }}
+                  >
                     {card.description}
                   </Typography>
                 </CardContent>
@@ -329,6 +529,9 @@ function Dashboard() {
         })}
       </Grid>
 
+      {/* ============================================================
+      Dashboard Analytics Component
+      ============================================================ */}
       <DashboardAnalytics
         onDataLoaded={(data) => {
           setDashboardStats(data);
@@ -336,11 +539,33 @@ function Dashboard() {
         }}
       />
 
-      <Box sx={{ mt: 5 }}>
+      {/* ============================================================
+      Search HCP Component
+      ============================================================ */}
+      <Box
+        sx={{
+          mt: {
+            xs: 3,
+            sm: 4,
+            md: 5,
+          },
+        }}
+      >
         <SearchHCP />
       </Box>
 
-      <Box sx={{ mt: 5 }}>
+      {/* ============================================================
+      Metrics Component
+      ============================================================ */}
+      <Box
+        sx={{
+          mt: {
+            xs: 3,
+            sm: 4,
+            md: 5,
+          },
+        }}
+      >
         <Metrics />
       </Box>
     </Box>
