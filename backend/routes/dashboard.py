@@ -1,5 +1,6 @@
 from collections import Counter
-from fastapi import APIRouter, Depends
+from datetime import date
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import (
     extract,
@@ -13,12 +14,12 @@ from models import (
 from schemas import (
     APIResponse,
     DashboardStats,
+    DashboardKPI,
     MonthlyInteraction,
     MonthlyInteractionResponse
 )
 from utils.logger import logger
 from typing import Optional
-from fastapi import Query
 
 
 
@@ -153,6 +154,7 @@ def get_dashboard_stats(
             data=None,
             error=str(e)
         )
+
 
 # ==========================================================
 # Monthly Interaction Trend
@@ -334,6 +336,189 @@ def monthly_interactions(
             success=False,
 
             message="Failed to retrieve monthly interaction trend.",
+
+            data=None,
+
+            error=str(e)
+
+        )
+
+
+# ==========================================================
+# Dashboard KPI
+# ==========================================================
+
+@router.get(
+
+    "/kpi",
+
+    response_model=APIResponse[DashboardKPI],
+
+    summary="Dashboard KPI",
+
+    description="Returns key performance indicators including today's followups, completed followups, unique products, and average interactions per HCP.",
+
+    responses={
+
+        200: {
+
+            "description": "Dashboard KPI retrieved successfully."
+
+        },
+
+        500: {
+
+            "description": "Internal server error."
+
+        }
+
+    }
+
+)
+def dashboard_kpi(
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info("Fetching dashboard KPI.")
+
+    try:
+
+        today = date.today()
+
+        # =====================================================
+        # Today's Followups
+        # =====================================================
+
+        today_followups = (
+
+            db.query(Interaction)
+
+            .filter(
+
+                func.date(
+
+                    Interaction.follow_up
+
+                ) == today
+
+            )
+
+            .count()
+
+        )
+
+        # =====================================================
+        # Completed Followups
+        # We assume follow_up < today means completed
+        # =====================================================
+
+        completed_followups = (
+
+            db.query(Interaction)
+
+            .filter(
+
+                Interaction.follow_up < today
+
+            )
+
+            .count()
+
+        )
+
+        # =====================================================
+        # Unique Products
+        # =====================================================
+
+        unique_products = (
+
+            db.query(
+
+                Interaction.product
+
+            )
+
+            .distinct()
+
+            .count()
+
+        )
+
+        # =====================================================
+        # Average Interactions/HCP
+        # =====================================================
+
+        total_interactions = (
+
+            db.query(Interaction)
+
+            .count()
+
+        )
+
+        total_hcps = (
+
+            db.query(HCP)
+
+            .count()
+
+        )
+
+        average = (
+
+            total_interactions / total_hcps
+
+            if total_hcps
+
+            else 0
+
+        )
+
+        # =====================================================
+        # Response
+        # =====================================================
+
+        logger.info("Dashboard KPI fetched successfully.")
+
+        return APIResponse[DashboardKPI](
+
+            success=True,
+
+            message="Dashboard KPI retrieved.",
+
+            data=DashboardKPI(
+
+                today_followups=today_followups,
+
+                completed_followups=completed_followups,
+
+                unique_products=unique_products,
+
+                average_interactions_per_hcp=round(
+
+                    average,
+
+                    2
+
+                )
+
+            ),
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        logger.exception("Failed to fetch dashboard KPI.")
+
+        return APIResponse[DashboardKPI](
+
+            success=False,
+
+            message="Failed to retrieve dashboard KPI.",
 
             data=None,
 

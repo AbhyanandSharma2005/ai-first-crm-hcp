@@ -151,6 +151,7 @@ class InteractionResponse(InteractionBase):
         from_attributes=True
     )
 
+
 # ==========================================================
 # DASHBOARD SCHEMAS
 # ==========================================================
@@ -176,6 +177,22 @@ class MonthlyInteraction(BaseModel):
 class MonthlyInteractionResponse(BaseModel):
 
     monthly_data: list[MonthlyInteraction]
+
+
+# ==========================================================
+# Dashboard KPI Schema
+# ==========================================================
+
+class DashboardKPI(BaseModel):
+
+    today_followups: int
+
+    completed_followups: int
+
+    unique_products: int
+
+    average_interactions_per_hcp: float
+
 
 # ==========================================================
 # CHAT SCHEMAS
@@ -325,4 +342,3 @@ class EditInteractionRequest(BaseModel):
             }
         }
     )
-    

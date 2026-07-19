@@ -26,6 +26,7 @@ import autoTable from "jspdf-autotable";
 import API from "../api/api";
 
 import DashboardFilters from "./DashboardFilters";
+import DashboardKPICards from "./DashboardKPICards";
 import ProductPieChart from "./ProductPieChart";
 import InteractionTrend from "./InteractionTrend";
 import RecentInteractionsTable from "./RecentInteractionsTable";
@@ -1401,6 +1402,14 @@ function DashboardAnalytics({ onDataLoaded }) {
             </Card>
 
             {/* =========================================================
+            KPI Cards
+        ========================================================== */}
+
+            <Box sx={{ mt: 4 }}>
+                <DashboardKPICards />
+            </Box>
+
+            {/* =========================================================
             Dashboard Filters
         ========================================================== */}
 
@@ -1432,7 +1441,7 @@ function DashboardAnalytics({ onDataLoaded }) {
             }
 
             {/* =========================================================
-            KPI Cards
+            KPI Cards (Legacy - Remove these when DashboardKPICards is fully integrated)
         ========================================================== */}
 
             <Grid
