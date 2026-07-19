@@ -1,5 +1,5 @@
-from collections import Counter
-from datetime import date
+from collections import Counter, defaultdict
+from datetime import date, datetime
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import (
@@ -20,7 +20,9 @@ from schemas import (
     TopDoctor,
     TopDoctorsResponse,
     ProductLeaderboardItem,
-    ProductLeaderboardResponse
+    ProductLeaderboardResponse,
+    DoctorHeatmapItem,
+    DoctorHeatmapResponse
 )
 from utils.logger import logger
 from typing import Optional
@@ -803,6 +805,203 @@ def get_product_leaderboard(
             success=False,
 
             message="Failed to fetch product leaderboard.",
+
+            data=None,
+
+            error=str(e)
+
+        )
+
+
+# ==========================================================
+# Doctor Activity Heatmap
+# ==========================================================
+
+@router.get(
+
+    "/doctor-heatmap",
+
+    response_model=APIResponse[DoctorHeatmapResponse],
+
+    operation_id="doctorHeatmap",
+
+    summary="Doctor Activity Heatmap",
+
+    description="Returns a weekly activity heatmap for doctors showing interactions per day of the week.",
+
+    responses={
+
+        200: {
+
+            "description": "Doctor heatmap retrieved successfully."
+
+        },
+
+        500: {
+
+            "description": "Internal server error."
+
+        }
+
+    }
+
+)
+def doctor_heatmap(
+
+    db: Session = Depends(get_db)
+
+):
+
+    logger.info(
+
+        "Fetching doctor activity heatmap."
+
+    )
+
+    try:
+
+        # =====================================================
+        # Fetch All Interactions
+        # =====================================================
+
+        interactions = db.query(
+
+            Interaction
+
+        ).all()
+
+        # =====================================================
+        # Initialize Heatmap with Default Values
+        # =====================================================
+
+        heatmap = defaultdict(
+
+            lambda: {
+
+                "monday": 0,
+
+                "tuesday": 0,
+
+                "wednesday": 0,
+
+                "thursday": 0,
+
+                "friday": 0,
+
+                "saturday": 0,
+
+                "sunday": 0
+
+            }
+
+        )
+
+        weekdays = [
+
+            "monday",
+
+            "tuesday",
+
+            "wednesday",
+
+            "thursday",
+
+            "friday",
+
+            "saturday",
+
+            "sunday"
+
+        ]
+
+        # =====================================================
+        # Process Interactions
+        # =====================================================
+
+        for interaction in interactions:
+
+            doctor = (
+
+                interaction.hcp_name
+
+                or
+
+                "Unknown"
+
+            )
+
+            if interaction.follow_up:
+
+                day = weekdays[
+
+                    interaction.follow_up.weekday()
+
+                ]
+
+                heatmap[doctor][day] += 1
+
+        # =====================================================
+        # Build Response
+        # =====================================================
+
+        result = []
+
+        for doctor, values in heatmap.items():
+
+            result.append(
+
+                DoctorHeatmapItem(
+
+                    doctor=doctor,
+
+                    **values
+
+                )
+
+            )
+
+        # Sort by doctor name
+        result.sort(
+
+            key=lambda x: x.doctor
+
+        )
+
+        # =====================================================
+        # Response
+        # =====================================================
+
+        logger.info("Doctor heatmap retrieved successfully.")
+
+        return APIResponse[DoctorHeatmapResponse](
+
+            success=True,
+
+            message="Doctor heatmap retrieved successfully.",
+
+            data=DoctorHeatmapResponse(
+
+                heatmap=result
+
+            ),
+
+            error=None
+
+        )
+
+    except Exception as e:
+
+        logger.exception(
+
+            "Doctor heatmap failed."
+
+        )
+
+        return APIResponse[DoctorHeatmapResponse](
+
+            success=False,
+
+            message="Failed to retrieve heatmap.",
 
             data=None,
 
