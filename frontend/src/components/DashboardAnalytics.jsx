@@ -35,6 +35,52 @@ import TopDoctorsChart from "./TopDoctorsChart";
 import ProductLeaderboard from "./ProductLeaderboard";
 import DoctorHeatmap from "./DoctorHeatmap";
 
+//-----------------------------------------------------
+// Shared Design-System Style Fragments
+// (Phase 13.8.14.1 - Consistent Design System)
+//-----------------------------------------------------
+
+const standardCardSx = {
+    borderRadius: 4,
+    border: "1px solid",
+    borderColor: "divider",
+    boxShadow: 1,
+    transition: "0.25s",
+    "&:hover": {
+        boxShadow: 4
+    }
+};
+
+const standardContainedButtonSx = {
+    borderRadius: 3,
+    px: 3,
+    py: 1.25,
+    textTransform: "none",
+    fontWeight: 700
+};
+
+const standardOutlinedButtonSx = {
+    borderRadius: 3,
+    textTransform: "none",
+    fontWeight: 700
+};
+
+const standardChipSx = {
+    fontWeight: 700,
+    borderRadius: 2
+};
+
+const standardGridSpacing = {
+    xs: 2,
+    sm: 2.5,
+    md: 3
+};
+
+const standardSectionSpacing = {
+    xs: 3,
+    md: 5
+};
+
 function DashboardAnalytics({ onDataLoaded }) {
 
     //-----------------------------------------------------
@@ -215,11 +261,11 @@ function DashboardAnalytics({ onDataLoaded }) {
 
     const handleWebSocketUpdate = (data) => {
         console.log("📡 WebSocket update received:", data);
-        
+
         // Refresh both dashboard stats and monthly trend
         fetchDashboardStats();
         fetchMonthlyTrend();
-        
+
         // Update last updated timestamp
         setLastUpdated(new Date().toLocaleTimeString());
     };
@@ -1160,17 +1206,17 @@ function DashboardAnalytics({ onDataLoaded }) {
 
         return (
 
-            <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: standardSectionSpacing }}>
 
                 <Skeleton
                     variant="rounded"
                     height={90}
-                    sx={{ mb: 4 }}
+                    sx={{ mb: 4, borderRadius: 4 }}
                 />
 
                 <Grid
                     container
-                    spacing={3}
+                    spacing={standardGridSpacing}
                 >
 
                     <Grid
@@ -1182,6 +1228,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                         <Skeleton
                             variant="rounded"
                             height={180}
+                            sx={{ borderRadius: 4 }}
                         />
 
                     </Grid>
@@ -1195,6 +1242,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                         <Skeleton
                             variant="rounded"
                             height={180}
+                            sx={{ borderRadius: 4 }}
                         />
 
                     </Grid>
@@ -1204,7 +1252,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 <Skeleton
                     variant="rounded"
                     height={320}
-                    sx={{ mt: 3 }}
+                    sx={{ mt: 3, borderRadius: 4 }}
                 />
 
             </Box>
@@ -1229,7 +1277,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     mt: 3,
 
-                    borderRadius: 2
+                    borderRadius: 3
 
                 }}
 
@@ -1259,7 +1307,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     mt: 3,
 
-                    borderRadius: 2
+                    borderRadius: 3
 
                 }}
 
@@ -1283,7 +1331,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             sx={{
 
-                mt: 4,
+                mt: standardSectionSpacing,
 
                 pb: 5
 
@@ -1296,12 +1344,14 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Card
                 sx={{
-                    mb: 4,
+                    mb: standardSectionSpacing,
                     borderRadius: 4,
                     background:
                         "linear-gradient(135deg,#0F172A 0%, #1E3A8A 100%)",
                     color: "#ffffff",
-                    boxShadow: "0 12px 30px rgba(15,23,42,0.25)"
+                    boxShadow: "0 12px 30px rgba(15,23,42,0.25)",
+                    border: "1px solid",
+                    borderColor: "divider"
                 }}
             >
 
@@ -1336,7 +1386,10 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                                 <Typography
                                     variant="h4"
-                                    fontWeight={700}
+                                    sx={{
+                                        fontWeight: 800,
+                                        letterSpacing: "-0.03em"
+                                    }}
                                 >
                                     Dashboard Analytics
                                 </Typography>
@@ -1367,8 +1420,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Chip
                                 label={isConnected ? "Live" : "Offline"}
                                 color={isConnected ? "success" : "error"}
+                                size="small"
                                 sx={{
-                                    fontWeight: 600,
+                                    ...standardChipSx,
                                     "& .MuiChip-label": {
                                         display: "flex",
                                         alignItems: "center",
@@ -1380,20 +1434,22 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Chip
                                 icon={<AccessTimeIcon />}
                                 label={`Updated : ${lastUpdated || "--"}`}
+                                size="small"
                                 sx={{
+                                    ...standardChipSx,
                                     bgcolor: "rgba(255,255,255,0.15)",
-                                    color: "#fff",
-                                    fontWeight: 600
+                                    color: "#fff"
                                 }}
                             />
 
                             <Chip
                                 icon={<SpeedIcon />}
                                 label={`Response : ${responseTime || "--"} sec`}
+                                size="small"
                                 sx={{
+                                    ...standardChipSx,
                                     bgcolor: "rgba(255,255,255,0.15)",
-                                    color: "#fff",
-                                    fontWeight: 600
+                                    color: "#fff"
                                 }}
                             />
 
@@ -1402,9 +1458,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 startIcon={<RefreshIcon />}
                                 onClick={fetchDashboardStats}
                                 sx={{
+                                    ...standardContainedButtonSx,
                                     bgcolor: "#ffffff",
                                     color: "#1565C0",
-                                    fontWeight: 700,
                                     "&:hover": {
                                         bgcolor: "#E3F2FD"
                                     }
@@ -1418,9 +1474,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 startIcon={<DownloadIcon />}
                                 onClick={exportCSV}
                                 sx={{
+                                    ...standardOutlinedButtonSx,
                                     borderColor: "#86EFAC",
                                     color: "#166534",
-                                    fontWeight: 700,
                                     "&:hover": {
                                         borderColor: "#4ADE80",
                                         bgcolor: "rgba(240, 253, 244, 0.16)"
@@ -1435,10 +1491,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 startIcon={<PictureAsPdfIcon />}
                                 onClick={exportPDF}
                                 sx={{
-                                    ml: 2,
-                                    borderRadius: 2,
-                                    textTransform: "none",
-                                    fontWeight: 600
+                                    ...standardContainedButtonSx,
+                                    ml: 2
                                 }}
                             >
                                 Export PDF
@@ -1456,7 +1510,7 @@ function DashboardAnalytics({ onDataLoaded }) {
             KPI Cards
         ========================================================== */}
 
-            <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: standardSectionSpacing }}>
                 <DashboardKPICards />
             </Box>
 
@@ -1497,8 +1551,8 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Grid
                 container
-                spacing={3}
-                sx={{ mb: 4 }}
+                spacing={standardGridSpacing}
+                sx={{ mb: standardSectionSpacing }}
             >
 
                 <Grid
@@ -1515,9 +1569,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 "linear-gradient(135deg,#1565C0,#42A5F5)",
                             color: "#fff",
                             boxShadow: "0 10px 25px rgba(21,101,192,.25)",
-                            transition: ".25s",
+                            border: "1px solid",
+                            borderColor: "divider",
+                            transition: "0.25s",
                             "&:hover": {
-                                transform: "translateY(-5px)"
+                                transform: "translateY(-5px)",
+                                boxShadow: "0 16px 40px rgba(21,101,192,.32)"
                             }
                         }}
                     >
@@ -1578,9 +1635,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 "linear-gradient(135deg,#00897B,#26A69A)",
                             color: "#fff",
                             boxShadow: "0 10px 25px rgba(0,137,123,.25)",
-                            transition: ".25s",
+                            border: "1px solid",
+                            borderColor: "divider",
+                            transition: "0.25s",
                             "&:hover": {
-                                transform: "translateY(-5px)"
+                                transform: "translateY(-5px)",
+                                boxShadow: "0 16px 40px rgba(0,137,123,.32)"
                             }
                         }}
                     >
@@ -1635,8 +1695,8 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Grid
                 container
-                spacing={3}
-                sx={{ mb: 4 }}
+                spacing={standardGridSpacing}
+                sx={{ mb: standardSectionSpacing }}
             >
 
                 <Grid
@@ -1644,7 +1704,11 @@ function DashboardAnalytics({ onDataLoaded }) {
                     xs={12}
                 >
 
-                    <TopDoctorsChart />
+                    <Card sx={standardCardSx}>
+                        <CardContent>
+                            <TopDoctorsChart />
+                        </CardContent>
+                    </Card>
 
                 </Grid>
 
@@ -1654,16 +1718,24 @@ function DashboardAnalytics({ onDataLoaded }) {
             Product Leaderboard
         ========================================================== */}
 
-            <Box sx={{ mt: 4 }}>
-                <ProductLeaderboard />
+            <Box sx={{ mt: standardSectionSpacing }}>
+                <Card sx={standardCardSx}>
+                    <CardContent>
+                        <ProductLeaderboard />
+                    </CardContent>
+                </Card>
             </Box>
 
             {/* =========================================================
             Doctor Activity Heatmap
         ========================================================== */}
 
-            <Box sx={{ mt: 4 }}>
-                <DoctorHeatmap />
+            <Box sx={{ mt: standardSectionSpacing }}>
+                <Card sx={standardCardSx}>
+                    <CardContent>
+                        <DoctorHeatmap />
+                    </CardContent>
+                </Card>
             </Box>
 
             {/* =========================================================
@@ -1671,12 +1743,12 @@ function DashboardAnalytics({ onDataLoaded }) {
         ========================================================== */}
 
             <Typography
-                variant="h5"
+                variant="h6"
                 fontWeight={700}
                 sx={{
                     color: "#0F172A",
                     mb: 3,
-                    mt: 4
+                    mt: standardSectionSpacing
                 }}
             >
                 Analytics Overview
@@ -1684,8 +1756,8 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Grid
                 container
-                spacing={3}
-                sx={{ mb: 4 }}
+                spacing={standardGridSpacing}
+                sx={{ mb: standardSectionSpacing }}
             >
 
                 {/* ==============================================
@@ -1698,22 +1770,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                     lg={6}
                 >
 
-                    <Card
-                        sx={{
-                            height: "100%",
-                            borderRadius: 4,
-                            border: "1px solid #E2E8F0",
-                            background:
-                                "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
-                            boxShadow:
-                                "0 8px 24px rgba(15,23,42,0.08)",
-                            transition: ".25s",
-                            "&:hover": {
-                                boxShadow:
-                                    "0 12px 30px rgba(15,23,42,0.15)"
-                            }
-                        }}
-                    >
+                    <Card sx={{ ...standardCardSx, height: "100%" }}>
 
                         <CardContent>
 
@@ -1727,7 +1784,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             >
 
                                 <Typography
-                                    variant="h6"
+                                    variant="subtitle2"
                                     fontWeight={700}
                                     color="#0F172A"
                                 >
@@ -1738,6 +1795,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                     size="small"
                                     label="Live"
                                     color="success"
+                                    sx={standardChipSx}
                                 />
 
                             </Box>
@@ -1764,22 +1822,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                     lg={6}
                 >
 
-                    <Card
-                        sx={{
-                            height: "100%",
-                            borderRadius: 4,
-                            border: "1px solid #E2E8F0",
-                            background:
-                                "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
-                            boxShadow:
-                                "0 8px 24px rgba(15,23,42,0.08)",
-                            transition: ".25s",
-                            "&:hover": {
-                                boxShadow:
-                                    "0 12px 30px rgba(15,23,42,0.15)"
-                            }
-                        }}
-                    >
+                    <Card sx={{ ...standardCardSx, height: "100%" }}>
 
                         <CardContent>
 
@@ -1793,7 +1836,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             >
 
                                 <Typography
-                                    variant="h6"
+                                    variant="subtitle2"
                                     fontWeight={700}
                                     color="#0F172A"
                                 >
@@ -1804,6 +1847,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                     size="small"
                                     label="12 Months"
                                     color="primary"
+                                    sx={standardChipSx}
                                 />
 
                             </Box>
@@ -1828,7 +1872,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Card
                 sx={{
-                    mb: 4,
+                    mb: standardSectionSpacing,
                     borderRadius: 4,
                     background:
                         "linear-gradient(135deg,#EEF6FF,#F8FBFF)",
@@ -1842,7 +1886,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     <Grid
                         container
-                        spacing={2}
+                        spacing={standardGridSpacing}
                     >
 
                         <Grid
@@ -1924,11 +1968,8 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Card
                 sx={{
-                    borderRadius: 4,
-                    border: "1px solid #E2E8F0",
-                    boxShadow:
-                        "0 8px 24px rgba(15,23,42,0.08)",
-                    mb: 4,
+                    ...standardCardSx,
+                    mb: standardSectionSpacing,
                     overflow: "hidden"
                 }}
             >
@@ -1947,7 +1988,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                         <Box>
 
                             <Typography
-                                variant="h6"
+                                variant="subtitle2"
                                 fontWeight={700}
                                 color="#0F172A"
                             >
@@ -1967,6 +2008,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             label={`${stats.recent_interactions?.length || 0} Records`}
                             color="primary"
                             variant="outlined"
+                            size="small"
+                            sx={standardChipSx}
                         />
 
                     </Box>
@@ -1993,8 +2036,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                     justifyContent: "flex-end",
                     alignItems: "center",
                     gap: 2,
-                    mb: 4,
-                    mt: 4
+                    mb: standardSectionSpacing,
+                    mt: standardSectionSpacing
                 }}
             >
 
@@ -2003,13 +2046,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                     color="success"
                     size="large"
                     startIcon={<DownloadIcon />}
-                    sx={{
-                        borderRadius: 3,
-                        px: 4,
-                        py: 1.2,
-                        textTransform: "none",
-                        fontWeight: 600
-                    }}
+                    sx={standardOutlinedButtonSx}
                     onClick={() => {
 
                         const dashboardReport = {
@@ -2085,13 +2122,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                     size="large"
                     startIcon={<PictureAsPdfIcon />}
                     onClick={exportPDF}
-                    sx={{
-                        borderRadius: 3,
-                        px: 4,
-                        py: 1.2,
-                        textTransform: "none",
-                        fontWeight: 600
-                    }}
+                    sx={standardOutlinedButtonSx}
                 >
                     Export PDF
                 </Button>
