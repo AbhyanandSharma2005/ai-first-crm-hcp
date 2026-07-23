@@ -88,6 +88,30 @@ class InteractionBase(BaseModel):
         examples=["Dr Sharma"]
     )
 
+    specialization: Optional[str] = Field(
+        default=None,
+        description="HCP specialization",
+        examples=["Cardiology"]
+    )
+
+    hospital: Optional[str] = Field(
+        default=None,
+        description="Hospital or clinic name",
+        examples=["Apollo Hospital"]
+    )
+
+    interaction_date: Optional[date] = Field(
+        default=None,
+        description="Date of interaction",
+        examples=["2026-07-20"]
+    )
+
+    interaction_type: Optional[str] = Field(
+        default=None,
+        description="Type of interaction",
+        examples=["Field Visit"]
+    )
+
     summary: str = Field(
         ...,
         min_length=5,
@@ -101,10 +125,22 @@ class InteractionBase(BaseModel):
         examples=["CardioX"]
     )
 
+    outcome: Optional[str] = Field(
+        default=None,
+        description="Outcome of the meeting",
+        examples=["Positive — doctor will prescribe"]
+    )
+
     follow_up: Optional[date] = Field(
         default=None,
         description="Follow-up date",
         examples=["2026-08-15"]
+    )
+
+    notes: Optional[str] = Field(
+        default=None,
+        description="Additional notes",
+        examples=["Bring clinical study on next visit"]
     )
 
 
@@ -114,9 +150,15 @@ class InteractionCreate(InteractionBase):
         json_schema_extra={
             "example": {
                 "hcp_name": "Dr Sharma",
+                "specialization": "Cardiology",
+                "hospital": "Apollo Hospital",
+                "interaction_date": "2026-07-20",
+                "interaction_type": "Field Visit",
                 "summary": "Discussed CardioX efficacy study",
                 "product": "CardioX",
-                "follow_up": "2026-08-15"
+                "outcome": "Positive",
+                "follow_up": "2026-08-15",
+                "notes": "Bring clinical study PDF next time"
             }
         }
     )
@@ -125,18 +167,20 @@ class InteractionCreate(InteractionBase):
 class InteractionUpdate(BaseModel):
 
     hcp_name: Optional[str] = None
-
+    specialization: Optional[str] = None
+    hospital: Optional[str] = None
+    interaction_date: Optional[date] = None
+    interaction_type: Optional[str] = None
     summary: Optional[str] = None
-
     product: Optional[str] = None
-
+    outcome: Optional[str] = None
     follow_up: Optional[date] = None
+    notes: Optional[str] = None
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "summary": "Doctor requested latest clinical study.",
-                "product": "CardioX",
                 "follow_up": "2026-08-20"
             }
         }
@@ -150,6 +194,7 @@ class InteractionResponse(InteractionBase):
     model_config = ConfigDict(
         from_attributes=True
     )
+
 
 
 # ==========================================================
