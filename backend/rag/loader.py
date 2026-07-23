@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from langchain_community.document_loaders import PyPDFLoader
-
 
 class DocumentLoader:
 
@@ -9,6 +7,9 @@ class DocumentLoader:
         self,
         folder="documents"
     ):
+        # Lazy import: avoids triggering langchain_core → langchain_text_splitters
+        # → sentence_transformers → torch import chain at server startup.
+        from langchain_community.document_loaders import PyPDFLoader
 
         docs = []
 
