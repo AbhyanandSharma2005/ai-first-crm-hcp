@@ -76,12 +76,15 @@ def create_interaction(
         new_interaction = Interaction(
 
             hcp_name=interaction.hcp_name,
-
+            specialization=interaction.specialization,
+            hospital=interaction.hospital,
+            interaction_date=interaction.interaction_date,
+            interaction_type=interaction.interaction_type,
             summary=interaction.summary,
-
             product=interaction.product,
-
-            follow_up=interaction.follow_up
+            outcome=interaction.outcome,
+            follow_up=interaction.follow_up,
+            notes=interaction.notes
 
         )
 
