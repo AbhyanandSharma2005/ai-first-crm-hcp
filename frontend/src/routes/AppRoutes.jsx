@@ -8,8 +8,8 @@ from "react-router-dom";
 
 
 import Dashboard from "../pages/Dashboard";
-
 import LogInteraction from "../pages/LogInteraction";
+import ChatScreen from "../pages/ChatScreen";
 
 
 
@@ -43,6 +43,15 @@ function AppRoutes(){
 
             />
 
+            <Route
+
+            path="/chat"
+
+            element={
+                <ChatScreen />
+            }
+
+            />
 
         </Routes>
 
