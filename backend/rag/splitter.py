@@ -1,12 +1,9 @@
 class DocumentSplitter:
 
     def __init__(self):
-        # Lazy import: langchain_text_splitters.__init__ eagerly imports
-        # SentenceTransformersTokenTextSplitter → sentence_transformers → torch,
-        # which is blocked by Windows Application Control. Importing inside
-        # __init__ means it only runs when DocumentSplitter is first instantiated,
-        # but since module-level `document_splitter = DocumentSplitter()` still
-        # runs at import time, we inline the splitter creation lazily instead.
+        # Lazy import: import RecursiveCharacterTextSplitter directly
+        # This avoids the langchain_text_splitters.__init__ import chain
+        # that pulls in SentenceTransformersTokenTextSplitter -> sentence_transformers -> torch
         from langchain_text_splitters import RecursiveCharacterTextSplitter
 
         self.splitter = RecursiveCharacterTextSplitter(
@@ -18,17 +15,18 @@ class DocumentSplitter:
         self,
         documents
     ):
-
         return self.splitter.split_documents(
             documents
         )
 
 
-document_splitter = DocumentSplitter()
-
+_splitter = None
 
 def split_documents(documents):
     """
-    Convenience wrapper.
+    Convenience wrapper that lazily initializes the splitter.
     """
-    return document_splitter.split_documents(documents)
+    global _splitter
+    if _splitter is None:
+        _splitter = DocumentSplitter()
+    return _splitter.split_documents(documents)
