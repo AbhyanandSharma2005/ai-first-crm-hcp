@@ -5,7 +5,7 @@ import faiss
 import numpy as np
 
 from rag.loader import document_loader
-from rag.splitter import document_splitter
+from rag.splitter import split_documents
 from rag.embeddings import generate_embeddings
 
 
@@ -53,7 +53,7 @@ class VectorStore:
         print("Splitting documents...")
 
         self.chunks = (
-            document_splitter.split_documents(
+            split_documents(
                 documents
             )
         )
