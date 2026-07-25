@@ -1,66 +1,69 @@
 import os
-
 import numpy as np
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+from google import genai
+
+_client = None
 
 
-_model = None
-
-
-def get_embedding_model():
+def get_client():
     """
-    Load the Google Generative AI embedding model only once.
-    Uses the GOOGLE_API_KEY environment variable.
-    Model: text-embedding-004 (768-dimensional output).
-    No local PyTorch/DLLs required — pure API calls.
+    Returns a singleton Google GenAI client.
     """
 
-    global _model
+    global _client
 
-    if _model is None:
+    if _client is None:
 
-        api_key = os.environ.get("GOOGLE_API_KEY")
+        api_key = os.getenv("GOOGLE_API_KEY")
 
         if not api_key:
             raise EnvironmentError(
-                "GOOGLE_API_KEY is not set. "
-                "Add it to your .env file to use Google embeddings."
+                "GOOGLE_API_KEY is missing."
             )
 
-        _model = GoogleGenerativeAIEmbeddings(
-            model="embedding-001",
-            google_api_key=api_key
-        )
+        _client = genai.Client(api_key=api_key)
 
-    return _model
+    return _client
 
 
 def generate_embeddings(chunks):
     """
-    Generate embeddings for a list of LangChain Documents.
-    Returns a numpy array of shape (n_chunks, 768).
+    Generate embeddings for LangChain Documents.
+    Returns numpy array (N x D)
     """
 
-    model = get_embedding_model()
+    client = get_client()
 
-    texts = [
-        doc.page_content
-        for doc in chunks
-    ]
+    vectors = []
 
-    vectors = model.embed_documents(texts)
+    for doc in chunks:
+
+        response = client.models.embed_content(
+            model="gemini-embedding-001",
+            contents=doc.page_content
+        )
+
+        vectors.append(
+            response.embeddings[0].values
+        )
 
     return np.array(vectors, dtype=np.float32)
 
 
 def embed_query(query):
     """
-    Generate embedding for a single query string.
-    Returns a numpy array of shape (768,).
+    Generate embedding for one query.
     """
 
-    model = get_embedding_model()
+    client = get_client()
 
-    vector = model.embed_query(query)
+    response = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=query
+    )
 
-    return np.array(vector, dtype=np.float32)
+    return np.array(
+        response.embeddings[0].values,
+        dtype=np.float32
+    )
