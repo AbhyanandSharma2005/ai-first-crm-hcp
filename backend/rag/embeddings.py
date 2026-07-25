@@ -28,7 +28,7 @@ def get_embedding_model():
             )
 
         _model = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
+            model="text-embedding-004",
             google_api_key=api_key
         )
 
