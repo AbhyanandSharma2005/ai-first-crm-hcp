@@ -2,26 +2,29 @@ import {
   Avatar,
   Box,
   Chip,
-  InputAdornment,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-  useMediaQuery,
-  useTheme,
+ InputAdornment,
+ Paper,
+ Table,
+ TableBody,
+ TableCell,
+ TableContainer,
+ TableHead,
+ TableRow,
+ TextField,
+ Typography,
+ useMediaQuery,
+ useTheme,
+ Button,
 } from "@mui/material";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import TablePagination from "@mui/material/TablePagination";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
+import EmptyState from "./EmptyState";
 
 function RecentInteractionsTable({ interactions = [] }) {
   const theme = useTheme();
@@ -78,8 +81,6 @@ function RecentInteractionsTable({ interactions = [] }) {
   const cardBg = isDark ? "#1E293B" : "#FFFFFF";
   const headerBg = isDark ? "#0F172A" : "#F8FAFD";
   const rowHoverBg = isDark ? "#1E293B" : "#FAFCFF";
-  const emptyBg = isDark ? "#1E293B" : "#FAFBFD";
-  const emptyBorder = isDark ? "#334155" : "#D9E1F2";
   const avatarBg = isDark ? "#1A2A4A" : "#EAF0FF";
   const avatarColor = isDark ? "#60A5FA" : "#2855D9";
   const chipBg = isDark ? "#1A2A4A" : "#EEF4FF";
@@ -87,33 +88,14 @@ function RecentInteractionsTable({ interactions = [] }) {
 
   if (!interactions.length) {
     return (
-      <Box
-        sx={{
-          minHeight: 170,
-          display: "grid",
-          placeItems: "center",
-          textAlign: "center",
-          border: `1px dashed ${emptyBorder}`,
-          borderRadius: 3,
-          bgcolor: emptyBg,
-          px: 3,
-          py: 4,
-        }}
-      >
-        <Box>
-          <EventNoteOutlinedIcon
-            sx={{ fontSize: 32, color: textSecondary, mb: 1 }}
-          />
-
-          <Typography fontWeight={700} color={textPrimary}>
-            No recent interactions
-          </Typography>
-
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            New HCP interaction records will appear here.
-          </Typography>
-        </Box>
-      </Box>
+      <EmptyState
+        icon={<AssignmentOutlinedIcon />}
+        variant="empty"
+        title="No recent interactions"
+        description="New HCP interaction records will appear here."
+        size="md"
+        testId="recent-interactions-empty"
+      />
     );
   }
 
@@ -387,14 +369,17 @@ function RecentInteractionsTable({ interactions = [] }) {
 
             {filteredInteractions.length === 0 && (
               <TableRow>
-                <TableCell 
-                  colSpan={showRecordColumn ? 5 : (showFollowupColumn ? 4 : 3)} 
-                  align="center" 
+                <TableCell
+                  colSpan={showRecordColumn ? 5 : (showFollowupColumn ? 4 : 3)}
+                  align="center"
                   sx={{ py: 4 }}
                 >
-                  <Typography color="text.secondary">
-                    No interactions found matching your search.
-                  </Typography>
+                  <EmptyState.NoResults
+                    searchTerm={searchTerm}
+                    onClearFilters={() => setSearchTerm("")}
+                    size="sm"
+                    testId="recent-interactions-search-empty"
+                  />
                 </TableCell>
               </TableRow>
             )}
