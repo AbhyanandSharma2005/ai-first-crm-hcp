@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SearchOffOutlinedIcon from "@mui/icons-material/SearchOffOutlined";
+import LoadingTable from "./LoadingTable";
 import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
 import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
 
@@ -103,6 +104,10 @@ function SearchHCP() {
     textTransform: "uppercase",
     borderColor: borderColor,
   };
+
+  if (loading) {
+    return <LoadingTable rows={5} />;
+  }
 
   return (
     <Card
