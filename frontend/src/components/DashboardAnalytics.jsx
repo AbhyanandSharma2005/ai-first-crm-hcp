@@ -34,6 +34,7 @@ import RecentInteractionsTable from "./RecentInteractionsTable";
 import TopDoctorsChart from "./TopDoctorsChart";
 import ProductLeaderboard from "./ProductLeaderboard";
 import DoctorHeatmap from "./DoctorHeatmap";
+import EmptyState from "./EmptyState";
 
 //-----------------------------------------------------
 // Shared Design-System Style Fragments
@@ -1299,23 +1300,10 @@ function DashboardAnalytics({ onDataLoaded }) {
 
         return (
 
-            <Alert
-
-                severity="info"
-
-                sx={{
-
-                    mt: 3,
-
-                    borderRadius: 3
-
-                }}
-
-            >
-
-                Dashboard data unavailable.
-
-            </Alert>
+            <EmptyState
+                title="No Dashboard Data"
+                description="Dashboard statistics will appear once interactions are recorded."
+            />
 
         );
 
@@ -1529,18 +1517,10 @@ function DashboardAnalytics({ onDataLoaded }) {
             {
                 stats.total_interactions === 0 && (
 
-                    <Alert
-                        severity="info"
-                        sx={{
-                            mt: 3,
-                            mb: 3,
-                            borderRadius: 3
-                        }}
-                    >
-
-                        No interaction data available.
-
-                    </Alert>
+                    <EmptyState
+                        title="No Interactions Yet"
+                        description="Log your first doctor interaction to populate dashboard analytics."
+                    />
 
                 )
             }
