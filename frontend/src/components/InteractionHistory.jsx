@@ -33,6 +33,7 @@ import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import EditInteraction from "./EditInteraction";
 import { commonSpacing } from "../theme/theme";
+import EmptyState from "./EmptyState";
 
 function InteractionHistory() {
   const theme = useTheme();
@@ -270,28 +271,10 @@ function InteractionHistory() {
       </Box>
 
       {filteredInteractions.length === 0 ? (
-        <Box
-          sx={{
-            py: 6,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 1,
-            border: `1px dashed ${borderColor}`,
-            borderRadius: 3,
-            bgcolor: emptyBg,
-          }}
-        >
-          <EventNoteOutlinedIcon sx={{ fontSize: 48, color: textSecondary }} />
-          <Typography fontWeight={700} color={textPrimary}>
-            {searchTerm ? "No matching interactions found" : "No interactions found"}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {searchTerm 
-              ? "Try adjusting your search terms" 
-              : "Start logging interactions to see them here."}
-          </Typography>
-        </Box>
+        <EmptyState
+          title="No Interaction History"
+          description="Interactions logged through forms or AI chat will appear here."
+        />
       ) : (
         <TableContainer
           component={Paper}
