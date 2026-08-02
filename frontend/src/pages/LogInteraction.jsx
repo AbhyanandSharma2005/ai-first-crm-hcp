@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
   useTheme,
+  Button,
 } from "@mui/material";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -19,6 +20,21 @@ import InteractionHistory from "../components/InteractionHistory";
 import AppSnackbar from "../components/AppSnackbar";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing, commonTypography } from "../theme/theme";
+
+// Reusable button style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
 
 function SectionHeader({ icon, title, description, color }) {
   const theme = useTheme();

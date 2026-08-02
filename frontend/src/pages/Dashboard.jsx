@@ -11,6 +11,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
@@ -28,6 +30,40 @@ import Metrics from "../components/Metrics";
 import AppSnackbar from "../components/AppSnackbar";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing, commonTypography } from "../theme/theme";
+
+// Reusable button style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
+
+// Outlined button style
+const outlinedButtonSx = {
+  ...buttonSx,
+  borderWidth: 2,
+  "&:hover": {
+    borderWidth: 2,
+    transform: "translateY(-2px)"
+  }
+};
+
+// Icon button style
+const iconButtonSx = {
+  transition: ".25s",
+  "&:hover": {
+    transform: "scale(1.08)",
+    bgcolor: "action.hover"
+  }
+};
 
 function Dashboard() {
   const theme = useTheme();
@@ -287,14 +323,15 @@ function Dashboard() {
 
           <Button
             variant="outlined"
+            color="primary"
+            size="medium"
             startIcon={<RefreshOutlinedIcon />}
             onClick={() => fetchMetrics(true)}
             disabled={refreshing}
+            aria-label="Refresh Dashboard"
             fullWidth={isMobile}
             sx={{
-              borderRadius: 3,
-              textTransform: "none",
-              fontWeight: 700,
+              ...outlinedButtonSx,
               borderColor: theme.palette.divider,
               color: theme.palette.text.primary,
               bgcolor: theme.palette.background.paper,
@@ -404,14 +441,13 @@ function Dashboard() {
               component={Link}
               to="/log-interaction"
               variant="contained"
+              color="primary"
+              size="large"
               startIcon={<AddOutlinedIcon />}
+              aria-label="Log Interaction"
               fullWidth
               sx={{
-                borderRadius: 3,
-                px: 3,
-                py: 1.25,
-                textTransform: "none",
-                fontWeight: 700,
+                ...buttonSx,
                 flexShrink: 0,
                 bgcolor: "#FFFFFF",
                 color: theme.palette.primary.main,
@@ -421,6 +457,8 @@ function Dashboard() {
                 },
                 "&:hover": {
                   bgcolor: "#EAF1FF",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 8px 20px rgba(0,0,0,.15)",
                 },
               }}
             >
