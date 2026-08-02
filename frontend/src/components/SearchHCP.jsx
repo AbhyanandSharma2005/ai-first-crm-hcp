@@ -25,6 +25,7 @@ import SearchOffOutlinedIcon from "@mui/icons-material/SearchOffOutlined";
 import LoadingTable from "./LoadingTable";
 import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
 import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
@@ -42,6 +43,7 @@ function SearchHCP() {
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchError, setSearchError] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
     severity: "success",
@@ -74,15 +76,36 @@ function SearchHCP() {
   const avatarBg = isDark ? "#1A2A4A" : "#EAF0FF";
   const avatarColor = isDark ? "#60A5FA" : "#2855D9";
 
-  const searchDoctor = async () => {
+  // Validation function
+  const validateSearch = () => {
     const query = doctorName.trim();
-
+    
     if (!query) {
-      setError("Enter a healthcare professional's name to search.");
-      setResults([]);
-      showSnackbar("warning", "Please enter a doctor name to search.");
+      setSearchError("Doctor name is required");
+      showSnackbar("warning", "Please enter a doctor name.");
+      return false;
+    }
+    
+    setSearchError("");
+    return true;
+  };
+
+  // Clear error while typing
+  const handleDoctorNameChange = (event) => {
+    const value = event.target.value;
+    setDoctorName(value);
+    if (searchError) {
+      setSearchError("");
+    }
+  };
+
+  const searchDoctor = async () => {
+    // Validate before search
+    if (!validateSearch()) {
       return;
     }
+
+    const query = doctorName.trim();
 
     setLoading(true);
     setError("");
@@ -120,7 +143,10 @@ function SearchHCP() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") searchDoctor();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchDoctor();
+    }
   };
 
   const clearSearch = () => {
@@ -128,6 +154,7 @@ function SearchHCP() {
     setResults([]);
     setHasSearched(false);
     setError("");
+    setSearchError("");
     showSnackbar("success", "Search cleared successfully.");
   };
 
@@ -202,11 +229,14 @@ function SearchHCP() {
           <TextField
             fullWidth
             value={doctorName}
-            onChange={(event) => setDoctorName(event.target.value)}
+            onChange={handleDoctorNameChange}
             onKeyDown={handleKeyDown}
             disabled={loading}
             placeholder="Search by doctor name, e.g. Dr. Sharma"
             size="medium"
+            error={Boolean(searchError)}
+            helperText={searchError}
+            required
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: isDark ? '#0F172A' : '#FFFFFF',
@@ -234,17 +264,13 @@ function SearchHCP() {
             }}
           />
 
-          <Button
+          <LoadingButton
             variant="contained"
             onClick={searchDoctor}
-            disabled={loading}
-            startIcon={
-              loading ? (
-                <CircularProgress color="inherit" size={18} />
-              ) : (
-                <SearchRoundedIcon />
-              )
-            }
+            loading={loading}
+            disabled={loading || !doctorName.trim()}
+            loadingPosition="start"
+            startIcon={<SearchRoundedIcon />}
             sx={{
               borderRadius: 3,
               px: 3,
@@ -255,10 +281,13 @@ function SearchHCP() {
               bgcolor: "#2855D9",
               boxShadow: "0 8px 16px rgba(40,85,217,.2)",
               "&:hover": { bgcolor: "#1F46BA" },
+              "&.Mui-disabled": {
+                bgcolor: isDark ? "#334155" : "#E2E8F0",
+              },
             }}
           >
-            {loading ? "Searching" : "Search"}
-          </Button>
+            Search
+          </LoadingButton>
         </Box>
 
         {/* Keep persistent error display - this is page state */}

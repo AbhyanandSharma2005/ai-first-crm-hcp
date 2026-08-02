@@ -109,17 +109,9 @@ function LogInteraction() {
   // Handler for InteractionForm submission
   const handleInteractionFormSubmit = async (formData) => {
     try {
-      // Validation
-      if (!formData.hcp_name || !formData.hcp_name.trim()) {
-        showSnackbar("warning", "Please complete all required fields.");
-        return false;
-      }
-
-      if (!formData.summary || !formData.summary.trim()) {
-        showSnackbar("warning", "Please complete all required fields.");
-        return false;
-      }
-
+      // Validation is now handled inside InteractionForm
+      // The form will validate before calling this handler
+      
       // API call would be made here
       // const response = await API.post("/interaction", formData);
       
@@ -136,12 +128,9 @@ function LogInteraction() {
   // Handler for ChatBox AI submission
   const handleChatSubmit = async (chatData) => {
     try {
-      // Validation
-      if (!chatData.message || !chatData.message.trim()) {
-        showSnackbar("warning", "Please complete all required fields.");
-        return false;
-      }
-
+      // Validation is now handled inside ChatBox
+      // The chat component will validate before calling this handler
+      
       // API call would be made here
       // const response = await API.post("/ai/assist", chatData);
       
@@ -157,12 +146,9 @@ function LogInteraction() {
   // Handler for InteractionHistory updates
   const handleHistoryUpdate = async (updateData) => {
     try {
-      // Validation
-      if (!updateData.id) {
-        showSnackbar("warning", "Please complete all required fields.");
-        return false;
-      }
-
+      // Validation is now handled inside InteractionHistory
+      // The history component will validate before calling this handler
+      
       // API call would be made here
       // const response = await API.put(`/interaction/${updateData.id}`, updateData);
       
@@ -279,7 +265,8 @@ function LogInteraction() {
                 onError={(message) => {
                   showSnackbar("error", message || "Failed to save interaction.");
                 }}
-                onValidationError={() => {
+                onValidationError={(errors) => {
+                  // Show a generic validation message
                   showSnackbar("warning", "Please complete all required fields.");
                 }}
               />
@@ -307,7 +294,7 @@ function LogInteraction() {
                   showSnackbar("error", message || "AI assistant encountered an error.");
                 }}
                 onValidationError={() => {
-                  showSnackbar("warning", "Please complete all required fields.");
+                  showSnackbar("warning", "Please enter a message.");
                 }}
               />
             </CardContent>
