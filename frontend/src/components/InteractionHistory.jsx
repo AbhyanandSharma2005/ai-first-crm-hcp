@@ -34,6 +34,7 @@ import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import EditInteraction from "./EditInteraction";
 import { commonSpacing } from "../theme/theme";
+import LoadingTable from "./LoadingTable";
 import EmptyState from "./EmptyState";
 
 function InteractionHistory() {
@@ -164,11 +165,7 @@ function InteractionHistory() {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingTable rows={8} />;
   }
 
   if (error) {
