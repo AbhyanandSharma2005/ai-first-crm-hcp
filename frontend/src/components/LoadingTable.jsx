@@ -24,6 +24,8 @@ function LoadingTable({
 
                         key={index}
 
+                        animation="wave"
+
                         variant="rounded"
 
                         height={55}
