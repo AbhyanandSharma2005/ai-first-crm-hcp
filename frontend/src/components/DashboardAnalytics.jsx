@@ -127,6 +127,22 @@ const standardSectionSpacing = {
     md: 5
 };
 
+//-----------------------------------------------------
+// Chart Color Palette
+// (Phase 13.8.14.8.2 - Better Color Palette)
+//-----------------------------------------------------
+
+const CHART_COLORS = [
+    "#2563EB",
+    "#14B8A6",
+    "#F97316",
+    "#8B5CF6",
+    "#EC4899",
+    "#22C55E",
+    "#EAB308",
+    "#EF4444"
+];
+
 function DashboardAnalytics({ onDataLoaded }) {
 
     //-----------------------------------------------------
@@ -1805,9 +1821,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             >
 
                                 <Typography
-                                    variant="subtitle2"
+                                    variant="h6"
                                     fontWeight={700}
-                                    color="#0F172A"
                                 >
                                     Product Distribution
                                 </Typography>
@@ -1825,6 +1840,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <ProductPieChart
                                 products={stats.products}
+                                colors={CHART_COLORS}
                             />
 
                         </CardContent>
@@ -1863,9 +1879,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             >
 
                                 <Typography
-                                    variant="subtitle2"
+                                    variant="h6"
                                     fontWeight={700}
-                                    color="#0F172A"
                                 >
                                     Monthly Interaction Trend
                                 </Typography>
@@ -1883,6 +1898,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <InteractionTrend
                                 monthlyData={monthlyData}
+                                colors={CHART_COLORS}
                             />
 
                         </CardContent>
