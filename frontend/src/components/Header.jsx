@@ -18,6 +18,21 @@ import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
+// Reusable style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
+
 function Header({ onMenuToggle }) {
   const theme = useTheme();
   const { mode, toggleTheme } = useCustomTheme();
@@ -33,6 +48,33 @@ function Header({ onMenuToggle }) {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  // Avatar hover styles
+  const avatarSx = {
+    width: {
+      xs: 32,
+      sm: 36,
+      md: 40,
+    },
+    height: {
+      xs: 32,
+      sm: 36,
+      md: 40,
+    },
+    bgcolor: theme.palette.primary.main,
+    fontSize: {
+      xs: "0.75rem",
+      sm: "0.875rem",
+      md: "1rem",
+    },
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      transform: "scale(1.05)",
+      boxShadow: `0 4px 12px ${theme.palette.primary.main}50`,
+    },
   };
 
   return (
@@ -77,6 +119,13 @@ function Header({ onMenuToggle }) {
               sx={{
                 mr: 1,
                 color: theme.palette.text.secondary,
+                ...buttonSx,
+                px: 1,
+                py: 1,
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: "none",
+                },
               }}
             >
               <MenuIcon />
@@ -165,6 +214,13 @@ function Header({ onMenuToggle }) {
                   backgroundColor: theme.palette.action.hover,
                   transform: 'rotate(15deg)',
                 },
+                ...buttonSx,
+                px: 1.5,
+                py: 1.5,
+                "&:hover": {
+                  transform: 'rotate(15deg)',
+                  boxShadow: "none",
+                },
               }}
             >
               {mode === 'light' ? (
@@ -230,31 +286,7 @@ function Header({ onMenuToggle }) {
           >
             <Avatar
               onClick={handleMenuClick}
-              sx={{
-                width: {
-                  xs: 32,
-                  sm: 36,
-                  md: 40,
-                },
-                height: {
-                  xs: 32,
-                  sm: 36,
-                  md: 40,
-                },
-                bgcolor: theme.palette.primary.main,
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.875rem",
-                  md: "1rem",
-                },
-                fontWeight: 600,
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: `0 4px 12px ${theme.palette.primary.main}50`,
-                },
-              }}
+              sx={avatarSx}
             >
               FR
             </Avatar>
@@ -294,13 +326,28 @@ function Header({ onMenuToggle }) {
                 </Typography>
               </Box>
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem 
+              onClick={handleMenuClose}
+              sx={buttonSx}
+            >
               <Typography color={theme.palette.text.primary}>Profile</Typography>
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem 
+              onClick={handleMenuClose}
+              sx={buttonSx}
+            >
               <Typography color={theme.palette.text.primary}>Settings</Typography>
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem 
+              onClick={handleMenuClose}
+              sx={{
+                ...buttonSx,
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 8px 20px rgba(239, 68, 68, 0.15)",
+                },
+              }}
+            >
               <Typography color={theme.palette.error.main}>Logout</Typography>
             </MenuItem>
           </Menu>
