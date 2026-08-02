@@ -62,6 +62,13 @@ function ChatBox() {
     scrollToBottom();
   }, [chatMessages, chatLoading]);
 
+  // Listen for Redux state changes to detect errors
+  useEffect(() => {
+    // This would typically come from Redux state
+    // For example: if (chatError) showSnackbar("error", "Unable to contact AI Assistant.");
+    // Or if (chatTimeout) showSnackbar("warning", "AI response is taking longer than expected.");
+  }, []); // Add chatError, chatTimeout as dependencies when available
+
   const handleSendMessage = () => {
     if (!message.trim()) return;
 
@@ -71,8 +78,14 @@ function ChatBox() {
     // Add user message to UI immediately
     dispatch(addUserMessage(text));
     
-    // Trigger backend call
-    dispatch(sendChatMessage({ session_id: sessionId, message: text }));
+    // Trigger backend call with error handling
+    try {
+      dispatch(sendChatMessage({ session_id: sessionId, message: text }));
+      // Note: Success response is shown in chat, no snackbar needed
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      showSnackbar("error", "Unable to contact AI Assistant.");
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -80,6 +93,12 @@ function ChatBox() {
       event.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // Function to handle conversation clear (if you have this feature)
+  const handleClearConversation = () => {
+    // Logic to clear conversation would go here
+    showSnackbar("success", "Conversation cleared.");
   };
 
   return (
