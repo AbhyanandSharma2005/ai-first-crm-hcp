@@ -23,6 +23,7 @@ import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
 import API from "../api/api";
 import { commonSpacing } from "../theme/theme";
+import EmptyState from "./EmptyState";
 
 function Metrics() {
   const [metrics, setMetrics] = useState(null);
@@ -279,23 +280,10 @@ function Metrics() {
             </Grid>
           </Grid>
         ) : (
-          <Box
-            sx={{
-              py: 5,
-              textAlign: "center",
-              border: "1px dashed #D9E1F2",
-              borderRadius: 3,
-              bgcolor: "#FAFBFD",
-            }}
-          >
-            <Typography fontWeight={700} color="#475569">
-              Metrics are unavailable
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Try refreshing once the backend service is available.
-            </Typography>
-          </Box>
+          <EmptyState
+            title="Metrics Unavailable"
+            description="Dashboard metrics will automatically appear after data is collected."
+          />
         )}
       </CardContent>
     </Card>
