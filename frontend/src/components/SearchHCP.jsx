@@ -27,6 +27,7 @@ import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
 import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing } from "../theme/theme";
+import EmptyState from "./EmptyState";
 
 function SearchHCP() {
   const theme = useTheme();
@@ -260,22 +261,15 @@ function SearchHCP() {
         )}
 
         {hasSearched && !loading && !error && results.length === 0 && (
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 5,
-              borderRadius: 3,
-              bgcolor: emptyBg,
-              border: `1px dashed ${emptyBorder}`,
+          <EmptyState
+            title="No Doctors Found"
+            description="Try another doctor name or clear the filters."
+            actionLabel="Clear Search"
+            onAction={() => {
+              setDoctorName("");
+              setResults([]);
             }}
-          >
-            <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"}>
-              No matching HCPs found
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Try another spelling or a more general name.
-            </Typography>
-          </Box>
+          />
         )}
 
         {results.length > 0 && (
