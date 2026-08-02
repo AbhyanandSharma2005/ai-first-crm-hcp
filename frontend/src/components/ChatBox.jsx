@@ -62,15 +62,23 @@ function ChatBox() {
     scrollToBottom();
   }, [chatMessages, chatLoading]);
 
-  // Listen for Redux state changes to detect errors
+  // Listen for Redux state changes to detect errors and timeouts
   useEffect(() => {
     // This would typically come from Redux state
-    // For example: if (chatError) showSnackbar("error", "Unable to contact AI Assistant.");
-    // Or if (chatTimeout) showSnackbar("warning", "AI response is taking longer than expected.");
+    // Example implementation when Redux state has error/timeout flags:
+    // if (chatError) {
+    //   showSnackbar("error", "Unable to contact AI Assistant.");
+    // }
+    // if (chatTimeout) {
+    //   showSnackbar("warning", "AI response is taking longer than expected.");
+    // }
   }, []); // Add chatError, chatTimeout as dependencies when available
 
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      showSnackbar("warning", "Please enter a message.");
+      return;
+    }
 
     const text = message;
     setMessage("");
@@ -291,6 +299,7 @@ function ChatBox() {
         </Box>
       </Box>
 
+      {/* App Snackbar */}
       <AppSnackbar
         open={snackbar.open}
         severity={snackbar.severity}

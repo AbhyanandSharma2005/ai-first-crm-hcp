@@ -195,6 +195,7 @@ function InteractionHistory() {
     return <LoadingTable rows={8} />;
   }
 
+  // Keep persistent error display (page state), but snackbar already handles the transient notification
   if (error) {
     return (
       <Box>

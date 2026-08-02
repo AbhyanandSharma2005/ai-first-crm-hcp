@@ -80,7 +80,7 @@ function SearchHCP() {
     if (!query) {
       setError("Enter a healthcare professional's name to search.");
       setResults([]);
-      showSnackbar("warning", "Please enter a doctor name to search");
+      showSnackbar("warning", "Please enter a doctor name to search.");
       return;
     }
 
@@ -128,7 +128,7 @@ function SearchHCP() {
     setResults([]);
     setHasSearched(false);
     setError("");
-    showSnackbar("success", "Search cleared successfully");
+    showSnackbar("success", "Search cleared successfully.");
   };
 
   const headerCellSx = {
@@ -261,6 +261,7 @@ function SearchHCP() {
           </Button>
         </Box>
 
+        {/* Keep persistent error display - this is page state */}
         {error && (
           <Alert
             severity="info"

@@ -145,8 +145,7 @@ function LogInteraction() {
       // API call would be made here
       // const response = await API.post("/ai/assist", chatData);
       
-      // On success
-      showSnackbar("success", "AI assistance completed successfully.");
+      // On success - no snackbar needed as chat message is feedback
       return true;
     } catch (err) {
       console.error(err);
@@ -168,7 +167,7 @@ function LogInteraction() {
       // const response = await API.put(`/interaction/${updateData.id}`, updateData);
       
       // On success
-      showSnackbar("success", "Interaction updated successfully.");
+      showSnackbar("success", "Interaction updated.");
       return true;
     } catch (err) {
       console.error(err);
@@ -302,7 +301,7 @@ function LogInteraction() {
               <ChatBox 
                 onSubmit={handleChatSubmit}
                 onSuccess={(message) => {
-                  showSnackbar("success", message || "AI assistance completed successfully.");
+                  // No snackbar - chat message provides feedback
                 }} 
                 onError={(message) => {
                   showSnackbar("error", message || "AI assistant encountered an error.");
@@ -329,7 +328,7 @@ function LogInteraction() {
               <InteractionHistory 
                 onUpdate={handleHistoryUpdate}
                 onSuccess={(message) => {
-                  showSnackbar("success", message || "Interaction updated successfully.");
+                  showSnackbar("success", message || "Interaction updated.");
                 }} 
                 onError={(message) => {
                   showSnackbar("error", message || "Failed to update interaction.");
