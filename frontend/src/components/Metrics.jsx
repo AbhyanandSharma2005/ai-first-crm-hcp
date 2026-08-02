@@ -24,6 +24,7 @@ import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 
 import API from "../api/api";
 import { commonSpacing } from "../theme/theme";
+import LoadingCards from "./LoadingCards";
 import EmptyState from "./EmptyState";
 
 function Metrics() {
@@ -180,7 +181,7 @@ function Metrics() {
         )}
 
         {loading ? (
-          <MetricsSkeleton />
+          <LoadingCards count={4} />
         ) : metrics ? (
           <Grid container spacing={commonSpacing.gridSpacing}>
             <Grid item xs={12} sm={6} lg={4}>
