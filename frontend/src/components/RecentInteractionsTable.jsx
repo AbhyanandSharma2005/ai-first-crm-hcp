@@ -26,8 +26,13 @@ import Highlighter from "react-highlight-words";
 import TablePagination from "@mui/material/TablePagination";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import EmptyState from "./EmptyState";
+import LoadingTable from "./LoadingTable";
 
-function RecentInteractionsTable({ interactions = [] }) {
+function RecentInteractionsTable({ interactions = [], loading = false }) {
+
+  if (loading) {
+    return <LoadingTable rows={5} />;
+  }
   const theme = useTheme();
   const { mode } = useCustomTheme();
   const isDark = mode === 'dark';
