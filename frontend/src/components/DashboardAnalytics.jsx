@@ -35,6 +35,9 @@ import RecentInteractionsTable from "./RecentInteractionsTable";
 import TopDoctorsChart from "./TopDoctorsChart";
 import ProductLeaderboard from "./ProductLeaderboard";
 import DoctorHeatmap from "./DoctorHeatmap";
+import LoadingCards from "./LoadingCards";
+import LoadingChart from "./LoadingChart";
+import LoadingTable from "./LoadingTable";
 import EmptyState from "./EmptyState";
 
 //-----------------------------------------------------
@@ -1208,54 +1211,21 @@ function DashboardAnalytics({ onDataLoaded }) {
 
         return (
 
-            <Box sx={{ mt: standardSectionSpacing }}>
+            <Box sx={{ mt: 4 }}>
 
-                <Skeleton
-                    variant="rounded"
-                    height={90}
-                    sx={{ mb: 4, borderRadius: 4 }}
-                />
+                <LoadingCards />
 
-                <Grid
-                    container
-                    spacing={standardGridSpacing}
-                >
+                <Box sx={{ mt: 4 }}>
 
-                    <Grid
-                        item
-                        xs={12}
-                        md={6}
-                    >
+                    <LoadingChart />
 
-                        <Skeleton
-                            variant="rounded"
-                            height={180}
-                            sx={{ borderRadius: 4 }}
-                        />
+                </Box>
 
-                    </Grid>
+                <Box sx={{ mt: 4 }}>
 
-                    <Grid
-                        item
-                        xs={12}
-                        md={6}
-                    >
+                    <LoadingTable />
 
-                        <Skeleton
-                            variant="rounded"
-                            height={180}
-                            sx={{ borderRadius: 4 }}
-                        />
-
-                    </Grid>
-
-                </Grid>
-
-                <Skeleton
-                    variant="rounded"
-                    height={320}
-                    sx={{ mt: 3, borderRadius: 4 }}
-                />
+                </Box>
 
             </Box>
 
