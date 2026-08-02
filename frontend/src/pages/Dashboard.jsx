@@ -25,6 +25,7 @@ import DashboardAnalytics from "../components/DashboardAnalytics";
 import LoadingCards from "../components/LoadingCards";
 import SearchHCP from "../components/SearchHCP";
 import Metrics from "../components/Metrics";
+import AppSnackbar from "../components/AppSnackbar";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing, commonTypography } from "../theme/theme";
 
@@ -39,6 +40,26 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "success",
+    message: ""
+  });
+
+  const showSnackbar = (severity, message) => {
+    setSnackbar({
+      open: true,
+      severity,
+      message
+    });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
+  };
 
   const fetchMetrics = useCallback(async (isManualRefresh = false) => {
     if (isManualRefresh) setRefreshing(true);
@@ -49,9 +70,15 @@ function Dashboard() {
       if (response.data?.success && response.data?.data) {
         setMetrics(response.data.data);
         setLastUpdated(new Date());
+        if (isManualRefresh) {
+          showSnackbar("success", "Dashboard refreshed successfully");
+        }
       }
     } catch (error) {
       console.error("Failed to fetch metrics", error);
+      if (isManualRefresh) {
+        showSnackbar("error", "Failed to refresh dashboard");
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -534,6 +561,11 @@ function Dashboard() {
             console.log("✅ Dashboard Analytics data loaded:", data);
             setDashboardStats(data);
             setLastUpdated(new Date());
+            showSnackbar("success", "Analytics data loaded successfully");
+          }}
+          onError={(error) => {
+            console.error("❌ Failed to load analytics:", error);
+            showSnackbar("error", "Failed to load analytics data");
           }}
         />
       </Box>
@@ -557,6 +589,14 @@ function Dashboard() {
       >
         <Metrics />
       </Box>
+
+      {/* App Snackbar */}
+      <AppSnackbar
+        open={snackbar.open}
+        severity={snackbar.severity}
+        message={snackbar.message}
+        onClose={handleSnackbarClose}
+      />
     </Box>
   );
 }

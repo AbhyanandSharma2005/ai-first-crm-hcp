@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -16,6 +16,7 @@ import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import InteractionForm from "../components/InteractionForm";
 import ChatBox from "../components/ChatBox";
 import InteractionHistory from "../components/InteractionHistory";
+import AppSnackbar from "../components/AppSnackbar";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing, commonTypography } from "../theme/theme";
 
@@ -65,6 +66,26 @@ function LogInteraction() {
   const theme = useTheme();
   const { mode } = useCustomTheme();
   const isDark = mode === 'dark';
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "success",
+    message: ""
+  });
+
+  const showSnackbar = (severity, message) => {
+    setSnackbar({
+      open: true,
+      severity,
+      message
+    });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
+  };
 
   const textPrimary = isDark ? "#F1F5F9" : "#172033";
   const borderColor = isDark ? "#334155" : "#E7ECF5";
@@ -180,7 +201,12 @@ function LogInteraction() {
                 color="#2855D9"
               />
 
-              <InteractionForm />
+              <InteractionForm onSuccess={(message) => {
+                showSnackbar("success", message || "Interaction logged successfully");
+              }} 
+              onError={(message) => {
+                showSnackbar("error", message || "Failed to log interaction");
+              }} />
             </CardContent>
           </Card>
         </Grid>
@@ -196,7 +222,12 @@ function LogInteraction() {
                 color="#8B5CF6"
               />
 
-              <ChatBox />
+              <ChatBox onSuccess={(message) => {
+                showSnackbar("success", message || "AI assistance completed successfully");
+              }} 
+              onError={(message) => {
+                showSnackbar("error", message || "AI assistant encountered an error");
+              }} />
             </CardContent>
           </Card>
         </Grid>
@@ -212,11 +243,24 @@ function LogInteraction() {
                 color="#10A683"
               />
 
-              <InteractionHistory />
+              <InteractionHistory onSuccess={(message) => {
+                showSnackbar("success", message || "Interaction updated successfully");
+              }} 
+              onError={(message) => {
+                showSnackbar("error", message || "Failed to update interaction");
+              }} />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {/* App Snackbar */}
+      <AppSnackbar
+        open={snackbar.open}
+        severity={snackbar.severity}
+        message={snackbar.message}
+        onClose={handleSnackbarClose}
+      />
     </Box>
   );
 }

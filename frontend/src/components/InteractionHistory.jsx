@@ -32,6 +32,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import EditInteraction from "./EditInteraction";
+import AppSnackbar from "../components/AppSnackbar";
 import { commonSpacing } from "../theme/theme";
 import LoadingTable from "./LoadingTable";
 import EmptyState from "./EmptyState";
@@ -50,6 +51,26 @@ function InteractionHistory() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "success",
+    message: ""
+  });
+
+  const showSnackbar = (severity, message) => {
+    setSnackbar({
+      open: true,
+      severity,
+      message
+    });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
+  };
 
   const textPrimary = isDark ? "#F1F5F9" : "#172033";
   const textSecondary = isDark ? "#94A3B8" : "#475569";
@@ -79,12 +100,17 @@ function InteractionHistory() {
         setInteractions([]);
       }
       setError("");
+      if (isRefresh) {
+        showSnackbar("success", "Interaction history refreshed successfully");
+      }
     } catch (err) {
       console.error("Error fetching interactions:", err);
-      setError(
-        err.response?.data?.message ||
-          "Unable to load interaction history."
-      );
+      const errorMessage = err.response?.data?.message ||
+        "Unable to load interaction history.";
+      setError(errorMessage);
+      if (isRefresh) {
+        showSnackbar("error", "Failed to refresh interaction history");
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -111,11 +137,15 @@ function InteractionHistory() {
     try {
       const response = await API.delete(`/interaction/${deleteId}`);
       if (response.data?.success) {
+        showSnackbar("success", "Interaction deleted successfully");
         await fetchInteractions(true);
+      } else {
+        showSnackbar("error", "Failed to delete interaction");
       }
     } catch (err) {
       console.error("Delete error:", err);
       setError("Failed to delete interaction.");
+      showSnackbar("error", "Failed to delete interaction");
     } finally {
       setDeleteDialogOpen(false);
       setDeleteId(null);
@@ -410,8 +440,12 @@ function InteractionHistory() {
           interaction={selectedInteraction}
           onClose={closeEdit}
           onUpdate={() => {
+            showSnackbar("success", "Interaction updated successfully");
             fetchInteractions(true);
             closeEdit();
+          }}
+          onError={(message) => {
+            showSnackbar("error", message || "Failed to update interaction");
           }}
         />
       )}
@@ -463,6 +497,14 @@ function InteractionHistory() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* App Snackbar */}
+      <AppSnackbar
+        open={snackbar.open}
+        severity={snackbar.severity}
+        message={snackbar.message}
+        onClose={handleSnackbarClose}
+      />
     </Box>
   );
 }

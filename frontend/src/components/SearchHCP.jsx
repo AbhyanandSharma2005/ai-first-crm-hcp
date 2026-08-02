@@ -30,6 +30,7 @@ import API from "../api/api";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing } from "../theme/theme";
 import EmptyState from "./EmptyState";
+import AppSnackbar from "../components/AppSnackbar";
 
 function SearchHCP() {
   const theme = useTheme();
@@ -41,6 +42,26 @@ function SearchHCP() {
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "success",
+    message: ""
+  });
+
+  const showSnackbar = (severity, message) => {
+    setSnackbar({
+      open: true,
+      severity,
+      message
+    });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
+  };
 
   const textPrimary = isDark ? "#F1F5F9" : "#172033";
   const textSecondary = isDark ? "#94A3B8" : "#475569";
@@ -59,6 +80,7 @@ function SearchHCP() {
     if (!query) {
       setError("Enter a healthcare professional's name to search.");
       setResults([]);
+      showSnackbar("warning", "Please enter a doctor name to search");
       return;
     }
 
@@ -73,19 +95,25 @@ function SearchHCP() {
       });
 
       if (response.data?.success && Array.isArray(response.data?.data)) {
-        setResults(response.data.data);
+        const fetchedResults = response.data.data;
+        setResults(fetchedResults);
+        if (fetchedResults.length === 0) {
+          showSnackbar("info", `No doctors found matching "${query}"`);
+        } else {
+          showSnackbar("success", `Found ${fetchedResults.length} doctor${fetchedResults.length > 1 ? 's' : ''} matching "${query}"`);
+        }
       } else {
-        setError(
-          response.data?.message ||
-            "No healthcare professionals matched your search."
-        );
+        const errorMsg = response.data?.message ||
+          "No healthcare professionals matched your search.";
+        setError(errorMsg);
+        showSnackbar("info", errorMsg);
       }
     } catch (err) {
       console.error("HCP search failed:", err);
-      setError(
-        err.response?.data?.message ||
-          "Unable to search healthcare professionals. Please try again."
-      );
+      const errorMsg = err.response?.data?.message ||
+        "Unable to search healthcare professionals. Please try again.";
+      setError(errorMsg);
+      showSnackbar("error", "Failed to search healthcare professionals");
     } finally {
       setLoading(false);
     }
@@ -93,6 +121,14 @@ function SearchHCP() {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") searchDoctor();
+  };
+
+  const clearSearch = () => {
+    setDoctorName("");
+    setResults([]);
+    setHasSearched(false);
+    setError("");
+    showSnackbar("success", "Search cleared successfully");
   };
 
   const headerCellSx = {
@@ -272,10 +308,7 @@ function SearchHCP() {
             title="No Doctors Found"
             description="Try another doctor name or clear the filters."
             actionLabel="Clear Search"
-            onAction={() => {
-              setDoctorName("");
-              setResults([]);
-            }}
+            onAction={clearSearch}
           />
         )}
 
@@ -392,6 +425,14 @@ function SearchHCP() {
           </Box>
         )}
       </CardContent>
+
+      {/* App Snackbar */}
+      <AppSnackbar
+        open={snackbar.open}
+        severity={snackbar.severity}
+        message={snackbar.message}
+        onClose={handleSnackbarClose}
+      />
     </Card>
   );
 }
