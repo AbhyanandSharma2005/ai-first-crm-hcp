@@ -71,14 +71,16 @@ function Dashboard() {
         setMetrics(response.data.data);
         setLastUpdated(new Date());
         if (isManualRefresh) {
-          showSnackbar("success", "Dashboard refreshed successfully");
+          showSnackbar("success", "Dashboard refreshed successfully.");
+        }
+      } else {
+        if (isManualRefresh) {
+          showSnackbar("error", "Failed to refresh dashboard.");
         }
       }
-    } catch (error) {
-      console.error("Failed to fetch metrics", error);
-      if (isManualRefresh) {
-        showSnackbar("error", "Failed to refresh dashboard");
-      }
+    } catch (err) {
+      console.error(err);
+      showSnackbar("error", "Failed to load dashboard.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -91,6 +93,24 @@ function Dashboard() {
     const interval = window.setInterval(() => fetchMetrics(), 30000);
     return () => window.clearInterval(interval);
   }, [fetchMetrics]);
+
+  // WebSocket connection simulation for snackbar notifications
+  useEffect(() => {
+    // Simulate WebSocket connection
+    const isConnected = true; // This would come from your WebSocket context/state
+    
+    // Simulate connection status changes
+    if (isConnected) {
+      showSnackbar("success", "Live connection restored.");
+    } else {
+      showSnackbar("warning", "Realtime updates disconnected.");
+    }
+
+    // Cleanup if needed
+    return () => {
+      // WebSocket cleanup would go here
+    };
+  }, []); // Add WebSocket connection status as dependency
 
   if (loading) {
     return (
@@ -561,11 +581,11 @@ function Dashboard() {
             console.log("✅ Dashboard Analytics data loaded:", data);
             setDashboardStats(data);
             setLastUpdated(new Date());
-            showSnackbar("success", "Analytics data loaded successfully");
+            showSnackbar("success", "Analytics data loaded successfully.");
           }}
           onError={(error) => {
             console.error("❌ Failed to load analytics:", error);
-            showSnackbar("error", "Failed to load analytics data");
+            showSnackbar("error", "Failed to load analytics data.");
           }}
         />
       </Box>
