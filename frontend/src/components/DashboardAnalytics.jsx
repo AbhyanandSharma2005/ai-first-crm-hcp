@@ -9,7 +9,8 @@ import {
     Button,
     Alert,
     Chip,
-    Divider
+    Divider,
+    Tooltip
 } from "@mui/material";
 
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -86,12 +87,26 @@ const buttonHoverSx = {
     }
 };
 
+//-----------------------------------------------------
+// Accessibility - Focus Visibility
+// (Phase 13.8.14.9.8 - Improve Focus Visibility)
+//-----------------------------------------------------
+
+const focusVisibleSx = {
+    "&:focus-visible": {
+        outline: "3px solid #1976D2",
+        outlineOffset: 2,
+        borderRadius: 6
+    }
+};
+
 const standardCardSx = {
     borderRadius: 4,
     border: "1px solid",
     borderColor: "divider",
     boxShadow: "0 8px 25px rgba(15,23,42,.08)",
-    ...cardAnimation
+    ...cardAnimation,
+    ...focusVisibleSx
 };
 
 const standardContainedButtonSx = {
@@ -100,14 +115,16 @@ const standardContainedButtonSx = {
     py: 1.25,
     textTransform: "none",
     fontWeight: 700,
-    ...buttonHoverSx
+    ...buttonHoverSx,
+    ...focusVisibleSx
 };
 
 const standardOutlinedButtonSx = {
     borderRadius: 3,
     textTransform: "none",
     fontWeight: 700,
-    ...buttonHoverSx
+    ...buttonHoverSx,
+    ...focusVisibleSx
 };
 
 const standardChipSx = {
@@ -1445,6 +1462,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             {/* Connection Status Chip */}
                             <Chip
                                 label={isConnected ? "Live" : "Offline"}
+                                aria-label={`System Status ${isConnected ? "Live" : "Offline"}`}
                                 color={isConnected ? "success" : "error"}
                                 size="small"
                                 sx={{
@@ -1460,6 +1478,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Chip
                                 icon={<AccessTimeIcon />}
                                 label={`Updated : ${lastUpdated || "--"}`}
+                                aria-label={`Dashboard updated at ${lastUpdated || "unknown time"}`}
                                 size="small"
                                 sx={{
                                     ...standardChipSx,
@@ -1471,6 +1490,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Chip
                                 icon={<SpeedIcon />}
                                 label={`Response : ${responseTime || "--"} sec`}
+                                aria-label={`API response time ${responseTime || "unknown"} seconds`}
                                 size="small"
                                 sx={{
                                     ...standardChipSx,
@@ -1479,52 +1499,61 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 }}
                             />
 
-                            <Button
-                                variant="contained"
-                                startIcon={<RefreshIcon />}
-                                onClick={fetchDashboardStats}
-                                sx={{
-                                    ...standardContainedButtonSx,
-                                    bgcolor: "#ffffff",
-                                    color: "#1565C0",
-                                    "&:hover": {
-                                        ...buttonHoverSx["&:hover"],
-                                        bgcolor: "#E3F2FD"
-                                    }
-                                }}
-                            >
-                                Refresh
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="success"
-                                startIcon={<DownloadIcon />}
-                                onClick={exportCSV}
-                                sx={{
-                                    ...standardOutlinedButtonSx,
-                                    borderColor: "#86EFAC",
-                                    color: "#166534",
-                                    "&:hover": {
-                                        ...buttonHoverSx["&:hover"],
-                                        borderColor: "#4ADE80",
-                                        bgcolor: "rgba(240, 253, 244, 0.16)"
-                                    }
-                                }}
-                            >
-                                Export CSV
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                startIcon={<PictureAsPdfIcon />}
-                                onClick={exportPDF}
-                                sx={{
-                                    ...standardContainedButtonSx,
-                                    ml: 2
-                                }}
-                            >
-                                Export PDF
-                            </Button>
+                            <Tooltip title="Refresh">
+                                <Button
+                                    variant="contained"
+                                    startIcon={<RefreshIcon />}
+                                    onClick={fetchDashboardStats}
+                                    aria-label="Refresh Dashboard Data"
+                                    sx={{
+                                        ...standardContainedButtonSx,
+                                        bgcolor: "#ffffff",
+                                        color: "#1565C0",
+                                        "&:hover": {
+                                            ...buttonHoverSx["&:hover"],
+                                            bgcolor: "#E3F2FD"
+                                        }
+                                    }}
+                                >
+                                    Refresh
+                                </Button>
+                            </Tooltip>
+                            <Tooltip title="Export CSV">
+                                <Button
+                                    variant="outlined"
+                                    color="success"
+                                    startIcon={<DownloadIcon />}
+                                    onClick={exportCSV}
+                                    aria-label="Export Dashboard CSV"
+                                    sx={{
+                                        ...standardOutlinedButtonSx,
+                                        borderColor: "#86EFAC",
+                                        color: "#166534",
+                                        "&:hover": {
+                                            ...buttonHoverSx["&:hover"],
+                                            borderColor: "#4ADE80",
+                                            bgcolor: "rgba(240, 253, 244, 0.16)"
+                                        }
+                                    }}
+                                >
+                                    Export CSV
+                                </Button>
+                            </Tooltip>
+                            <Tooltip title="Export PDF">
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<PictureAsPdfIcon />}
+                                    onClick={exportPDF}
+                                    aria-label="Export Dashboard PDF"
+                                    sx={{
+                                        ...standardContainedButtonSx,
+                                        ml: 2
+                                    }}
+                                >
+                                    Export PDF
+                                </Button>
+                            </Tooltip>
 
                         </Box>
 
@@ -1583,6 +1612,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                 >
 
                     <Card
+                        tabIndex={0}
+                        role="article"
+                        aria-label="Analytics Card: Total HCPs"
                         sx={{
                             height: "100%",
                             borderRadius: 4,
@@ -1601,7 +1633,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 background:
                                     "linear-gradient(135deg,#ffffff,#F8FBFF)",
                                 transform: "translateY(-6px)"
-                            }
+                            },
+                            ...focusVisibleSx
                         }}
                     >
 
@@ -1654,6 +1687,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                 >
 
                     <Card
+                        tabIndex={0}
+                        role="article"
+                        aria-label="Analytics Card: Total Interactions"
                         sx={{
                             height: "100%",
                             borderRadius: 4,
@@ -1672,7 +1708,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 background:
                                     "linear-gradient(135deg,#ffffff,#F8FBFF)",
                                 transform: "translateY(-6px)"
-                            }
+                            },
+                            ...focusVisibleSx
                         }}
                     >
 
@@ -1735,7 +1772,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                     xs={12}
                 >
 
-                    <Card sx={standardCardSx}>
+                    <Card
+                        tabIndex={0}
+                        role="article"
+                        aria-label="Analytics Card: Top Doctors"
+                        sx={standardCardSx}
+                    >
                         <CardContent sx={cardContentAnimationSx}>
                             <TopDoctorsChart />
                         </CardContent>
@@ -1750,7 +1792,12 @@ function DashboardAnalytics({ onDataLoaded }) {
         ========================================================== */}
 
             <Box sx={{ mt: standardSectionSpacing }}>
-                <Card sx={standardCardSx}>
+                <Card
+                    tabIndex={0}
+                    role="article"
+                    aria-label="Analytics Card: Product Leaderboard"
+                    sx={standardCardSx}
+                >
                     <CardContent sx={cardContentAnimationSx}>
                         <ProductLeaderboard />
                     </CardContent>
@@ -1762,7 +1809,12 @@ function DashboardAnalytics({ onDataLoaded }) {
         ========================================================== */}
 
             <Box sx={{ mt: standardSectionSpacing }}>
-                <Card sx={standardCardSx}>
+                <Card
+                    tabIndex={0}
+                    role="article"
+                    aria-label="Analytics Card: Doctor Activity Heatmap"
+                    sx={standardCardSx}
+                >
                     <CardContent sx={cardContentAnimationSx}>
                         <DoctorHeatmap />
                     </CardContent>
@@ -1802,6 +1854,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                 >
 
                     <Card
+                        tabIndex={0}
+                        role="article"
+                        aria-label="Analytics Card: Product Distribution"
                         sx={{
                             ...standardCardSx,
                             height: "100%",
@@ -1830,6 +1885,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Chip
                                     size="small"
                                     label="Live"
+                                    aria-label="Product Distribution Status Live"
                                     color="success"
                                     sx={standardChipSx}
                                 />
@@ -1838,6 +1894,15 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Divider sx={{ mb: 3 }} />
 
+                            {/*
+                                Note: ProductPieChart renders the Recharts
+                                <ResponsiveContainer>. Add the following
+                                props inside that component:
+                                <ResponsiveContainer
+                                    aria-label="Product Distribution Chart"
+                                    role="img"
+                                >
+                            */}
                             <ProductPieChart
                                 products={stats.products}
                                 colors={CHART_COLORS}
@@ -1860,6 +1925,9 @@ function DashboardAnalytics({ onDataLoaded }) {
                 >
 
                     <Card
+                        tabIndex={0}
+                        role="article"
+                        aria-label="Analytics Card: Monthly Interaction Trend"
                         sx={{
                             ...standardCardSx,
                             height: "100%",
@@ -1888,6 +1956,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Chip
                                     size="small"
                                     label="12 Months"
+                                    aria-label="Showing 12 Months of Data"
                                     color="primary"
                                     sx={standardChipSx}
                                 />
@@ -1896,6 +1965,15 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Divider sx={{ mb: 3 }} />
 
+                            {/*
+                                Note: InteractionTrend renders the Recharts
+                                <ResponsiveContainer>. Add the following
+                                props inside that component:
+                                <ResponsiveContainer
+                                    aria-label="Monthly Interaction Trend"
+                                    role="img"
+                                >
+                            */}
                             <InteractionTrend
                                 monthlyData={monthlyData}
                                 colors={CHART_COLORS}
@@ -1914,6 +1992,9 @@ function DashboardAnalytics({ onDataLoaded }) {
         ========================================================== */}
 
             <Card
+                tabIndex={0}
+                role="article"
+                aria-label="Analytics Card: Dashboard Insights"
                 sx={{
                     mb: standardSectionSpacing,
                     borderRadius: 4,
@@ -1922,7 +2003,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                     border: "1px solid #D6E4FF",
                     boxShadow:
                         "0 6px 18px rgba(21,101,192,.08)",
-                    ...cardAnimation
+                    ...cardAnimation,
+                    ...focusVisibleSx
                 }}
             >
 
@@ -1941,7 +2023,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                color="text.secondary"
+                                sx={{ color: "#475569" }}
                             >
                                 Active Products
                             </Typography>
@@ -1964,7 +2046,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                color="text.secondary"
+                                sx={{ color: "#475569" }}
                             >
                                 Latest Update
                             </Typography>
@@ -1986,7 +2068,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                color="text.secondary"
+                                sx={{ color: "#475569" }}
                             >
                                 API Response Time
                             </Typography>
@@ -2011,6 +2093,9 @@ function DashboardAnalytics({ onDataLoaded }) {
         ========================================================== */}
 
             <Card
+                tabIndex={0}
+                role="article"
+                aria-label="Analytics Card: Recent Interactions"
                 sx={{
                     ...standardCardSx,
                     mb: standardSectionSpacing,
@@ -2041,7 +2126,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="body2"
-                                color="text.secondary"
+                                sx={{ color: "#475569" }}
                             >
                                 Latest 5 doctor interactions recorded in the CRM.
                             </Typography>
@@ -2050,6 +2135,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                         <Chip
                             label={`${stats.recent_interactions?.length || 0} Records`}
+                            aria-label={`${stats.recent_interactions?.length || 0} interaction records shown`}
                             color="primary"
                             variant="outlined"
                             size="small"
@@ -2060,6 +2146,12 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     <Divider sx={{ mb: 3 }} />
 
+                    {/*
+                        Note: RecentInteractionsTable renders the MUI
+                        <Table>. Add the following prop inside that
+                        component:
+                        <Table aria-label="Recent Interaction Table">
+                    */}
                     <RecentInteractionsTable
                         interactions={
                             stats.recent_interactions || []
@@ -2085,91 +2177,97 @@ function DashboardAnalytics({ onDataLoaded }) {
                 }}
             >
 
-                <Button
-                    variant="outlined"
-                    color="success"
-                    size="large"
-                    startIcon={<DownloadIcon />}
-                    sx={standardOutlinedButtonSx}
-                    onClick={() => {
+                <Tooltip title="Export">
+                    <Button
+                        variant="outlined"
+                        color="success"
+                        size="large"
+                        startIcon={<DownloadIcon />}
+                        aria-label="Export Dashboard Report as JSON"
+                        sx={standardOutlinedButtonSx}
+                        onClick={() => {
 
-                        const dashboardReport = {
+                            const dashboardReport = {
 
-                            generated_at:
-                                new Date().toLocaleString(),
+                                generated_at:
+                                    new Date().toLocaleString(),
 
-                            total_hcps:
-                                stats.total_hcps,
+                                total_hcps:
+                                    stats.total_hcps,
 
-                            total_interactions:
-                                stats.total_interactions,
+                                total_interactions:
+                                    stats.total_interactions,
 
-                            products:
-                                stats.products,
+                                products:
+                                    stats.products,
 
-                            monthly_trend:
-                                monthlyData,
+                                monthly_trend:
+                                    monthlyData,
 
-                            recent_interactions:
-                                stats.recent_interactions
+                                recent_interactions:
+                                    stats.recent_interactions
 
-                        };
+                            };
 
-                        const blob = new Blob(
+                            const blob = new Blob(
 
-                            [
+                                [
 
-                                JSON.stringify(
-                                    dashboardReport,
-                                    null,
-                                    4
-                                )
+                                    JSON.stringify(
+                                        dashboardReport,
+                                        null,
+                                        4
+                                    )
 
-                            ],
+                                ],
 
-                            {
+                                {
 
-                                type: "application/json"
+                                    type: "application/json"
 
-                            }
+                                }
 
-                        );
+                            );
 
-                        const url =
-                            window.URL.createObjectURL(blob);
+                            const url =
+                                window.URL.createObjectURL(blob);
 
-                        const link =
-                            document.createElement("a");
+                            const link =
+                                document.createElement("a");
 
-                        link.href = url;
+                            link.href = url;
 
-                        link.download =
-                            "dashboard-report.json";
+                            link.download =
+                                "dashboard-report.json";
 
-                        document.body.appendChild(link);
+                            document.body.appendChild(link);
 
-                        link.click();
+                            link.click();
 
-                        document.body.removeChild(link);
+                            document.body.removeChild(link);
 
-                        window.URL.revokeObjectURL(url);
+                            window.URL.revokeObjectURL(url);
 
-                    }}
-                >
+                        }}
+                    >
 
-                    Export Dashboard Report
+                        Export Dashboard Report
 
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    size="large"
-                    startIcon={<PictureAsPdfIcon />}
-                    onClick={exportPDF}
-                    sx={standardOutlinedButtonSx}
-                >
-                    Export PDF
-                </Button>
+                    </Button>
+                </Tooltip>
+                <Tooltip title="Export PDF">
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        size="large"
+                        startIcon={<PictureAsPdfIcon />}
+                        onClick={exportPDF}
+                        aria-label="Export Dashboard PDF"
+                        sx={standardOutlinedButtonSx}
+                    >
+                        Export PDF
+                    </Button>
+                </Tooltip>
 
             </Box>
 
