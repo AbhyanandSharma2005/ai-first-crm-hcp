@@ -52,6 +52,19 @@ const outlinedButtonSx = {
   }
 };
 
+// Reusable card animation with reduced motion support
+const cardAnimation = {
+  transition: "all 0.3s ease-in-out",
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    transform: "none"
+  },
+  "&:hover": {
+    transform: "translateY(-6px) scale(1.01)",
+    boxShadow: "0 18px 40px rgba(15,23,42,0.18)"
+  }
+};
+
 function Metrics() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,14 +111,25 @@ function Metrics() {
       sx={{
         borderRadius: 4,
         border: "1px solid #E7ECF5",
-        boxShadow: 1,
-        transition: "0.25s",
-        "&:hover": {
-          boxShadow: 4,
-        },
+        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+        ...cardAnimation,
       }}
     >
-      <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+      <CardContent 
+        sx={{ 
+          p: { xs: 2.5, md: 3.5 },
+          transition: "all .3s",
+          "@media (prefers-reduced-motion: reduce)": {
+            transition: "none"
+          },
+          ".MuiTypography-root": {
+            transition: "all .25s",
+            "@media (prefers-reduced-motion: reduce)": {
+              transition: "none"
+            }
+          }
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -126,6 +150,13 @@ function Metrics() {
                 borderRadius: 3,
                 bgcolor: "#E9FBF6",
                 color: "#10A683",
+                transition: "all .3s",
+                "@media (prefers-reduced-motion: reduce)": {
+                  transition: "none"
+                },
+                "&:hover": {
+                  transform: "scale(1.1) rotate(-5deg)",
+                }
               }}
             >
               <MonitorHeartOutlinedIcon />
@@ -176,6 +207,10 @@ function Metrics() {
                   borderColor: "#D9E1F2",
                   color: "#475569",
                   bgcolor: "#FFFFFF",
+                  transition: "all .25s",
+                  "@media (prefers-reduced-motion: reduce)": {
+                    transition: "none"
+                  },
                   "&:hover": {
                     borderColor: "#2855D9",
                     color: "#2855D9",
@@ -206,6 +241,14 @@ function Metrics() {
                   py: 0.8,
                   px: 2,
                   borderRadius: 2,
+                  transition: "all .25s",
+                  "@media (prefers-reduced-motion: reduce)": {
+                    transition: "none"
+                  },
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+                  }
                 }}
               >
                 Retry
@@ -285,9 +328,23 @@ function Metrics() {
                   background:
                     "linear-gradient(135deg, #172554 0%, #2855D9 100%)",
                   boxShadow: "0 10px 20px rgba(40,85,217,.2)",
+                  ...cardAnimation,
                 }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    transition: "all .3s",
+                    "@media (prefers-reduced-motion: reduce)": {
+                      transition: "none"
+                    },
+                    ".MuiTypography-root": {
+                      transition: "all .25s",
+                      "@media (prefers-reduced-motion: reduce)": {
+                        transition: "none"
+                      }
+                    }
+                  }}
+                >
                   <Typography
                     variant="caption"
                     sx={{
@@ -345,15 +402,24 @@ function MetricCard({
         borderRadius: 4,
         border: "1px solid #E7ECF5",
         background,
-        boxShadow: 1,
-        transition: "transform .2s ease, box-shadow .2s ease",
-        "&:hover": {
-          transform: "translateY(-3px)",
-          boxShadow: 4,
-        },
+        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+        ...cardAnimation,
       }}
     >
-      <CardContent>
+      <CardContent
+        sx={{
+          transition: "all .3s",
+          "@media (prefers-reduced-motion: reduce)": {
+            transition: "none"
+          },
+          ".MuiTypography-root": {
+            transition: "all .25s",
+            "@media (prefers-reduced-motion: reduce)": {
+              transition: "none"
+            }
+          }
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -371,6 +437,13 @@ function MetricCard({
               borderRadius: 3,
               color,
               bgcolor: "#FFFFFFA8",
+              transition: "all .3s",
+              "@media (prefers-reduced-motion: reduce)": {
+                transition: "none"
+              },
+              "&:hover": {
+                transform: "scale(1.1) rotate(-5deg)",
+              }
             }}
           >
             {icon}
