@@ -98,22 +98,22 @@ function SearchHCP() {
         const fetchedResults = response.data.data;
         setResults(fetchedResults);
         if (fetchedResults.length === 0) {
-          showSnackbar("info", `No doctors found matching "${query}"`);
+          showSnackbar("info", "No matching doctor found.");
         } else {
-          showSnackbar("success", `Found ${fetchedResults.length} doctor${fetchedResults.length > 1 ? 's' : ''} matching "${query}"`);
+          showSnackbar("success", "Doctor found successfully.");
         }
       } else {
         const errorMsg = response.data?.message ||
           "No healthcare professionals matched your search.";
         setError(errorMsg);
-        showSnackbar("info", errorMsg);
+        showSnackbar("info", "No matching doctor found.");
       }
     } catch (err) {
       console.error("HCP search failed:", err);
       const errorMsg = err.response?.data?.message ||
         "Unable to search healthcare professionals. Please try again.";
       setError(errorMsg);
-      showSnackbar("error", "Failed to search healthcare professionals");
+      showSnackbar("error", "Search failed.");
     } finally {
       setLoading(false);
     }
