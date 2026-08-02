@@ -65,6 +65,32 @@ const iconButtonSx = {
   }
 };
 
+// Reusable card animation with reduced motion support
+const cardAnimation = {
+  transition: "all 0.3s ease-in-out",
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    transform: "none"
+  },
+  "&:hover": {
+    transform: "translateY(-6px) scale(1.01)",
+    boxShadow: "0 18px 40px rgba(15,23,42,0.18)"
+  }
+};
+
+// KPI card animation
+const kpiCardAnimation = {
+  transition: "all .3s ease",
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    transform: "none"
+  },
+  "&:hover": {
+    transform: "translateY(-8px)",
+    boxShadow: "0 20px 45px rgba(0,0,0,.18)"
+  }
+};
+
 function Dashboard() {
   const theme = useTheme();
   const { mode } = useCustomTheme();
@@ -359,6 +385,14 @@ function Dashboard() {
           background:
             "radial-gradient(circle at 88% 15%, rgba(122, 164, 255, .48), transparent 28%), linear-gradient(125deg, #14213D 0%, #1D4ED8 100%)",
           boxShadow: `0 18px 34px ${theme.palette.primary.main}40`,
+          transition: "all .3s ease",
+          "@media (prefers-reduced-motion: reduce)": {
+            transition: "none"
+          },
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: `0 24px 48px ${theme.palette.primary.main}50`
+          }
         }}
       >
         <CardContent
@@ -368,6 +402,16 @@ function Dashboard() {
               sm: 3,
               md: 4,
             },
+            transition: "all .3s",
+            "@media (prefers-reduced-motion: reduce)": {
+              transition: "none"
+            },
+            ".MuiTypography-root": {
+              transition: "all .25s",
+              "@media (prefers-reduced-motion: reduce)": {
+                transition: "none"
+              }
+            }
           }}
         >
           <Box
@@ -455,6 +499,10 @@ function Dashboard() {
                   xs: "100%",
                   sm: "auto",
                 },
+                transition: "all .25s",
+                "@media (prefers-reduced-motion: reduce)": {
+                  transition: "none"
+                },
                 "&:hover": {
                   bgcolor: "#EAF1FF",
                   transform: "translateY(-2px)",
@@ -497,15 +545,8 @@ function Dashboard() {
                   borderRadius: 4,
                   border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
-                  boxShadow: 1,
-                  transition: "transform .2s ease, box-shadow .2s ease",
-                  "&:hover": {
-                    transform: {
-                      xs: "none",
-                      md: "translateY(-4px)",
-                    },
-                    boxShadow: 4,
-                  },
+                  boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+                  ...kpiCardAnimation,
                 }}
               >
                 <CardContent
@@ -514,6 +555,16 @@ function Dashboard() {
                       xs: 2,
                       sm: 2.5,
                     },
+                    transition: "all .3s",
+                    "@media (prefers-reduced-motion: reduce)": {
+                      transition: "none"
+                    },
+                    ".MuiTypography-root": {
+                      transition: "all .25s",
+                      "@media (prefers-reduced-motion: reduce)": {
+                        transition: "none"
+                      }
+                    }
                   }}
                 >
                   <Box
@@ -531,6 +582,13 @@ function Dashboard() {
                         width: 44,
                         height: 44,
                         borderRadius: 3,
+                        transition: "all .3s",
+                        "@media (prefers-reduced-motion: reduce)": {
+                          transition: "none"
+                        },
+                        "&:hover": {
+                          transform: "scale(1.1) rotate(-5deg)",
+                        }
                       }}
                     >
                       {style.icon}
