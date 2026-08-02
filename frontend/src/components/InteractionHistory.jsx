@@ -101,16 +101,14 @@ function InteractionHistory() {
       }
       setError("");
       if (isRefresh) {
-        showSnackbar("success", "Interaction history refreshed successfully");
+        showSnackbar("success", "Interaction history refreshed successfully.");
       }
     } catch (err) {
       console.error("Error fetching interactions:", err);
       const errorMessage = err.response?.data?.message ||
         "Unable to load interaction history.";
       setError(errorMessage);
-      if (isRefresh) {
-        showSnackbar("error", "Failed to refresh interaction history");
-      }
+      showSnackbar("error", "Unable to load interaction history.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -137,15 +135,15 @@ function InteractionHistory() {
     try {
       const response = await API.delete(`/interaction/${deleteId}`);
       if (response.data?.success) {
-        showSnackbar("success", "Interaction deleted successfully");
+        showSnackbar("success", "Interaction deleted.");
         await fetchInteractions(true);
       } else {
-        showSnackbar("error", "Failed to delete interaction");
+        showSnackbar("error", "Failed to delete interaction.");
       }
     } catch (err) {
       console.error("Delete error:", err);
       setError("Failed to delete interaction.");
-      showSnackbar("error", "Failed to delete interaction");
+      showSnackbar("error", "Failed to delete interaction.");
     } finally {
       setDeleteDialogOpen(false);
       setDeleteId(null);
@@ -440,12 +438,12 @@ function InteractionHistory() {
           interaction={selectedInteraction}
           onClose={closeEdit}
           onUpdate={() => {
-            showSnackbar("success", "Interaction updated successfully");
+            showSnackbar("success", "Interaction updated.");
             fetchInteractions(true);
             closeEdit();
           }}
           onError={(message) => {
-            showSnackbar("error", message || "Failed to update interaction");
+            showSnackbar("error", message || "Failed to update interaction.");
           }}
         />
       )}
