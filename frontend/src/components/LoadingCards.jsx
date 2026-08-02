@@ -39,18 +39,21 @@ function LoadingCards({
                         >
 
                             <Skeleton
+                                animation="wave"
                                 variant="text"
                                 width="45%"
                                 height={30}
                             />
 
                             <Skeleton
+                                animation="wave"
                                 variant="text"
                                 width="70%"
                                 height={55}
                             />
 
                             <Skeleton
+                                animation="wave"
                                 variant="rounded"
                                 height={height}
                             />
