@@ -376,7 +376,7 @@ function Metrics() {
           </Grid>
         ) : (
           <EmptyState
-            icon={<InsightsOutlinedIcon />}
+            icon={InsightsOutlinedIcon}
             title="Metrics Unavailable"
             description="Dashboard metrics will automatically appear after data is collected."
           />

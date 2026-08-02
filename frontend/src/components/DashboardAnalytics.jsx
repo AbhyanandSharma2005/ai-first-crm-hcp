@@ -1587,7 +1587,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 stats.total_interactions === 0 && (
 
                     <EmptyState
-                        icon={<AnalyticsOutlinedIcon />}
+                        icon={AnalyticsOutlinedIcon}
                         title="No Interactions Yet"
                         description="Log your first doctor interaction to populate dashboard analytics."
                     />

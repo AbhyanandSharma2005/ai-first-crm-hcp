@@ -440,7 +440,7 @@ function SearchHCP() {
 
         {hasSearched && !loading && !error && results.length === 0 && (
           <EmptyState
-            icon={<SearchOffOutlinedIcon />}
+            icon={SearchOffOutlinedIcon}
             title="No Doctors Found"
             description="Try another doctor name or clear the filters."
             actionLabel="Clear Search"

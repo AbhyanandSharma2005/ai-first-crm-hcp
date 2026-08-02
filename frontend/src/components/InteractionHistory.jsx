@@ -366,7 +366,7 @@ function InteractionHistory() {
 
       {filteredInteractions.length === 0 ? (
         <EmptyState
-          icon={<HistoryOutlinedIcon />}
+          icon={HistoryOutlinedIcon}
           title="No Interaction History"
           description="Interactions logged through forms or AI chat will appear here."
         />

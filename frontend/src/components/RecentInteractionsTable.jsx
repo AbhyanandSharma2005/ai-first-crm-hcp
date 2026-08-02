@@ -2,19 +2,19 @@ import {
   Avatar,
   Box,
   Chip,
- InputAdornment,
- Paper,
- Table,
- TableBody,
- TableCell,
- TableContainer,
- TableHead,
- TableRow,
- TextField,
- Typography,
- useMediaQuery,
- useTheme,
- Button,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  Button,
 } from "@mui/material";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
@@ -94,7 +94,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
   if (!interactions.length) {
     return (
       <EmptyState
-        icon={<AssignmentOutlinedIcon />}
+        icon={AssignmentOutlinedIcon}
         title="No Recent Interactions"
         description="Recent meetings with healthcare professionals will appear here."
       />
