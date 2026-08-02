@@ -48,6 +48,19 @@ const buttonSx = {
   }
 };
 
+// Reusable card animation with reduced motion support
+const cardAnimation = {
+  transition: "all 0.3s ease-in-out",
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    transform: "none"
+  },
+  "&:hover": {
+    transform: "translateY(-6px) scale(1.01)",
+    boxShadow: "0 18px 40px rgba(15,23,42,0.18)"
+  }
+};
+
 function SearchHCP() {
   const theme = useTheme();
   const { mode } = useCustomTheme();
@@ -192,15 +205,26 @@ function SearchHCP() {
       sx={{
         borderRadius: 4,
         border: `1px solid ${borderColor}`,
-        boxShadow: 1,
+        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
         backgroundColor: cardBg,
-        transition: "0.25s",
-        "&:hover": {
-          boxShadow: 4,
-        },
+        ...cardAnimation,
       }}
     >
-      <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+      <CardContent 
+        sx={{ 
+          p: { xs: 2.5, md: 3.5 },
+          transition: "all .3s",
+          "@media (prefers-reduced-motion: reduce)": {
+            transition: "none"
+          },
+          ".MuiTypography-root": {
+            transition: "all .25s",
+            "@media (prefers-reduced-motion: reduce)": {
+              transition: "none"
+            }
+          }
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -217,6 +241,13 @@ function SearchHCP() {
               borderRadius: 3,
               bgcolor: avatarBg,
               color: avatarColor,
+              transition: "all .3s",
+              "@media (prefers-reduced-motion: reduce)": {
+                transition: "none"
+              },
+              "&:hover": {
+                transform: "scale(1.1) rotate(-5deg)",
+              }
             }}
           >
             <PersonSearchOutlinedIcon />
@@ -294,6 +325,10 @@ function SearchHCP() {
               minWidth: { xs: "100%", sm: 140 },
               bgcolor: "#2855D9",
               boxShadow: "0 8px 16px rgba(40,85,217,.2)",
+              transition: "all .25s",
+              "@media (prefers-reduced-motion: reduce)": {
+                transition: "none"
+              },
               "&:hover": {
                 bgcolor: "#1F46BA",
                 transform: "translateY(-2px)",
@@ -336,6 +371,13 @@ function SearchHCP() {
               bgcolor: emptyBg,
               textAlign: "center",
               px: 3,
+              transition: "all .3s",
+              "@media (prefers-reduced-motion: reduce)": {
+                transition: "none"
+              },
+              "&:hover": {
+                transform: "scale(1.02)",
+              }
             }}
           >
             <Box>
@@ -394,6 +436,13 @@ function SearchHCP() {
                 borderColor: borderColor,
                 overflowX: "auto",
                 backgroundColor: cardBg,
+                transition: "all .3s",
+                "@media (prefers-reduced-motion: reduce)": {
+                  transition: "none"
+                },
+                "&:hover": {
+                  boxShadow: "0 8px 25px rgba(15,23,42,.12)",
+                }
               }}
             >
               <Table sx={{ minWidth: 650 }}>
@@ -414,6 +463,10 @@ function SearchHCP() {
                       sx={{
                         "&:last-child td": { borderBottom: 0 },
                         "&:hover": { bgcolor: rowHoverBg },
+                        transition: "all .2s",
+                        "@media (prefers-reduced-motion: reduce)": {
+                          transition: "none"
+                        }
                       }}
                     >
                       <TableCell sx={{ py: 1.75 }}>
@@ -427,6 +480,13 @@ function SearchHCP() {
                               bgcolor: avatarBg,
                               color: avatarColor,
                               borderRadius: 3,
+                              transition: "all .3s",
+                              "@media (prefers-reduced-motion: reduce)": {
+                                transition: "none"
+                              },
+                              "&:hover": {
+                                transform: "scale(1.1) rotate(-5deg)",
+                              }
                             }}
                           >
                             {(doctor.name || "H").charAt(0).toUpperCase()}
@@ -445,7 +505,17 @@ function SearchHCP() {
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                           <LocalHospitalOutlinedIcon
-                            sx={{ color: isDark ? "#475569" : "#8A98AB", fontSize: 18 }}
+                            sx={{ 
+                              color: isDark ? "#475569" : "#8A98AB", 
+                              fontSize: 18,
+                              transition: "all .3s",
+                              "@media (prefers-reduced-motion: reduce)": {
+                                transition: "none"
+                              },
+                              "&:hover": {
+                                transform: "scale(1.1)",
+                              }
+                            }}
                           />
                           <Typography variant="body2" color={isDark ? "#94A3B8" : "#526176"}>
                             {doctor.hospital || "Not specified"}
@@ -462,6 +532,14 @@ function SearchHCP() {
                             color: isDark ? '#94A3B8' : '#526176',
                             fontWeight: 700,
                             borderRadius: 2,
+                            transition: "all .3s",
+                            "@media (prefers-reduced-motion: reduce)": {
+                              transition: "none"
+                            },
+                            "&:hover": {
+                              transform: "scale(1.05)",
+                              bgcolor: isDark ? '#334155' : '#E2E8F0',
+                            }
                           }}
                         />
                       </TableCell>
