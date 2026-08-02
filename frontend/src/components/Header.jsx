@@ -33,6 +33,15 @@ const buttonSx = {
   }
 };
 
+// Icon button hover styles
+const iconButtonSx = {
+  transition: ".25s",
+  "&:hover": {
+    transform: "scale(1.08)",
+    bgcolor: "action.hover"
+  }
+};
+
 function Header({ onMenuToggle }) {
   const theme = useTheme();
   const { mode, toggleTheme } = useCustomTheme();
@@ -111,25 +120,29 @@ function Header({ onMenuToggle }) {
           }}
         >
           {isMobile && onMenuToggle && (
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={onMenuToggle}
-              sx={{
-                mr: 1,
-                color: theme.palette.text.secondary,
-                ...buttonSx,
-                px: 1,
-                py: 1,
-                "&:hover": {
-                  transform: "scale(1.05)",
-                  boxShadow: "none",
-                },
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            <Tooltip title="Toggle Menu">
+              <IconButton
+                edge="start"
+                color="primary"
+                size="large"
+                aria-label="Toggle Menu"
+                onClick={onMenuToggle}
+                sx={{
+                  mr: 1,
+                  color: theme.palette.text.secondary,
+                  ...buttonSx,
+                  ...iconButtonSx,
+                  px: 1,
+                  py: 1,
+                  "&:hover": {
+                    transform: "scale(1.08)",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Tooltip>
           )}
 
           <Typography
@@ -204,21 +217,20 @@ function Header({ onMenuToggle }) {
           {/* Theme Toggle */}
           <Tooltip title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}>
             <IconButton
+              color="primary"
+              size="large"
+              aria-label="Toggle Theme"
               onClick={toggleTheme}
-              color="inherit"
               sx={{
                 borderRadius: 2,
                 p: 1,
                 transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: theme.palette.action.hover,
-                  transform: 'rotate(15deg)',
-                },
                 ...buttonSx,
+                ...iconButtonSx,
                 px: 1.5,
                 py: 1.5,
                 "&:hover": {
-                  transform: 'rotate(15deg)',
+                  transform: "scale(1.08) rotate(15deg)",
                   boxShadow: "none",
                 },
               }}
@@ -284,12 +296,15 @@ function Header({ onMenuToggle }) {
               gap: 1,
             }}
           >
-            <Avatar
-              onClick={handleMenuClick}
-              sx={avatarSx}
-            >
-              FR
-            </Avatar>
+            <Tooltip title="User Menu">
+              <Avatar
+                onClick={handleMenuClick}
+                aria-label="User Menu"
+                sx={avatarSx}
+              >
+                FR
+              </Avatar>
+            </Tooltip>
           </Box>
 
           {/* Mobile User Menu */}
