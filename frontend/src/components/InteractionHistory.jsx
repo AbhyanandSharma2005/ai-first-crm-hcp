@@ -27,6 +27,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 
 import API from "../api/api";
@@ -272,6 +273,7 @@ function InteractionHistory() {
 
       {filteredInteractions.length === 0 ? (
         <EmptyState
+          icon={<HistoryOutlinedIcon />}
           title="No Interaction History"
           description="Interactions logged through forms or AI chat will appear here."
         />
