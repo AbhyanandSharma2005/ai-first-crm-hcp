@@ -89,12 +89,8 @@ function RecentInteractionsTable({ interactions = [] }) {
   if (!interactions.length) {
     return (
       <EmptyState
-        icon={<AssignmentOutlinedIcon />}
-        variant="empty"
-        title="No recent interactions"
-        description="New HCP interaction records will appear here."
-        size="md"
-        testId="recent-interactions-empty"
+        title="No Recent Interactions"
+        description="Recent meetings with healthcare professionals will appear here."
       />
     );
   }
