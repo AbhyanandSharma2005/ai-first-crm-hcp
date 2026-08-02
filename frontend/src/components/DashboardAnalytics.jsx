@@ -44,15 +44,54 @@ import EmptyState from "./EmptyState";
 // (Phase 13.8.14.1 - Consistent Design System)
 //-----------------------------------------------------
 
+//-----------------------------------------------------
+// Reusable Animation Fragments
+// (Phase 13.8.14.7 - Motion Design System)
+//-----------------------------------------------------
+
+const cardAnimation = {
+    transition: "all 0.3s ease-in-out",
+
+    "@media (prefers-reduced-motion: reduce)": {
+        transition: "none",
+        transform: "none"
+    },
+
+    "&:hover": {
+        transform: "translateY(-6px) scale(1.01)",
+
+        boxShadow:
+            "0 18px 40px rgba(15,23,42,0.18)"
+    }
+};
+
+const cardContentAnimationSx = {
+    transition: "all .3s",
+    ".MuiTypography-root": {
+        transition: "all .25s"
+    }
+};
+
+const chipHoverSx = {
+    transition: "all .25s",
+    "&:hover": {
+        transform: "scale(1.05)"
+    }
+};
+
+const buttonHoverSx = {
+    transition: "all .25s",
+    "&:hover": {
+        transform: "translateY(-2px)"
+    }
+};
+
 const standardCardSx = {
     borderRadius: 4,
     border: "1px solid",
     borderColor: "divider",
-    boxShadow: 1,
-    transition: "0.25s",
-    "&:hover": {
-        boxShadow: 4
-    }
+    boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+    ...cardAnimation
 };
 
 const standardContainedButtonSx = {
@@ -60,18 +99,21 @@ const standardContainedButtonSx = {
     px: 3,
     py: 1.25,
     textTransform: "none",
-    fontWeight: 700
+    fontWeight: 700,
+    ...buttonHoverSx
 };
 
 const standardOutlinedButtonSx = {
     borderRadius: 3,
     textTransform: "none",
-    fontWeight: 700
+    fontWeight: 700,
+    ...buttonHoverSx
 };
 
 const standardChipSx = {
     fontWeight: 700,
-    borderRadius: 2
+    borderRadius: 2,
+    ...chipHoverSx
 };
 
 const standardGridSpacing = {
@@ -1309,11 +1351,21 @@ function DashboardAnalytics({ onDataLoaded }) {
                     color: "#ffffff",
                     boxShadow: "0 12px 30px rgba(15,23,42,0.25)",
                     border: "1px solid",
-                    borderColor: "divider"
+                    borderColor: "divider",
+                    transition: "all 0.3s ease-in-out",
+                    "@media (prefers-reduced-motion: reduce)": {
+                        transition: "none",
+                        transform: "none"
+                    },
+                    "&:hover": {
+                        background:
+                            "linear-gradient(135deg,#ffffff,#F8FBFF)",
+                        transform: "translateY(-6px)"
+                    }
                 }}
             >
 
-                <CardContent>
+                <CardContent sx={cardContentAnimationSx}>
 
                     <Box
                         sx={{
@@ -1420,6 +1472,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                     bgcolor: "#ffffff",
                                     color: "#1565C0",
                                     "&:hover": {
+                                        ...buttonHoverSx["&:hover"],
                                         bgcolor: "#E3F2FD"
                                     }
                                 }}
@@ -1436,6 +1489,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                     borderColor: "#86EFAC",
                                     color: "#166534",
                                     "&:hover": {
+                                        ...buttonHoverSx["&:hover"],
                                         borderColor: "#4ADE80",
                                         bgcolor: "rgba(240, 253, 244, 0.16)"
                                     }
@@ -1522,15 +1576,20 @@ function DashboardAnalytics({ onDataLoaded }) {
                             boxShadow: "0 10px 25px rgba(21,101,192,.25)",
                             border: "1px solid",
                             borderColor: "divider",
-                            transition: "0.25s",
+                            transition: "all 0.3s ease-in-out",
+                            "@media (prefers-reduced-motion: reduce)": {
+                                transition: "none",
+                                transform: "none"
+                            },
                             "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: "0 16px 40px rgba(21,101,192,.32)"
+                                background:
+                                    "linear-gradient(135deg,#ffffff,#F8FBFF)",
+                                transform: "translateY(-6px)"
                             }
                         }}
                     >
 
-                        <CardContent>
+                        <CardContent sx={cardContentAnimationSx}>
 
                             <Typography
                                 variant="subtitle2"
@@ -1588,15 +1647,20 @@ function DashboardAnalytics({ onDataLoaded }) {
                             boxShadow: "0 10px 25px rgba(0,137,123,.25)",
                             border: "1px solid",
                             borderColor: "divider",
-                            transition: "0.25s",
+                            transition: "all 0.3s ease-in-out",
+                            "@media (prefers-reduced-motion: reduce)": {
+                                transition: "none",
+                                transform: "none"
+                            },
                             "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: "0 16px 40px rgba(0,137,123,.32)"
+                                background:
+                                    "linear-gradient(135deg,#ffffff,#F8FBFF)",
+                                transform: "translateY(-6px)"
                             }
                         }}
                     >
 
-                        <CardContent>
+                        <CardContent sx={cardContentAnimationSx}>
 
                             <Typography
                                 variant="subtitle2"
@@ -1656,7 +1720,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 >
 
                     <Card sx={standardCardSx}>
-                        <CardContent>
+                        <CardContent sx={cardContentAnimationSx}>
                             <TopDoctorsChart />
                         </CardContent>
                     </Card>
@@ -1671,7 +1735,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Box sx={{ mt: standardSectionSpacing }}>
                 <Card sx={standardCardSx}>
-                    <CardContent>
+                    <CardContent sx={cardContentAnimationSx}>
                         <ProductLeaderboard />
                     </CardContent>
                 </Card>
@@ -1683,7 +1747,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             <Box sx={{ mt: standardSectionSpacing }}>
                 <Card sx={standardCardSx}>
-                    <CardContent>
+                    <CardContent sx={cardContentAnimationSx}>
                         <DoctorHeatmap />
                     </CardContent>
                 </Card>
@@ -1721,9 +1785,15 @@ function DashboardAnalytics({ onDataLoaded }) {
                     lg={6}
                 >
 
-                    <Card sx={{ ...standardCardSx, height: "100%" }}>
+                    <Card
+                        sx={{
+                            ...standardCardSx,
+                            height: "100%",
+                            overflow: "hidden"
+                        }}
+                    >
 
-                        <CardContent>
+                        <CardContent sx={cardContentAnimationSx}>
 
                             <Box
                                 sx={{
@@ -1773,9 +1843,15 @@ function DashboardAnalytics({ onDataLoaded }) {
                     lg={6}
                 >
 
-                    <Card sx={{ ...standardCardSx, height: "100%" }}>
+                    <Card
+                        sx={{
+                            ...standardCardSx,
+                            height: "100%",
+                            overflow: "hidden"
+                        }}
+                    >
 
-                        <CardContent>
+                        <CardContent sx={cardContentAnimationSx}>
 
                             <Box
                                 sx={{
@@ -1829,11 +1905,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                         "linear-gradient(135deg,#EEF6FF,#F8FBFF)",
                     border: "1px solid #D6E4FF",
                     boxShadow:
-                        "0 6px 18px rgba(21,101,192,.08)"
+                        "0 6px 18px rgba(21,101,192,.08)",
+                    ...cardAnimation
                 }}
             >
 
-                <CardContent>
+                <CardContent sx={cardContentAnimationSx}>
 
                     <Grid
                         container
@@ -1925,7 +2002,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 }}
             >
 
-                <CardContent>
+                <CardContent sx={cardContentAnimationSx}>
 
                     <Box
                         sx={{
