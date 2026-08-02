@@ -33,7 +33,7 @@ import { commonSpacing } from "../theme/theme";
 import EmptyState from "./EmptyState";
 import AppSnackbar from "../components/AppSnackbar";
 
-// Reusable button style object
+// Reusable button style object with focus visibility
 const buttonSx = {
   borderRadius: 3,
   px: 3,
@@ -45,10 +45,15 @@ const buttonSx = {
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  },
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
-// Reusable card animation with reduced motion support
+// Reusable card animation with reduced motion support and focus visibility
 const cardAnimation = {
   transition: "all 0.3s ease-in-out",
   "@media (prefers-reduced-motion: reduce)": {
@@ -58,6 +63,20 @@ const cardAnimation = {
   "&:hover": {
     transform: "translateY(-6px) scale(1.01)",
     boxShadow: "0 18px 40px rgba(15,23,42,0.18)"
+  },
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
+  }
+};
+
+// Focus visibility for interactive elements
+const focusVisibleSx = {
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -188,7 +207,7 @@ function SearchHCP() {
 
   const headerCellSx = {
     py: 1.5,
-    color: isDark ? "#94A3B8" : "#667085",
+    color: "#475569", // Improved contrast
     fontSize: "0.72rem",
     fontWeight: 800,
     letterSpacing: "0.06em",
@@ -202,6 +221,9 @@ function SearchHCP() {
 
   return (
     <Card
+      tabIndex={0}
+      role="article"
+      aria-label="Search Healthcare Professionals"
       sx={{
         borderRadius: 4,
         border: `1px solid ${borderColor}`,
@@ -235,6 +257,7 @@ function SearchHCP() {
         >
           <Avatar
             variant="rounded"
+            aria-label="Search icon"
             sx={{
               width: 44,
               height: 44,
@@ -247,7 +270,8 @@ function SearchHCP() {
               },
               "&:hover": {
                 transform: "scale(1.1) rotate(-5deg)",
-              }
+              },
+              ...focusVisibleSx,
             }}
           >
             <PersonSearchOutlinedIcon />
@@ -258,7 +282,13 @@ function SearchHCP() {
               Search healthcare professionals
             </Typography>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                mt: 0.25,
+                color: "#475569" // Improved contrast
+              }}
+            >
               Find HCP records by doctor name and review profile details.
             </Typography>
           </Box>
@@ -278,11 +308,14 @@ function SearchHCP() {
             onChange={handleDoctorNameChange}
             onKeyDown={handleKeyDown}
             disabled={loading}
-            placeholder="Search by doctor name, e.g. Dr. Sharma"
+            placeholder="Search doctor name..."
             size="medium"
             error={Boolean(searchError)}
             helperText={searchError}
             required
+            inputProps={{
+              "aria-label": "Search Healthcare Professional"
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: isDark ? '#0F172A' : '#FFFFFF',
@@ -300,6 +333,7 @@ function SearchHCP() {
               "& .MuiInputBase-input": {
                 color: textPrimary,
               },
+              ...focusVisibleSx,
             }}
             InputProps={{
               startAdornment: (
@@ -319,7 +353,7 @@ function SearchHCP() {
             disabled={loading || !doctorName.trim()}
             loadingPosition="start"
             startIcon={<SearchRoundedIcon />}
-            aria-label="Search healthcare professionals"
+            aria-label="Search HCP"
             sx={{
               ...buttonSx,
               minWidth: { xs: "100%", sm: 140 },
@@ -347,12 +381,14 @@ function SearchHCP() {
         {error && (
           <Alert
             severity="info"
+            aria-label="Search error"
             sx={{
               mb: 3,
               borderRadius: 2.5,
               border: `1px solid ${isDark ? '#334155' : '#B8D4FF'}`,
               bgcolor: isDark ? '#1A2A4A' : '#F2F8FF',
               color: isDark ? '#60A5FA' : '#255FA8',
+              ...focusVisibleSx,
             }}
           >
             {error}
@@ -361,6 +397,9 @@ function SearchHCP() {
 
         {!hasSearched && !loading && !error && (
           <Box
+            tabIndex={0}
+            role="img"
+            aria-label="Search your HCP directory"
             sx={{
               display: "flex",
               alignItems: "center",
@@ -377,7 +416,8 @@ function SearchHCP() {
               },
               "&:hover": {
                 transform: "scale(1.02)",
-              }
+              },
+              ...focusVisibleSx,
             }}
           >
             <Box>
@@ -385,7 +425,13 @@ function SearchHCP() {
               <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"}>
                 Search your HCP directory
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  mt: 0.5,
+                  color: "#475569" // Improved contrast
+                }}
+              >
                 Enter a doctor name to find their profile and hospital details.
               </Typography>
             </Box>
@@ -412,7 +458,10 @@ function SearchHCP() {
                 mb: 1.5,
               }}
             >
-              <Typography variant="body2" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                sx={{ color: "#475569" }} // Improved contrast
+              >
                 Search results
               </Typography>
 
@@ -421,9 +470,11 @@ function SearchHCP() {
                 size="small"
                 color="primary"
                 variant="outlined"
+                aria-label={`${results.length} ${results.length === 1 ? "record" : "records"} found`}
                 sx={{
                   fontWeight: 700,
                   borderRadius: 2,
+                  ...focusVisibleSx,
                 }}
               />
             </Box>
@@ -431,6 +482,7 @@ function SearchHCP() {
             <TableContainer
               component={Paper}
               variant="outlined"
+              aria-label="Search Results"
               sx={{
                 borderRadius: 3,
                 borderColor: borderColor,
@@ -442,10 +494,14 @@ function SearchHCP() {
                 },
                 "&:hover": {
                   boxShadow: "0 8px 25px rgba(15,23,42,.12)",
-                }
+                },
+                ...focusVisibleSx,
               }}
             >
-              <Table sx={{ minWidth: 650 }}>
+              <Table 
+                aria-label="Healthcare Professional Search Results"
+                sx={{ minWidth: 650 }}
+              >
                 <TableHead>
                   <TableRow sx={{ bgcolor: headerBg }}>
                     <TableCell sx={headerCellSx}>HCP</TableCell>
@@ -460,18 +516,23 @@ function SearchHCP() {
                     <TableRow
                       key={doctor.id}
                       hover
+                      tabIndex={0}
+                      role="row"
+                      aria-label={`Healthcare Professional: ${doctor.name || "Unknown"}`}
                       sx={{
                         "&:last-child td": { borderBottom: 0 },
                         "&:hover": { bgcolor: rowHoverBg },
                         transition: "all .2s",
                         "@media (prefers-reduced-motion: reduce)": {
                           transition: "none"
-                        }
+                        },
+                        ...focusVisibleSx,
                       }}
                     >
                       <TableCell sx={{ py: 1.75 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
                           <Avatar
+                            aria-label={`${doctor.name || "Unknown"} avatar`}
                             sx={{
                               width: 34,
                               height: 34,
@@ -486,7 +547,8 @@ function SearchHCP() {
                               },
                               "&:hover": {
                                 transform: "scale(1.1) rotate(-5deg)",
-                              }
+                              },
+                              ...focusVisibleSx,
                             }}
                           >
                             {(doctor.name || "H").charAt(0).toUpperCase()}
@@ -505,6 +567,7 @@ function SearchHCP() {
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                           <LocalHospitalOutlinedIcon
+                            aria-label="Hospital"
                             sx={{ 
                               color: isDark ? "#475569" : "#8A98AB", 
                               fontSize: 18,
@@ -514,7 +577,8 @@ function SearchHCP() {
                               },
                               "&:hover": {
                                 transform: "scale(1.1)",
-                              }
+                              },
+                              ...focusVisibleSx,
                             }}
                           />
                           <Typography variant="body2" color={isDark ? "#94A3B8" : "#526176"}>
@@ -527,6 +591,7 @@ function SearchHCP() {
                         <Chip
                           label={`#${doctor.id}`}
                           size="small"
+                          aria-label={`Record ID ${doctor.id}`}
                           sx={{
                             bgcolor: isDark ? '#1E293B' : '#F1F5F9',
                             color: isDark ? '#94A3B8' : '#526176',
@@ -539,7 +604,8 @@ function SearchHCP() {
                             "&:hover": {
                               transform: "scale(1.05)",
                               bgcolor: isDark ? '#334155' : '#E2E8F0',
-                            }
+                            },
+                            ...focusVisibleSx,
                           }}
                         />
                       </TableCell>

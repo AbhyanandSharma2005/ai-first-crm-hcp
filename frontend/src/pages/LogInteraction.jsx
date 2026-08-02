@@ -21,7 +21,7 @@ import AppSnackbar from "../components/AppSnackbar";
 import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing, commonTypography } from "../theme/theme";
 
-// Reusable button style object
+// Reusable button style object with focus visibility
 const buttonSx = {
   borderRadius: 3,
   px: 3,
@@ -33,6 +33,20 @@ const buttonSx = {
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  },
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
+  }
+};
+
+// Focus visibility for cards
+const cardFocusSx = {
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -60,6 +74,11 @@ function SectionHeader({ icon, title, description, color }) {
           borderRadius: 3,
           bgcolor: isDark ? `${color}30` : `${color}16`,
           color,
+          "&:focus-visible": {
+            outline: "3px solid #1976D2",
+            outlineOffset: 2,
+            borderRadius: 6
+          }
         }}
       >
         {icon}
@@ -70,7 +89,13 @@ function SectionHeader({ icon, title, description, color }) {
           {title}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            mt: 0.25,
+            color: "#475569" // Improved contrast
+          }}
+        >
           {description}
         </Typography>
       </Box>
@@ -120,6 +145,7 @@ function LogInteraction() {
     "&:hover": {
       boxShadow: 4,
     },
+    ...cardFocusSx,
   };
 
   // Handler for InteractionForm submission
@@ -180,6 +206,9 @@ function LogInteraction() {
 
   return (
     <Box 
+      component="main"
+      role="main"
+      aria-label="Log Interaction Main Content"
       sx={{ 
         width: "100%",
         maxWidth: 1600,
@@ -201,6 +230,7 @@ function LogInteraction() {
           <Chip
             label="HCP ACTIVITY"
             size="small"
+            aria-label="HCP Activity"
             sx={{
               bgcolor: chipBg,
               color: chipColor,
@@ -208,6 +238,11 @@ function LogInteraction() {
               fontSize: 11,
               fontWeight: 800,
               letterSpacing: "0.09em",
+              "&:focus-visible": {
+                outline: "3px solid #1976D2",
+                outlineOffset: 2,
+                borderRadius: 6
+              }
             }}
           />
         </Stack>
@@ -225,8 +260,12 @@ function LogInteraction() {
 
         <Typography
           variant="body1"
-          color="text.secondary"
-          sx={{ mt: 0.5, maxWidth: 680, lineHeight: 1.7 }}
+          sx={{ 
+            mt: 0.5, 
+            maxWidth: 680, 
+            lineHeight: 1.7,
+            color: "#475569" // Improved contrast
+          }}
         >
           Capture meaningful HCP conversations, use AI to structure insights,
           and make every follow-up action clear to your field team.
@@ -235,6 +274,9 @@ function LogInteraction() {
 
       {/* Hero Card */}
       <Card
+        tabIndex={0}
+        role="article"
+        aria-label="Workflow overview"
         sx={{
           mb: 4,
           borderRadius: 4,
@@ -243,6 +285,7 @@ function LogInteraction() {
           background:
             "radial-gradient(circle at 90% 0%, rgba(138, 180, 255, .45), transparent 30%), linear-gradient(130deg, #172554 0%, #2855D9 100%)",
           boxShadow: "0 16px 32px rgba(37, 84, 217, .18)",
+          ...cardFocusSx,
         }}
       >
         <CardContent sx={{ p: { xs: 3, md: 3.5 } }}>
@@ -264,7 +307,12 @@ function LogInteraction() {
       <Grid container spacing={commonSpacing.gridSpacing} alignItems="stretch">
         {/* Structured Interaction Form */}
         <Grid item xs={12} lg={7}>
-          <Card sx={sectionCardSx}>
+          <Card 
+            tabIndex={0}
+            role="article"
+            aria-label="Structured interaction form"
+            sx={sectionCardSx}
+          >
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
               <SectionHeader
                 icon={<EditNoteOutlinedIcon />}
@@ -292,7 +340,12 @@ function LogInteraction() {
 
         {/* AI Conversation Assistant */}
         <Grid item xs={12} lg={5}>
-          <Card sx={sectionCardSx}>
+          <Card 
+            tabIndex={0}
+            role="article"
+            aria-label="AI conversation assistant"
+            sx={sectionCardSx}
+          >
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
               <SectionHeader
                 icon={<AutoAwesomeOutlinedIcon />}
@@ -319,7 +372,12 @@ function LogInteraction() {
 
         {/* Interaction History */}
         <Grid item xs={12}>
-          <Card sx={sectionCardSx}>
+          <Card 
+            tabIndex={0}
+            role="article"
+            aria-label="Interaction history"
+            sx={sectionCardSx}
+          >
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
               <SectionHeader
                 icon={<HistoryOutlinedIcon />}
