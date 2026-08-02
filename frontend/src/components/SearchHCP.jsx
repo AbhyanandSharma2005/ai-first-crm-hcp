@@ -21,6 +21,7 @@ import {
   useTheme,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import SearchOffOutlinedIcon from "@mui/icons-material/SearchOffOutlined";
 import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
 import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
 
@@ -262,6 +263,7 @@ function SearchHCP() {
 
         {hasSearched && !loading && !error && results.length === 0 && (
           <EmptyState
+            icon={<SearchOffOutlinedIcon />}
             title="No Doctors Found"
             description="Try another doctor name or clear the filters."
             actionLabel="Clear Search"
