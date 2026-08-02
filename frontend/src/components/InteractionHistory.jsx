@@ -37,7 +37,7 @@ import { commonSpacing } from "../theme/theme";
 import LoadingTable from "./LoadingTable";
 import EmptyState from "./EmptyState";
 
-// Reusable button style object
+// Reusable button style object with focus visibility
 const buttonSx = {
   borderRadius: 3,
   px: 3,
@@ -49,6 +49,11 @@ const buttonSx = {
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  },
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -62,12 +67,26 @@ const outlinedButtonSx = {
   }
 };
 
-// Icon button style
+// Icon button style with focus visibility
 const iconButtonSx = {
   transition: ".25s",
   "&:hover": {
     transform: "scale(1.08)",
     bgcolor: "action.hover"
+  },
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
+  }
+};
+
+// Focus visibility for cards and containers
+const focusVisibleSx = {
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -212,7 +231,7 @@ function InteractionHistory() {
 
   const headerCellSx = {
     py: 1.5,
-    color: textSecondary,
+    color: "#475569", // Improved contrast
     fontSize: "0.72rem",
     fontWeight: 800,
     letterSpacing: "0.06em",
@@ -240,6 +259,7 @@ function InteractionHistory() {
             borderRadius: 2,
             border: `1px solid ${isDark ? '#334155' : '#FFCDD2'}`,
             bgcolor: isDark ? '#1A1A2E' : '#FFEBEE',
+            ...focusVisibleSx,
           }}
         >
           {error}
@@ -276,6 +296,9 @@ function InteractionHistory() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           size="medium"
+          inputProps={{
+            "aria-label": "Search Interaction"
+          }}
           sx={{
             flex: { xs: "1 1 100%", sm: "0 1 300px" },
             "& .MuiOutlinedInput-root": {
@@ -291,18 +314,26 @@ function InteractionHistory() {
             "& .MuiInputBase-input": {
               color: textPrimary,
             },
+            "&:focus-visible": {
+              outline: "3px solid #1976D2",
+              outlineOffset: 2,
+              borderRadius: 6
+            }
           }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: textSecondary }} />
+                <SearchIcon sx={{ color: "#475569" }} />
               </InputAdornment>
             ),
           }}
         />
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            sx={{ color: "#475569" }} // Improved contrast
+          >
             {filteredInteractions.length} of {interactions.length} interactions
           </Typography>
 
@@ -343,11 +374,13 @@ function InteractionHistory() {
         <TableContainer
           component={Paper}
           variant="outlined"
+          aria-label="Interaction History"
           sx={{
             borderRadius: 3,
             borderColor: borderColor,
             overflowX: "auto",
             backgroundColor: cardBg,
+            ...focusVisibleSx,
             "&::-webkit-scrollbar": {
               height: 6,
             },
@@ -364,7 +397,10 @@ function InteractionHistory() {
             },
           }}
         >
-          <Table sx={{ minWidth: 650 }}>
+          <Table 
+            aria-label="Interaction History"
+            sx={{ minWidth: 650 }}
+          >
             <TableHead>
               <TableRow sx={{ bgcolor: headerBg }}>
                 <TableCell sx={headerCellSx}>ID</TableCell>
@@ -386,6 +422,7 @@ function InteractionHistory() {
                   sx={{
                     "&:last-child td": { borderBottom: 0 },
                     "&:hover": { bgcolor: rowHoverBg },
+                    ...focusVisibleSx,
                   }}
                 >
                   <TableCell sx={{ ...tableCellSx, fontWeight: 600 }}>
@@ -422,6 +459,7 @@ function InteractionHistory() {
                           color: chipColor,
                           fontWeight: 700,
                           borderRadius: 2,
+                          ...focusVisibleSx,
                         }}
                       />
                     ) : (
@@ -436,7 +474,8 @@ function InteractionHistory() {
                       <IconButton
                         color="warning"
                         size="large"
-                        aria-label="Edit interaction"
+                        aria-label="Edit Interaction"
+                        title="Edit"
                         onClick={() => openEdit(interaction)}
                         sx={{
                           ...iconButtonSx,
@@ -455,7 +494,8 @@ function InteractionHistory() {
                       <IconButton
                         color="error"
                         size="large"
-                        aria-label="Delete interaction"
+                        aria-label="Delete Interaction"
+                        title="Delete"
                         onClick={() => openDeleteDialog(interaction.id)}
                         sx={{
                           ...iconButtonSx,
@@ -503,6 +543,7 @@ function InteractionHistory() {
             borderRadius: 3,
             backgroundColor: cardBg,
             border: `1px solid ${borderColor}`,
+            ...focusVisibleSx,
           },
         }}
       >
@@ -510,7 +551,10 @@ function InteractionHistory() {
           Delete Interaction
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            sx={{ color: "#475569" }} // Improved contrast
+          >
             Are you sure you want to delete this interaction? This action cannot be undone.
           </Typography>
         </DialogContent>
