@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   InputAdornment,
   Paper,
   Table,
@@ -19,6 +18,7 @@ import {
   TextField,
   Typography,
   useTheme,
+  Tooltip,
 } from "@mui/material";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import SearchOffOutlinedIcon from "@mui/icons-material/SearchOffOutlined";
@@ -32,6 +32,21 @@ import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import { commonSpacing } from "../theme/theme";
 import EmptyState from "./EmptyState";
 import AppSnackbar from "../components/AppSnackbar";
+
+// Reusable button style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
 
 function SearchHCP() {
   const theme = useTheme();
@@ -266,21 +281,24 @@ function SearchHCP() {
 
           <LoadingButton
             variant="contained"
+            color="primary"
+            size="large"
             onClick={searchDoctor}
             loading={loading}
             disabled={loading || !doctorName.trim()}
             loadingPosition="start"
             startIcon={<SearchRoundedIcon />}
+            aria-label="Search healthcare professionals"
             sx={{
-              borderRadius: 3,
-              px: 3,
-              py: 1.25,
-              textTransform: "none",
-              fontWeight: 700,
+              ...buttonSx,
               minWidth: { xs: "100%", sm: 140 },
               bgcolor: "#2855D9",
               boxShadow: "0 8px 16px rgba(40,85,217,.2)",
-              "&:hover": { bgcolor: "#1F46BA" },
+              "&:hover": {
+                bgcolor: "#1F46BA",
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 24px rgba(40,85,217,.3)",
+              },
               "&.Mui-disabled": {
                 bgcolor: isDark ? "#334155" : "#E2E8F0",
               },

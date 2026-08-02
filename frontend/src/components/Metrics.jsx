@@ -11,6 +11,7 @@ import {
   Grid,
   Stack,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import MonitorHeartOutlinedIcon from "@mui/icons-material/MonitorHeartOutlined";
@@ -25,6 +26,31 @@ import API from "../api/api";
 import { commonSpacing } from "../theme/theme";
 import LoadingCards from "./LoadingCards";
 import EmptyState from "./EmptyState";
+
+// Reusable button style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
+
+// Outlined button style
+const outlinedButtonSx = {
+  ...buttonSx,
+  borderWidth: 2,
+  "&:hover": {
+    borderWidth: 2,
+    transform: "translateY(-2px)"
+  }
+};
 
 function Metrics() {
   const [metrics, setMetrics] = useState(null);
@@ -130,29 +156,38 @@ function Metrics() {
               />
             )}
 
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => fetchMetrics(true)}
-              disabled={refreshing}
-              startIcon={
-                refreshing ? (
-                  <CircularProgress size={15} color="inherit" />
-                ) : (
-                  <RefreshRoundedIcon />
-                )
-              }
-              sx={{
-                borderRadius: 3,
-                textTransform: "none",
-                fontWeight: 700,
-                borderColor: "#D9E1F2",
-                color: "#475569",
-                bgcolor: "#FFFFFF",
-              }}
-            >
-              {refreshing ? "Refreshing" : "Refresh"}
-            </Button>
+            <Tooltip title="Refresh Metrics">
+              <Button
+                variant="outlined"
+                color="primary"
+                size="medium"
+                onClick={() => fetchMetrics(true)}
+                disabled={refreshing}
+                startIcon={
+                  refreshing ? (
+                    <CircularProgress size={15} color="inherit" />
+                  ) : (
+                    <RefreshRoundedIcon />
+                  )
+                }
+                aria-label="Refresh Metrics"
+                sx={{
+                  ...outlinedButtonSx,
+                  borderColor: "#D9E1F2",
+                  color: "#475569",
+                  bgcolor: "#FFFFFF",
+                  "&:hover": {
+                    borderColor: "#2855D9",
+                    color: "#2855D9",
+                    borderWidth: 2,
+                    transform: "translateY(-2px)",
+                    bgcolor: "action.hover",
+                  },
+                }}
+              >
+                {refreshing ? "Refreshing" : "Refresh"}
+              </Button>
+            </Tooltip>
           </Stack>
         </Box>
 
@@ -162,13 +197,15 @@ function Metrics() {
             sx={{ mb: 3, borderRadius: 2.5 }}
             action={
               <Button
-                color="inherit"
-                size="small"
+                color="primary"
+                size="medium"
                 onClick={() => fetchMetrics(true)}
+                aria-label="Retry loading metrics"
                 sx={{
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontWeight: 700,
+                  ...buttonSx,
+                  py: 0.8,
+                  px: 2,
+                  borderRadius: 2,
                 }}
               >
                 Retry
@@ -377,7 +414,5 @@ function MetricCard({
     </Card>
   );
 }
-
-
 
 export default Metrics;
