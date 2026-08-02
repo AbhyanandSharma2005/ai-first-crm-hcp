@@ -20,6 +20,7 @@ import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import ApiOutlinedIcon from "@mui/icons-material/ApiOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
+import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
 
 import API from "../api/api";
 import { commonSpacing } from "../theme/theme";
@@ -281,6 +282,7 @@ function Metrics() {
           </Grid>
         ) : (
           <EmptyState
+            icon={<InsightsOutlinedIcon />}
             title="Metrics Unavailable"
             description="Dashboard metrics will automatically appear after data is collected."
           />
