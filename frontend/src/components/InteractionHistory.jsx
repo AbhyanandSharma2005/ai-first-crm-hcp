@@ -37,6 +37,40 @@ import { commonSpacing } from "../theme/theme";
 import LoadingTable from "./LoadingTable";
 import EmptyState from "./EmptyState";
 
+// Reusable button style object
+const buttonSx = {
+  borderRadius: 3,
+  px: 3,
+  py: 1.2,
+  textTransform: "none",
+  fontWeight: 600,
+  transition: "all .25s ease",
+  boxShadow: "none",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  }
+};
+
+// Outlined button style
+const outlinedButtonSx = {
+  ...buttonSx,
+  borderWidth: 2,
+  "&:hover": {
+    borderWidth: 2,
+    transform: "translateY(-2px)"
+  }
+};
+
+// Icon button style
+const iconButtonSx = {
+  transition: ".25s",
+  "&:hover": {
+    transform: "scale(1.08)",
+    bgcolor: "action.hover"
+  }
+};
+
 function InteractionHistory() {
   const theme = useTheme();
   const { mode } = useCustomTheme();
@@ -212,12 +246,11 @@ function InteractionHistory() {
         </Alert>
         <Button
           variant="contained"
+          color="primary"
+          size="large"
+          aria-label="Retry loading interactions"
           onClick={() => fetchInteractions()}
-          sx={{
-            borderRadius: 3,
-            textTransform: "none",
-            fontWeight: 700,
-          }}
+          sx={buttonSx}
         >
           Retry
         </Button>
@@ -242,7 +275,7 @@ function InteractionHistory() {
           placeholder="Search interactions..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          size="small"
+          size="medium"
           sx={{
             flex: { xs: "1 1 100%", sm: "0 1 300px" },
             "& .MuiOutlinedInput-root": {
@@ -273,26 +306,30 @@ function InteractionHistory() {
             {filteredInteractions.length} of {interactions.length} interactions
           </Typography>
 
-          <Button
-            variant="outlined"
-            startIcon={<RefreshIcon />}
-            onClick={() => fetchInteractions(true)}
-            disabled={refreshing}
-            size="small"
-            sx={{
-              borderRadius: 3,
-              textTransform: "none",
-              fontWeight: 700,
-              borderColor: borderColor,
-              color: textSecondary,
-              "&:hover": {
-                borderColor: textPrimary,
-                color: textPrimary,
-              },
-            }}
-          >
-            {refreshing ? "Refreshing..." : "Refresh"}
-          </Button>
+          <Tooltip title="Refresh Interactions">
+            <Button
+              variant="outlined"
+              color="primary"
+              size="medium"
+              startIcon={<RefreshIcon />}
+              onClick={() => fetchInteractions(true)}
+              disabled={refreshing}
+              aria-label="Refresh Interactions"
+              sx={{
+                ...outlinedButtonSx,
+                borderColor: borderColor,
+                color: textSecondary,
+                "&:hover": {
+                  borderColor: textPrimary,
+                  color: textPrimary,
+                  borderWidth: 2,
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </Button>
+          </Tooltip>
         </Box>
       </Box>
 
@@ -397,32 +434,40 @@ function InteractionHistory() {
                   <TableCell align="right">
                     <Tooltip title="Edit interaction">
                       <IconButton
-                        size="small"
+                        color="warning"
+                        size="large"
+                        aria-label="Edit interaction"
                         onClick={() => openEdit(interaction)}
                         sx={{
+                          ...iconButtonSx,
                           color: textSecondary,
                           "&:hover": {
-                            color: "#2855D9",
+                            color: "#ED6C02",
                             bgcolor: chipBg,
+                            transform: "scale(1.08)",
                           },
                         }}
                       >
-                        <EditIcon fontSize="small" />
+                        <EditIcon />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete interaction">
                       <IconButton
-                        size="small"
+                        color="error"
+                        size="large"
+                        aria-label="Delete interaction"
                         onClick={() => openDeleteDialog(interaction.id)}
                         sx={{
+                          ...iconButtonSx,
                           color: textSecondary,
                           "&:hover": {
                             color: "#EF4444",
                             bgcolor: isDark ? "#2A1A1A" : "#FFEBEE",
+                            transform: "scale(1.08)",
                           },
                         }}
                       >
-                        <DeleteIcon fontSize="small" />
+                        <DeleteIcon />
                       </IconButton>
                     </Tooltip>
                   </TableCell>
@@ -472,10 +517,16 @@ function InteractionHistory() {
         <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button
             onClick={() => setDeleteDialogOpen(false)}
+            color="inherit"
+            size="medium"
+            aria-label="Cancel delete"
             sx={{
+              ...buttonSx,
               color: textSecondary,
               "&:hover": {
                 bgcolor: isDark ? "#1E293B" : "#F1F5F9",
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 20px rgba(0,0,0,.15)",
               },
             }}
           >
@@ -485,11 +536,15 @@ function InteractionHistory() {
             onClick={handleDelete}
             variant="contained"
             color="error"
+            size="large"
+            aria-label="Confirm delete"
             sx={{
-              borderRadius: 3,
-              textTransform: "none",
-              fontWeight: 700,
+              ...buttonSx,
               boxShadow: "0 4px 12px rgba(239, 68, 68, 0.2)",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 24px rgba(239, 68, 68, 0.3)",
+              },
             }}
           >
             Delete
