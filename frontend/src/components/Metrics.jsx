@@ -9,7 +9,6 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -379,29 +378,6 @@ function MetricCard({
   );
 }
 
-function MetricsSkeleton() {
-  return (
-    <Grid container spacing={2}>
-      {[1, 2, 3, 4, 5, 6].map((item) => (
-        <Grid item xs={12} sm={6} lg={4} key={item}>
-          <Card
-            sx={{
-              minHeight: 180,
-              borderRadius: 4,
-              border: "1px solid #E7ECF5",
-            }}
-          >
-            <CardContent>
-              <Skeleton variant="rounded" width={40} height={40} sx={{ borderRadius: 3 }} />
-              <Skeleton width="55%" sx={{ mt: 3 }} />
-              <Skeleton width="38%" height={40} />
-              <Skeleton width="75%" />
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
+
 
 export default Metrics;
