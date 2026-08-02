@@ -21,11 +21,13 @@ function LoadingChart() {
             <CardContent>
 
                 <Skeleton
+                    animation="wave"
                     width="35%"
                     height={35}
                 />
 
                 <Skeleton
+                    animation="wave"
                     variant="rounded"
                     height={300}
                 />
