@@ -106,6 +106,77 @@ function LogInteraction() {
     },
   };
 
+  // Handler for InteractionForm submission
+  const handleInteractionFormSubmit = async (formData) => {
+    try {
+      // Validation
+      if (!formData.hcp_name || !formData.hcp_name.trim()) {
+        showSnackbar("warning", "Please complete all required fields.");
+        return false;
+      }
+
+      if (!formData.summary || !formData.summary.trim()) {
+        showSnackbar("warning", "Please complete all required fields.");
+        return false;
+      }
+
+      // API call would be made here
+      // const response = await API.post("/interaction", formData);
+      
+      // On success
+      showSnackbar("success", "Interaction logged successfully.");
+      return true;
+    } catch (err) {
+      console.error(err);
+      showSnackbar("error", "Failed to save interaction.");
+      return false;
+    }
+  };
+
+  // Handler for ChatBox AI submission
+  const handleChatSubmit = async (chatData) => {
+    try {
+      // Validation
+      if (!chatData.message || !chatData.message.trim()) {
+        showSnackbar("warning", "Please complete all required fields.");
+        return false;
+      }
+
+      // API call would be made here
+      // const response = await API.post("/ai/assist", chatData);
+      
+      // On success
+      showSnackbar("success", "AI assistance completed successfully.");
+      return true;
+    } catch (err) {
+      console.error(err);
+      showSnackbar("error", "AI assistant encountered an error.");
+      return false;
+    }
+  };
+
+  // Handler for InteractionHistory updates
+  const handleHistoryUpdate = async (updateData) => {
+    try {
+      // Validation
+      if (!updateData.id) {
+        showSnackbar("warning", "Please complete all required fields.");
+        return false;
+      }
+
+      // API call would be made here
+      // const response = await API.put(`/interaction/${updateData.id}`, updateData);
+      
+      // On success
+      showSnackbar("success", "Interaction updated successfully.");
+      return true;
+    } catch (err) {
+      console.error(err);
+      showSnackbar("error", "Failed to update interaction.");
+      return false;
+    }
+  };
+
   return (
     <Box 
       sx={{ 
@@ -201,12 +272,18 @@ function LogInteraction() {
                 color="#2855D9"
               />
 
-              <InteractionForm onSuccess={(message) => {
-                showSnackbar("success", message || "Interaction logged successfully");
-              }} 
-              onError={(message) => {
-                showSnackbar("error", message || "Failed to log interaction");
-              }} />
+              <InteractionForm 
+                onSubmit={handleInteractionFormSubmit}
+                onSuccess={(message) => {
+                  showSnackbar("success", message || "Interaction logged successfully.");
+                }} 
+                onError={(message) => {
+                  showSnackbar("error", message || "Failed to save interaction.");
+                }}
+                onValidationError={() => {
+                  showSnackbar("warning", "Please complete all required fields.");
+                }}
+              />
             </CardContent>
           </Card>
         </Grid>
@@ -222,12 +299,18 @@ function LogInteraction() {
                 color="#8B5CF6"
               />
 
-              <ChatBox onSuccess={(message) => {
-                showSnackbar("success", message || "AI assistance completed successfully");
-              }} 
-              onError={(message) => {
-                showSnackbar("error", message || "AI assistant encountered an error");
-              }} />
+              <ChatBox 
+                onSubmit={handleChatSubmit}
+                onSuccess={(message) => {
+                  showSnackbar("success", message || "AI assistance completed successfully.");
+                }} 
+                onError={(message) => {
+                  showSnackbar("error", message || "AI assistant encountered an error.");
+                }}
+                onValidationError={() => {
+                  showSnackbar("warning", "Please complete all required fields.");
+                }}
+              />
             </CardContent>
           </Card>
         </Grid>
@@ -243,12 +326,18 @@ function LogInteraction() {
                 color="#10A683"
               />
 
-              <InteractionHistory onSuccess={(message) => {
-                showSnackbar("success", message || "Interaction updated successfully");
-              }} 
-              onError={(message) => {
-                showSnackbar("error", message || "Failed to update interaction");
-              }} />
+              <InteractionHistory 
+                onUpdate={handleHistoryUpdate}
+                onSuccess={(message) => {
+                  showSnackbar("success", message || "Interaction updated successfully.");
+                }} 
+                onError={(message) => {
+                  showSnackbar("error", message || "Failed to update interaction.");
+                }}
+                onValidationError={() => {
+                  showSnackbar("warning", "Please complete all required fields.");
+                }}
+              />
             </CardContent>
           </Card>
         </Grid>
