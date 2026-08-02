@@ -19,6 +19,7 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SpeedIcon from "@mui/icons-material/Speed";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
+import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -1518,6 +1519,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 stats.total_interactions === 0 && (
 
                     <EmptyState
+                        icon={<AnalyticsOutlinedIcon />}
                         title="No Interactions Yet"
                         description="Log your first doctor interaction to populate dashboard analytics."
                     />
