@@ -26,16 +26,19 @@ const menuItems = [
     text: "Dashboard",
     icon: <DashboardRoundedIcon />,
     path: "/",
+    ariaLabel: "Dashboard",
   },
   {
     text: "Log Interaction",
     icon: <AddCircleOutlineRoundedIcon />,
     path: "/log-interaction",
+    ariaLabel: "Log Interaction",
   },
   {
     text: "Interaction History",
     icon: <HistoryRoundedIcon />,
     path: "/history",
+    ariaLabel: "Interaction History",
   },
 ];
 
@@ -44,8 +47,19 @@ function Sidebar() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
+  // Focus visibility style for interactive elements
+  const focusVisibleSx = {
+    "&:focus-visible": {
+      outline: "3px solid #1976D2",
+      outlineOffset: 2,
+      borderRadius: 6,
+    },
+  };
+
   return (
     <Drawer
+      role="navigation"
+      aria-label="Main Navigation"
       variant="permanent"
       sx={{
         width: drawerWidth,
@@ -77,6 +91,7 @@ function Sidebar() {
           "&::-webkit-scrollbar-thumb:hover": {
             backgroundColor: theme.palette.text.disabled,
           },
+          ...focusVisibleSx,
         },
       }}
     >
@@ -85,12 +100,15 @@ function Sidebar() {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
           <Avatar
             variant="rounded"
+            aria-label="AI First CRM Logo"
+            role="img"
             sx={{
               width: 42,
               height: 42,
               borderRadius: 3,
               bgcolor: theme.palette.primary.main,
               boxShadow: `0 8px 18px ${theme.palette.primary.main}40`,
+              ...focusVisibleSx,
             }}
           >
             <AutoAwesomeRoundedIcon fontSize="small" />
@@ -105,7 +123,12 @@ function Sidebar() {
               AI First CRM
             </Typography>
 
-            <Typography variant="caption" color={theme.palette.text.secondary}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "#475569", // Improved contrast
+              }}
+            >
               HCP Intelligence
             </Typography>
           </Box>
@@ -120,7 +143,7 @@ function Sidebar() {
           variant="caption"
           sx={{
             px: 1.5,
-            color: theme.palette.text.secondary,
+            color: "#475569", // Improved contrast
             fontWeight: 800,
             fontSize: "0.68rem",
             letterSpacing: "0.1em",
@@ -142,15 +165,22 @@ function Sidebar() {
                   component={Link}
                   to={item.path}
                   selected={isActive}
+                  aria-label={item.ariaLabel}
+                  tabIndex={0}
                   sx={{
                     minHeight: 46,
                     px: 1.5,
                     borderRadius: 2.5,
-                    color: isActive ? theme.palette.primary.main : theme.palette.text.secondary,
+                    color: isActive
+                      ? theme.palette.primary.main
+                      : "#475569", // Improved contrast
                     transition: "all .2s ease",
+                    ...focusVisibleSx,
                     "& .MuiListItemIcon-root": {
                       minWidth: 38,
-                      color: isActive ? theme.palette.primary.main : theme.palette.text.disabled,
+                      color: isActive
+                        ? theme.palette.primary.main
+                        : theme.palette.text.disabled,
                     },
                     "&.Mui-selected": {
                       backgroundColor: theme.palette.primary.main + "20",
@@ -174,6 +204,9 @@ function Sidebar() {
                     primaryTypographyProps={{
                       fontSize: 14,
                       fontWeight: isActive ? 700 : 600,
+                      color: isActive
+                        ? theme.palette.primary.main
+                        : theme.palette.text.primary,
                     }}
                   />
                 </ListItemButton>
@@ -191,11 +224,13 @@ function Sidebar() {
             borderRadius: 3,
             bgcolor: theme.palette.primary.main + "10",
             border: `1px solid ${theme.palette.primary.main}20`,
+            ...focusVisibleSx,
           }}
         >
           <Chip
             label="AI-enabled"
             size="small"
+            aria-label="AI-enabled workflow"
             sx={{
               mb: 1,
               bgcolor: theme.palette.primary.main + "20",
@@ -203,17 +238,26 @@ function Sidebar() {
               fontWeight: 700,
               borderRadius: 2,
               fontSize: 11,
+              ...focusVisibleSx,
             }}
           />
 
-          <Typography variant="body2" fontWeight={700} color={theme.palette.text.primary}>
+          <Typography
+            variant="body2"
+            fontWeight={700}
+            color={theme.palette.text.primary}
+          >
             HCP intelligence hub
           </Typography>
 
           <Typography
             variant="caption"
-            color={theme.palette.text.secondary}
-            sx={{ display: "block", mt: 0.5, lineHeight: 1.5 }}
+            sx={{
+              display: "block",
+              mt: 0.5,
+              lineHeight: 1.5,
+              color: "#475569", // Improved contrast
+            }}
           >
             Capture interactions and turn field data into action.
           </Typography>

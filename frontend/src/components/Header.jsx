@@ -30,6 +30,12 @@ const buttonSx = {
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  },
+  // Focus visibility
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -39,6 +45,12 @@ const iconButtonSx = {
   "&:hover": {
     transform: "scale(1.08)",
     bgcolor: "action.hover"
+  },
+  // Focus visibility
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -59,7 +71,7 @@ function Header({ onMenuToggle }) {
     setAnchorEl(null);
   };
 
-  // Avatar hover styles
+  // Avatar hover styles with focus visibility
   const avatarSx = {
     width: {
       xs: 32,
@@ -84,10 +96,17 @@ function Header({ onMenuToggle }) {
       transform: "scale(1.05)",
       boxShadow: `0 4px 12px ${theme.palette.primary.main}50`,
     },
+    "&:focus-visible": {
+      outline: "3px solid #1976D2",
+      outlineOffset: 2,
+      borderRadius: 6
+    }
   };
 
   return (
     <AppBar
+      component="header"
+      role="banner"
       position="fixed"
       elevation={1}
       sx={{
@@ -126,6 +145,7 @@ function Header({ onMenuToggle }) {
                 color="primary"
                 size="large"
                 aria-label="Toggle Menu"
+                title="Toggle Menu"
                 onClick={onMenuToggle}
                 sx={{
                   mr: 1,
@@ -148,6 +168,8 @@ function Header({ onMenuToggle }) {
           <Typography
             variant={isMobile ? "body1" : "h6"}
             fontWeight="700"
+            aria-label="AI First CRM Logo"
+            role="img"
             sx={{
               color: theme.palette.text.primary,
               fontSize: {
@@ -165,7 +187,7 @@ function Header({ onMenuToggle }) {
                 component="span"
                 sx={{
                   fontWeight: 400,
-                  color: theme.palette.text.secondary,
+                  color: "#475569", // Improved contrast
                   ml: 0.5,
                   display: {
                     xs: "none",
@@ -183,6 +205,7 @@ function Header({ onMenuToggle }) {
             <Chip
               label="Live"
               size="small"
+              aria-label="System Status Live"
               sx={{
                 bgcolor: mode === 'light' ? '#DCFCE7' : '#065F46',
                 color: mode === 'light' ? '#166534' : '#6EE7B7',
@@ -197,6 +220,11 @@ function Header({ onMenuToggle }) {
                   xs: "none",
                   md: "inline-flex",
                 },
+                "&:focus-visible": {
+                  outline: "3px solid #1976D2",
+                  outlineOffset: 2,
+                  borderRadius: 6
+                }
               }}
             />
           )}
@@ -219,7 +247,8 @@ function Header({ onMenuToggle }) {
             <IconButton
               color="primary"
               size="large"
-              aria-label="Toggle Theme"
+              aria-label={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
               onClick={toggleTheme}
               sx={{
                 borderRadius: 2,
@@ -236,7 +265,7 @@ function Header({ onMenuToggle }) {
               }}
             >
               {mode === 'light' ? (
-                <Brightness4Icon sx={{ color: theme.palette.text.secondary, fontSize: 24 }} />
+                <Brightness4Icon sx={{ color: "#475569", fontSize: 24 }} />
               ) : (
                 <Brightness7Icon sx={{ color: theme.palette.warning.main, fontSize: 24 }} />
               )}
@@ -258,7 +287,7 @@ function Header({ onMenuToggle }) {
               <Typography
                 variant="body2"
                 sx={{
-                  color: theme.palette.text.secondary,
+                  color: "#475569", // Improved contrast
                   fontWeight: 500,
                   display: {
                     xs: "none",
@@ -274,7 +303,7 @@ function Header({ onMenuToggle }) {
               <Typography
                 variant="caption"
                 sx={{
-                  color: theme.palette.text.secondary,
+                  color: "#475569", // Improved contrast
                   fontWeight: 500,
                   display: {
                     xs: "none",
@@ -299,7 +328,9 @@ function Header({ onMenuToggle }) {
             <Tooltip title="User Menu">
               <Avatar
                 onClick={handleMenuClick}
-                aria-label="User Menu"
+                aria-label="User Profile"
+                title="User Profile"
+                tabIndex={0}
                 sx={avatarSx}
               >
                 FR
@@ -331,25 +362,49 @@ function Header({ onMenuToggle }) {
               },
             }}
           >
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem 
+              onClick={handleMenuClose}
+              sx={{
+                ...buttonSx,
+                "&:focus-visible": {
+                  outline: "3px solid #1976D2",
+                  outlineOffset: 2,
+                  borderRadius: 6
+                }
+              }}
+            >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography fontWeight={600} color={theme.palette.text.primary}>
                   Field Representative
                 </Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary}>
+                <Typography variant="caption" color="#475569">
                   FR • HCP Module
                 </Typography>
               </Box>
             </MenuItem>
             <MenuItem 
               onClick={handleMenuClose}
-              sx={buttonSx}
+              sx={{
+                ...buttonSx,
+                "&:focus-visible": {
+                  outline: "3px solid #1976D2",
+                  outlineOffset: 2,
+                  borderRadius: 6
+                }
+              }}
             >
               <Typography color={theme.palette.text.primary}>Profile</Typography>
             </MenuItem>
             <MenuItem 
               onClick={handleMenuClose}
-              sx={buttonSx}
+              sx={{
+                ...buttonSx,
+                "&:focus-visible": {
+                  outline: "3px solid #1976D2",
+                  outlineOffset: 2,
+                  borderRadius: 6
+                }
+              }}
             >
               <Typography color={theme.palette.text.primary}>Settings</Typography>
             </MenuItem>
@@ -361,6 +416,11 @@ function Header({ onMenuToggle }) {
                   transform: "translateY(-2px)",
                   boxShadow: "0 8px 20px rgba(239, 68, 68, 0.15)",
                 },
+                "&:focus-visible": {
+                  outline: "3px solid #1976D2",
+                  outlineOffset: 2,
+                  borderRadius: 6
+                }
               }}
             >
               <Typography color={theme.palette.error.main}>Logout</Typography>

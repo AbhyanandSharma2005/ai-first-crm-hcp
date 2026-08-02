@@ -43,6 +43,12 @@ const buttonSx = {
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 20px rgba(0,0,0,.15)"
+  },
+  // Focus visibility
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -62,6 +68,12 @@ const iconButtonSx = {
   "&:hover": {
     transform: "scale(1.08)",
     bgcolor: "action.hover"
+  },
+  // Focus visibility
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -88,6 +100,15 @@ const kpiCardAnimation = {
   "&:hover": {
     transform: "translateY(-8px)",
     boxShadow: "0 20px 45px rgba(0,0,0,.18)"
+  }
+};
+
+// Focus visibility for cards
+const cardFocusSx = {
+  "&:focus-visible": {
+    outline: "3px solid #1976D2",
+    outlineOffset: 2,
+    borderRadius: 6
   }
 };
 
@@ -192,6 +213,7 @@ function Dashboard() {
       value: dashboardStats?.total_hcps ?? metrics?.total_hcps ?? "—",
       description: "Healthcare professionals",
       trend: "Active records",
+      ariaLabel: "Total Healthcare Professionals",
     },
     {
       title: "Interactions",
@@ -201,18 +223,21 @@ function Dashboard() {
         "—",
       description: "Meetings and follow-ups",
       trend: "CRM activity",
+      ariaLabel: "Total Interactions",
     },
     {
       title: "Application",
       value: metrics?.status ?? "—",
       description: metrics?.api ?? "AI CRM platform",
       trend: "System health",
+      ariaLabel: "Application Status",
     },
     {
       title: "Environment",
       value: metrics?.environment ?? "—",
       description: `Version ${metrics?.version ?? "—"}`,
       trend: "Deployment",
+      ariaLabel: "Environment Details",
     },
   ];
 
@@ -254,6 +279,9 @@ function Dashboard() {
 
   return (
     <Box
+      component="main"
+      role="main"
+      aria-label="Dashboard Main Content"
       sx={{
         width: "100%",
         maxWidth: 1600,
@@ -303,10 +331,10 @@ function Dashboard() {
 
           <Typography
             variant="body1"
-            color="text.secondary"
             sx={{
               mb: 0,
               mt: 0.5,
+              color: "#475569", // Improved contrast
             }}
           >
             Monitor field activity, healthcare professionals, and CRM insights.
@@ -334,16 +362,22 @@ function Dashboard() {
             label={`Updated ${lastUpdated.toLocaleTimeString()}`}
             variant="outlined"
             size="small"
+            aria-label={`Dashboard updated at ${lastUpdated.toLocaleTimeString()}`}
             sx={{
               borderColor: theme.palette.divider,
               bgcolor: theme.palette.background.paper,
-              color: theme.palette.text.secondary,
+              color: "#475569", // Improved contrast
               fontWeight: 700,
               borderRadius: 2,
               width: {
                 xs: "100%",
                 sm: "auto",
               },
+              "&:focus-visible": {
+                outline: "3px solid #1976D2",
+                outlineOffset: 2,
+                borderRadius: 6
+              }
             }}
           />
 
@@ -392,7 +426,8 @@ function Dashboard() {
           "&:hover": {
             transform: "translateY(-4px)",
             boxShadow: `0 24px 48px ${theme.palette.primary.main}50`
-          }
+          },
+          ...cardFocusSx,
         }}
       >
         <CardContent
@@ -441,12 +476,18 @@ function Dashboard() {
               <Chip
                 label="AI-enabled workflow"
                 size="small"
+                aria-label="AI-enabled workflow"
                 sx={{
                   mb: 2,
                   color: "#DCE8FF",
                   bgcolor: "rgba(255,255,255,.13)",
                   fontWeight: 700,
                   borderRadius: 2,
+                  "&:focus-visible": {
+                    outline: "3px solid #1976D2",
+                    outlineOffset: 2,
+                    borderRadius: 6
+                  }
                 }}
               />
 
@@ -540,6 +581,9 @@ function Dashboard() {
               key={card.title}
             >
               <Card
+                tabIndex={0}
+                role="article"
+                aria-label={card.ariaLabel}
                 sx={{
                   height: "100%",
                   borderRadius: 4,
@@ -547,6 +591,7 @@ function Dashboard() {
                   background: style.background,
                   boxShadow: "0 8px 25px rgba(15,23,42,.08)",
                   ...kpiCardAnimation,
+                  ...cardFocusSx,
                 }}
               >
                 <CardContent
@@ -588,6 +633,11 @@ function Dashboard() {
                         },
                         "&:hover": {
                           transform: "scale(1.1) rotate(-5deg)",
+                        },
+                        "&:focus-visible": {
+                          outline: "3px solid #1976D2",
+                          outlineOffset: 2,
+                          borderRadius: 6
                         }
                       }}
                     >
@@ -611,12 +661,12 @@ function Dashboard() {
 
                   <Typography
                     variant="subtitle2"
-                    color="text.secondary"
                     sx={{
                       fontSize: {
                         xs: "0.75rem",
                         sm: "0.875rem",
                       },
+                      color: "#475569", // Improved contrast
                     }}
                   >
                     {card.title}
@@ -647,12 +697,12 @@ function Dashboard() {
 
                   <Typography
                     variant="caption"
-                    color="text.secondary"
                     sx={{
                       fontSize: {
                         xs: "0.65rem",
                         sm: "0.75rem",
                       },
+                      color: "#475569", // Improved contrast
                     }}
                   >
                     {card.description}
