@@ -19,7 +19,7 @@ import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { Link, useLocation } from "react-router-dom";
 
-const drawerWidth = 264;
+const drawerWidth = 280;
 
 const menuItems = [
   {
@@ -103,8 +103,8 @@ function Sidebar() {
             aria-label="AI First CRM Logo"
             role="img"
             sx={{
-              width: 42,
-              height: 42,
+              width: 44,
+              height: 44,
               borderRadius: 3,
               bgcolor: theme.palette.primary.main,
               boxShadow: `0 8px 18px ${theme.palette.primary.main}40`,
@@ -159,6 +159,11 @@ function Sidebar() {
                 ? location.pathname === "/"
                 : location.pathname.startsWith(item.path);
 
+            // Clone the icon with larger size
+            const iconWithSize = React.cloneElement(item.icon, {
+              sx: { fontSize: 26 },
+            });
+
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton
@@ -168,7 +173,7 @@ function Sidebar() {
                   aria-label={item.ariaLabel}
                   tabIndex={0}
                   sx={{
-                    minHeight: 46,
+                    minHeight: 48,
                     px: 1.5,
                     borderRadius: 2.5,
                     color: isActive
@@ -177,7 +182,7 @@ function Sidebar() {
                     transition: "all .2s ease",
                     ...focusVisibleSx,
                     "& .MuiListItemIcon-root": {
-                      minWidth: 38,
+                      minWidth: 40,
                       color: isActive
                         ? theme.palette.primary.main
                         : theme.palette.text.disabled,
@@ -197,7 +202,7 @@ function Sidebar() {
                     },
                   }}
                 >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemIcon>{iconWithSize}</ListItemIcon>
 
                   <ListItemText
                     primary={item.text}
@@ -220,7 +225,7 @@ function Sidebar() {
       <Box sx={{ mt: "auto", p: 1.5, pb: 2.5 }}>
         <Box
           sx={{
-            p: 2,
+            p: 2.5,
             borderRadius: 3,
             bgcolor: theme.palette.primary.main + "10",
             border: `1px solid ${theme.palette.primary.main}20`,
@@ -232,7 +237,7 @@ function Sidebar() {
             size="small"
             aria-label="AI-enabled workflow"
             sx={{
-              mb: 1,
+              mb: 1.25,
               bgcolor: theme.palette.primary.main + "20",
               color: theme.palette.primary.main,
               fontWeight: 700,
@@ -246,6 +251,7 @@ function Sidebar() {
             variant="body2"
             fontWeight={700}
             color={theme.palette.text.primary}
+            sx={{ mb: 0.5 }}
           >
             HCP intelligence hub
           </Typography>
@@ -255,7 +261,7 @@ function Sidebar() {
             sx={{
               display: "block",
               mt: 0.5,
-              lineHeight: 1.5,
+              lineHeight: 1.6,
               color: "#475569", // Improved contrast
             }}
           >
