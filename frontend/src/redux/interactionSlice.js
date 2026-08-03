@@ -13,14 +13,11 @@ export const sendChatMessage = createAsyncThunk(
   "interaction/sendChatMessage",
   async ({ session_id, message }, { rejectWithValue }) => {
     try {
-      const response = await API.post("/chat/", { session_id, message });
-      const data = response.data;
-      return (
-        data.response ||
-        data.final_response ||
-        data.message ||
-        JSON.stringify(data)
-      );
+      const response = await API.post("/chat/", { 
+        session_id, 
+        message 
+      });
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Unable to connect with AI service."
@@ -149,10 +146,27 @@ const interactionSlice = createSlice({
       })
       .addCase(sendChatMessage.fulfilled, (state, action) => {
         state.chatLoading = false;
+        
+        // Extract response from the full response object
+        // Supports multiple response field names for flexibility
+        const responseText = 
+          action.payload?.data?.response ||
+          action.payload?.response ||
+          action.payload?.final_response ||
+          action.payload?.message ||
+          JSON.stringify(action.payload);
+        
         state.chatMessages.push({
           sender: "AI Assistant",
-          text: action.payload,
+          text: responseText,
           isUser: false,
+          // Include additional metadata if available
+          metadata: {
+            intent: action.payload?.data?.intent || null,
+            sources: action.payload?.data?.sources || null,
+            scores: action.payload?.data?.scores || null,
+            rewritten_query: action.payload?.data?.rewritten_query || null,
+          }
         });
       })
       .addCase(sendChatMessage.rejected, (state, action) => {
@@ -160,7 +174,7 @@ const interactionSlice = createSlice({
         state.chatError = action.payload;
         state.chatMessages.push({
           sender: "AI Assistant",
-          text: action.payload,
+          text: action.payload || "An error occurred while processing your request.",
           isUser: false,
           isError: true,
         });
