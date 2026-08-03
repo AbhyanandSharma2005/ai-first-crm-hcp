@@ -53,21 +53,12 @@ const buttonSx = {
   }
 };
 
-// Reusable card animation with reduced motion support and focus visibility
-const cardAnimation = {
-  transition: "all 0.3s ease-in-out",
-  "@media (prefers-reduced-motion: reduce)": {
-    transition: "none",
-    transform: "none"
-  },
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
   "&:hover": {
-    transform: "translateY(-6px) scale(1.01)",
-    boxShadow: "0 18px 40px rgba(15,23,42,0.18)"
-  },
-  "&:focus-visible": {
-    outline: "3px solid #1976D2",
-    outlineOffset: 2,
-    borderRadius: 6
+    boxShadow: 8,
+    transform: "translateY(-4px)"
   }
 };
 
@@ -122,6 +113,9 @@ function SearchHCP() {
   const emptyBorder = isDark ? "#334155" : "#D9E1F2";
   const avatarBg = isDark ? "#1A2A4A" : "#EAF0FF";
   const avatarColor = isDark ? "#60A5FA" : "#2855D9";
+
+  // Uniform section spacing - 32px between sections
+  const sectionSpacing = 4; // 32px
 
   // Validation function
   const validateSearch = () => {
@@ -207,7 +201,7 @@ function SearchHCP() {
 
   const headerCellSx = {
     py: 2,
-    color: "#475569", // Improved contrast
+    color: "#475569",
     fontSize: "0.72rem",
     fontWeight: 800,
     letterSpacing: "0.06em",
@@ -227,9 +221,10 @@ function SearchHCP() {
       sx={{
         borderRadius: 5,
         border: `1px solid ${borderColor}`,
-        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
         backgroundColor: cardBg,
-        ...cardAnimation,
+        minHeight: 380, // Search minHeight
+        ...cardShadowSx,
+        ...focusVisibleSx,
       }}
     >
       <CardContent 
@@ -252,7 +247,7 @@ function SearchHCP() {
             display: "flex",
             alignItems: "flex-start",
             gap: 1.5,
-            mb: 3.5,
+            mb: sectionSpacing,
           }}
         >
           <Avatar
@@ -278,7 +273,15 @@ function SearchHCP() {
           </Avatar>
 
           <Box>
-            <Typography variant="h6" fontWeight={700} color={textPrimary} sx={{ mb: 0.5 }}>
+            <Typography 
+              variant="h6" 
+              fontWeight={700} 
+              color={textPrimary} 
+              sx={{ 
+                mb: 0.5,
+                fontSize: "1.25rem" // 20px
+              }}
+            >
               Search healthcare professionals
             </Typography>
 
@@ -286,7 +289,8 @@ function SearchHCP() {
               variant="body2" 
               sx={{ 
                 mt: 0.25,
-                color: "#475569" // Improved contrast
+                color: "#475569",
+                fontSize: "0.875rem" // 14px
               }}
             >
               Find HCP records by doctor name and review profile details.
@@ -299,7 +303,7 @@ function SearchHCP() {
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             gap: 1.5,
-            mb: 3.5,
+            mb: sectionSpacing,
           }}
         >
           <TextField
@@ -332,6 +336,7 @@ function SearchHCP() {
               },
               "& .MuiInputBase-input": {
                 color: textPrimary,
+                fontSize: "1rem", // 16px
               },
               ...focusVisibleSx,
             }}
@@ -383,11 +388,12 @@ function SearchHCP() {
             severity="info"
             aria-label="Search error"
             sx={{
-              mb: 3.5,
+              mb: sectionSpacing,
               borderRadius: 3,
               border: `1px solid ${isDark ? '#334155' : '#B8D4FF'}`,
               bgcolor: isDark ? '#1A2A4A' : '#F2F8FF',
               color: isDark ? '#60A5FA' : '#255FA8',
+              fontSize: "0.875rem", // 14px
               ...focusVisibleSx,
             }}
           >
@@ -422,14 +428,22 @@ function SearchHCP() {
           >
             <Box>
               <SearchRoundedIcon sx={{ color: isDark ? "#475569" : "#A0AEC0", fontSize: 32, mb: 1.5 }} />
-              <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"} sx={{ mb: 0.5 }}>
+              <Typography 
+                fontWeight={700} 
+                color={isDark ? "#94A3B8" : "#475569"} 
+                sx={{ 
+                  mb: 0.5,
+                  fontSize: "1rem" // 16px
+                }}
+              >
                 Search your HCP directory
               </Typography>
               <Typography 
                 variant="body2" 
                 sx={{ 
                   mt: 0.5,
-                  color: "#475569" // Improved contrast
+                  color: "#475569",
+                  fontSize: "0.875rem" // 14px
                 }}
               >
                 Enter a doctor name to find their profile and hospital details.
@@ -460,7 +474,10 @@ function SearchHCP() {
             >
               <Typography 
                 variant="body2" 
-                sx={{ color: "#475569" }} // Improved contrast
+                sx={{ 
+                  color: "#475569",
+                  fontSize: "0.875rem" // 14px
+                }}
               >
                 Search results
               </Typography>
@@ -474,6 +491,7 @@ function SearchHCP() {
                 sx={{
                   fontWeight: 700,
                   borderRadius: 2,
+                  fontSize: "0.75rem", // 12px
                   ...focusVisibleSx,
                 }}
               />
@@ -488,14 +506,12 @@ function SearchHCP() {
                 borderColor: borderColor,
                 overflowX: "auto",
                 backgroundColor: cardBg,
-                transition: "all .3s",
-                "@media (prefers-reduced-motion: reduce)": {
-                  transition: "none"
-                },
-                "&:hover": {
-                  boxShadow: "0 8px 25px rgba(15,23,42,.12)",
-                },
+                ...cardShadowSx,
                 ...focusVisibleSx,
+                "&:hover": {
+                  boxShadow: 8,
+                  transform: "translateY(-4px)",
+                },
               }}
             >
               <Table 
@@ -554,13 +570,21 @@ function SearchHCP() {
                             {(doctor.name || "H").charAt(0).toUpperCase()}
                           </Avatar>
 
-                          <Typography fontWeight={700} color={textPrimary}>
+                          <Typography 
+                            fontWeight={700} 
+                            color={textPrimary}
+                            sx={{ fontSize: "0.875rem" }} // 14px
+                          >
                             {doctor.name || "—"}
                           </Typography>
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ color: isDark ? "#94A3B8" : "#526176", py: 2 }}>
+                      <TableCell sx={{ 
+                        color: isDark ? "#94A3B8" : "#526176", 
+                        py: 2,
+                        fontSize: "0.875rem" // 14px
+                      }}>
                         {doctor.specialization || "Not specified"}
                       </TableCell>
 
@@ -581,7 +605,11 @@ function SearchHCP() {
                               ...focusVisibleSx,
                             }}
                           />
-                          <Typography variant="body2" color={isDark ? "#94A3B8" : "#526176"}>
+                          <Typography 
+                            variant="body2" 
+                            color={isDark ? "#94A3B8" : "#526176"}
+                            sx={{ fontSize: "0.875rem" }} // 14px
+                          >
                             {doctor.hospital || "Not specified"}
                           </Typography>
                         </Box>
@@ -597,6 +625,7 @@ function SearchHCP() {
                             color: isDark ? '#94A3B8' : '#526176',
                             fontWeight: 700,
                             borderRadius: 2,
+                            fontSize: "0.75rem", // 12px
                             transition: "all .3s",
                             "@media (prefers-reduced-motion: reduce)": {
                               transition: "none"
