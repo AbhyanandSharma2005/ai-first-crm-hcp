@@ -4,8 +4,8 @@ import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-// Sidebar width constant
-const DRAWER_WIDTH = 264;
+// Sidebar width constant - increased from 264 to 280
+const DRAWER_WIDTH = 280;
 
 function Layout({ children }) {
     const theme = useTheme();
@@ -24,7 +24,7 @@ function Layout({ children }) {
                 sx={{
                     display: "flex",
                     flex: 1,
-                    mt: "64px", // Header height offset
+                    mt: "72px", // Header height offset - increased from 64px to 72px
                 }}
             >
                 {/* Desktop Sidebar */}
@@ -58,7 +58,7 @@ function Layout({ children }) {
                             sm: 3,
                             md: 4,
                         },
-                        minHeight: "calc(100vh - 64px)",
+                        minHeight: "calc(100vh - 72px)", // Updated to match new header height
                         backgroundColor: theme.palette.background.default,
                         transition: theme.transitions.create(["margin", "width"], {
                             easing: theme.transitions.easing.sharp,
