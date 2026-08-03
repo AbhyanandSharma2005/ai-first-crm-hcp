@@ -206,7 +206,7 @@ function SearchHCP() {
   };
 
   const headerCellSx = {
-    py: 1.5,
+    py: 2,
     color: "#475569", // Improved contrast
     fontSize: "0.72rem",
     fontWeight: 800,
@@ -225,7 +225,7 @@ function SearchHCP() {
       role="article"
       aria-label="Search Healthcare Professionals"
       sx={{
-        borderRadius: 4,
+        borderRadius: 5,
         border: `1px solid ${borderColor}`,
         boxShadow: "0 8px 25px rgba(15,23,42,.08)",
         backgroundColor: cardBg,
@@ -234,7 +234,7 @@ function SearchHCP() {
     >
       <CardContent 
         sx={{ 
-          p: { xs: 2.5, md: 3.5 },
+          p: { xs: 3, md: 4 },
           transition: "all .3s",
           "@media (prefers-reduced-motion: reduce)": {
             transition: "none"
@@ -252,16 +252,16 @@ function SearchHCP() {
             display: "flex",
             alignItems: "flex-start",
             gap: 1.5,
-            mb: 3,
+            mb: 3.5,
           }}
         >
           <Avatar
             variant="rounded"
             aria-label="Search icon"
             sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 3,
+              width: 48,
+              height: 48,
+              borderRadius: 4,
               bgcolor: avatarBg,
               color: avatarColor,
               transition: "all .3s",
@@ -278,7 +278,7 @@ function SearchHCP() {
           </Avatar>
 
           <Box>
-            <Typography variant="h6" fontWeight={700} color={textPrimary}>
+            <Typography variant="h6" fontWeight={700} color={textPrimary} sx={{ mb: 0.5 }}>
               Search healthcare professionals
             </Typography>
 
@@ -299,7 +299,7 @@ function SearchHCP() {
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             gap: 1.5,
-            mb: 3,
+            mb: 3.5,
           }}
         >
           <TextField
@@ -319,7 +319,7 @@ function SearchHCP() {
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: isDark ? '#0F172A' : '#FFFFFF',
-                borderRadius: 2.5,
+                borderRadius: 3,
                 "& fieldset": {
                   borderColor: borderColor,
                 },
@@ -383,8 +383,8 @@ function SearchHCP() {
             severity="info"
             aria-label="Search error"
             sx={{
-              mb: 3,
-              borderRadius: 2.5,
+              mb: 3.5,
+              borderRadius: 3,
               border: `1px solid ${isDark ? '#334155' : '#B8D4FF'}`,
               bgcolor: isDark ? '#1A2A4A' : '#F2F8FF',
               color: isDark ? '#60A5FA' : '#255FA8',
@@ -404,9 +404,9 @@ function SearchHCP() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              minHeight: 160,
+              minHeight: 180,
               border: `1px dashed ${emptyBorder}`,
-              borderRadius: 3,
+              borderRadius: 4,
               bgcolor: emptyBg,
               textAlign: "center",
               px: 3,
@@ -421,8 +421,8 @@ function SearchHCP() {
             }}
           >
             <Box>
-              <SearchRoundedIcon sx={{ color: isDark ? "#475569" : "#A0AEC0", fontSize: 30, mb: 1 }} />
-              <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"}>
+              <SearchRoundedIcon sx={{ color: isDark ? "#475569" : "#A0AEC0", fontSize: 32, mb: 1.5 }} />
+              <Typography fontWeight={700} color={isDark ? "#94A3B8" : "#475569"} sx={{ mb: 0.5 }}>
                 Search your HCP directory
               </Typography>
               <Typography 
@@ -455,7 +455,7 @@ function SearchHCP() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mb: 1.5,
+                mb: 2,
               }}
             >
               <Typography 
@@ -484,7 +484,7 @@ function SearchHCP() {
               variant="outlined"
               aria-label="Search Results"
               sx={{
-                borderRadius: 3,
+                borderRadius: 4,
                 borderColor: borderColor,
                 overflowX: "auto",
                 backgroundColor: cardBg,
@@ -529,18 +529,18 @@ function SearchHCP() {
                         ...focusVisibleSx,
                       }}
                     >
-                      <TableCell sx={{ py: 1.75 }}>
+                      <TableCell sx={{ py: 2 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
                           <Avatar
                             aria-label={`${doctor.name || "Unknown"} avatar`}
                             sx={{
-                              width: 34,
-                              height: 34,
+                              width: 36,
+                              height: 36,
                               fontSize: 13,
                               fontWeight: 700,
                               bgcolor: avatarBg,
                               color: avatarColor,
-                              borderRadius: 3,
+                              borderRadius: 4,
                               transition: "all .3s",
                               "@media (prefers-reduced-motion: reduce)": {
                                 transition: "none"
@@ -560,11 +560,11 @@ function SearchHCP() {
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ color: isDark ? "#94A3B8" : "#526176" }}>
+                      <TableCell sx={{ color: isDark ? "#94A3B8" : "#526176", py: 2 }}>
                         {doctor.specialization || "Not specified"}
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell sx={{ py: 2 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                           <LocalHospitalOutlinedIcon
                             aria-label="Hospital"
@@ -587,7 +587,7 @@ function SearchHCP() {
                         </Box>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell sx={{ py: 2 }}>
                         <Chip
                           label={`#${doctor.id}`}
                           size="small"
