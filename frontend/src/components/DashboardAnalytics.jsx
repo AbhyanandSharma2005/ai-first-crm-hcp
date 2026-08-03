@@ -66,8 +66,11 @@ const cardAnimation = {
     }
 };
 
+// Step 5 — Increase Card Heights: CRM dashboards breathe more.
+// padding: 2 -> padding: 3 across card content
 const cardContentAnimationSx = {
     transition: "all .3s",
+    padding: 3,
     ".MuiTypography-root": {
         transition: "all .25s"
     }
@@ -127,9 +130,10 @@ const standardOutlinedButtonSx = {
     ...focusVisibleSx
 };
 
+// Step 5 — Increase Card Heights: borderRadius: 2 -> borderRadius: 4
 const standardChipSx = {
     fontWeight: 700,
-    borderRadius: 2,
+    borderRadius: 4,
     ...chipHoverSx
 };
 
@@ -1323,7 +1327,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                     mt: 3,
 
-                    borderRadius: 3
+                    borderRadius: 4
 
                 }}
 
@@ -1830,7 +1834,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 fontWeight={700}
                 sx={{
                     color: "#0F172A",
-                    mb: 3,
+                    mb: 2,
                     mt: standardSectionSpacing
                 }}
             >
@@ -1878,6 +1882,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Typography
                                     variant="h6"
                                     fontWeight={700}
+                                    sx={{ mb: 2 }}
                                 >
                                     Product Distribution
                                 </Typography>
@@ -1949,6 +1954,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Typography
                                     variant="h6"
                                     fontWeight={700}
+                                    sx={{ mb: 2 }}
                                 >
                                     Monthly Interaction Trend
                                 </Typography>
@@ -2054,6 +2060,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Typography
                                 variant="h6"
                                 fontWeight={600}
+                                sx={{ mb: 2 }}
                             >
                                 {lastUpdated}
                             </Typography>
@@ -2077,6 +2084,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 variant="h6"
                                 fontWeight={600}
                                 color="success.main"
+                                sx={{ mb: 2 }}
                             >
                                 {responseTime || "--"} sec
                             </Typography>
