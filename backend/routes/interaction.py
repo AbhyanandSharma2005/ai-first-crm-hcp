@@ -14,6 +14,7 @@ from schemas import (
 from utils.logger import logger
 from websocket_manager import manager
 from services.redis_service import redis_service
+from services.session_memory import session_memory
 
 
 router = APIRouter(
@@ -68,7 +69,8 @@ def create_interaction(
 ):
 
     logger.info(
-        f"Creating interaction for HCP: {interaction.hcp_name}"
+        f"Creating interaction for HCP: {interaction.hcp_name} "
+        f"(Session: {interaction.session_id})"
     )
 
     try:
@@ -97,6 +99,53 @@ def create_interaction(
         logger.info(
             f"Interaction created successfully. ID={new_interaction.id}"
         )
+
+        # ============================================================
+        # Store interaction data in session memory
+        # ============================================================
+        if interaction.session_id:
+            try:
+                session_memory.set_value(
+                    interaction.session_id,
+                    "last_hcp",
+                    new_interaction.hcp_name
+                )
+
+                session_memory.set_value(
+                    interaction.session_id,
+                    "last_product",
+                    new_interaction.product
+                )
+
+                session_memory.set_value(
+                    interaction.session_id,
+                    "last_summary",
+                    new_interaction.summary
+                )
+
+                session_memory.set_value(
+                    interaction.session_id,
+                    "last_follow_up",
+                    new_interaction.follow_up.isoformat()
+                    if new_interaction.follow_up
+                    else None
+                )
+
+                session_memory.set_value(
+                    interaction.session_id,
+                    "last_interaction_id",
+                    new_interaction.id
+                )
+
+                logger.info(
+                    f"Stored interaction data in session memory "
+                    f"for session: {interaction.session_id}"
+                )
+            except Exception as session_error:
+                logger.error(
+                    f"Failed to store interaction in session memory: "
+                    f"{session_error}"
+                )
 
         # Invalidate dashboard cache
         try:
@@ -424,6 +473,53 @@ def update_interaction(
         db.refresh(interaction)
 
         logger.info(f"Interaction {interaction_id} updated successfully.")
+
+        # ============================================================
+        # Store updated interaction data in session memory
+        # ============================================================
+        if interaction_data.session_id:
+            try:
+                session_memory.set_value(
+                    interaction_data.session_id,
+                    "last_hcp",
+                    interaction.hcp_name
+                )
+
+                session_memory.set_value(
+                    interaction_data.session_id,
+                    "last_product",
+                    interaction.product
+                )
+
+                session_memory.set_value(
+                    interaction_data.session_id,
+                    "last_summary",
+                    interaction.summary
+                )
+
+                session_memory.set_value(
+                    interaction_data.session_id,
+                    "last_follow_up",
+                    interaction.follow_up.isoformat()
+                    if interaction.follow_up
+                    else None
+                )
+
+                session_memory.set_value(
+                    interaction_data.session_id,
+                    "last_interaction_id",
+                    interaction.id
+                )
+
+                logger.info(
+                    f"Updated interaction data in session memory "
+                    f"for session: {interaction_data.session_id}"
+                )
+            except Exception as session_error:
+                logger.error(
+                    f"Failed to update interaction in session memory: "
+                    f"{session_error}"
+                )
 
         # Invalidate dashboard cache
         try:
