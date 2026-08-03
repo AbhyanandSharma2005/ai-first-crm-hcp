@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
@@ -19,7 +18,7 @@ import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { Link, useLocation } from "react-router-dom";
 
-const drawerWidth = 280;
+import { layout } from "../theme/layout";
 
 const menuItems = [
   {
@@ -44,10 +43,8 @@ const menuItems = [
 
 function Sidebar() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
-  // Focus visibility style for interactive elements
   const focusVisibleSx = {
     "&:focus-visible": {
       outline: "3px solid #1976D2",
@@ -62,35 +59,24 @@ function Sidebar() {
       aria-label="Main Navigation"
       variant="permanent"
       sx={{
-        width: drawerWidth,
+        width: layout.drawerWidth,
         flexShrink: 0,
         display: {
           xs: "none",
           md: "block",
         },
         "& .MuiDrawer-paper": {
-          width: drawerWidth,
+          width: layout.drawerWidth,
           boxSizing: "border-box",
           border: "none",
           borderRight: `1px solid ${theme.palette.divider}`,
           backgroundColor: theme.palette.background.paper,
           px: 1.5,
-          top: "72px",
-          height: "calc(100vh - 72px)",
+          position: "fixed",
+          top: `${layout.headerHeight}px`,
+          left: 0,
+          height: `calc(100vh - ${layout.headerHeight}px)`,
           overflowY: "auto",
-          "&::-webkit-scrollbar": {
-            width: 4,
-          },
-          "&::-webkit-scrollbar-track": {
-            backgroundColor: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: theme.palette.divider,
-            borderRadius: 10,
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: theme.palette.text.disabled,
-          },
           ...focusVisibleSx,
         },
       }}
@@ -122,12 +108,9 @@ function Sidebar() {
             >
               AI First CRM
             </Typography>
-
             <Typography
               variant="caption"
-              sx={{
-                color: "#475569", // Improved contrast
-              }}
+              sx={{ color: "#475569" }}
             >
               HCP Intelligence
             </Typography>
@@ -143,7 +126,7 @@ function Sidebar() {
           variant="caption"
           sx={{
             px: 1.5,
-            color: "#475569", // Improved contrast
+            color: "#475569",
             fontWeight: 800,
             fontSize: "0.68rem",
             letterSpacing: "0.1em",
@@ -159,11 +142,6 @@ function Sidebar() {
                 ? location.pathname === "/"
                 : location.pathname.startsWith(item.path);
 
-            // Clone the icon with larger size
-            const iconWithSize = React.cloneElement(item.icon, {
-              sx: { fontSize: 26 },
-            });
-
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton
@@ -178,7 +156,7 @@ function Sidebar() {
                     borderRadius: 2.5,
                     color: isActive
                       ? theme.palette.primary.main
-                      : "#475569", // Improved contrast
+                      : "#475569",
                     transition: "all .2s ease",
                     ...focusVisibleSx,
                     "& .MuiListItemIcon-root": {
@@ -202,8 +180,7 @@ function Sidebar() {
                     },
                   }}
                 >
-                  <ListItemIcon>{iconWithSize}</ListItemIcon>
-
+                  <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText
                     primary={item.text}
                     primaryTypographyProps={{
@@ -246,7 +223,6 @@ function Sidebar() {
               ...focusVisibleSx,
             }}
           />
-
           <Typography
             variant="body2"
             fontWeight={700}
@@ -255,14 +231,13 @@ function Sidebar() {
           >
             HCP intelligence hub
           </Typography>
-
           <Typography
             variant="caption"
             sx={{
               display: "block",
               mt: 0.5,
               lineHeight: 1.6,
-              color: "#475569", // Improved contrast
+              color: "#475569",
             }}
           >
             Capture interactions and turn field data into action.
