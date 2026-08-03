@@ -555,7 +555,7 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards */}
+      {/* KPI Cards - Updated responsive breakpoints */}
       <Grid 
         container 
         spacing={commonSpacing.gridSpacing}
