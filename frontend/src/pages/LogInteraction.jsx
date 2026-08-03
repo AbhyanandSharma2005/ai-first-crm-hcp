@@ -276,7 +276,7 @@ function LogInteraction() {
         </Typography>
       </Box>
 
-      {/* Hero Card */}
+      {/* Hero Card - Enhanced with larger padding */}
       <Card
         tabIndex={0}
         role="article"
@@ -289,17 +289,50 @@ function LogInteraction() {
           background:
             "radial-gradient(circle at 90% 0%, rgba(138, 180, 255, .45), transparent 30%), linear-gradient(130deg, #172554 0%, #2855D9 100%)",
           boxShadow: "0 16px 32px rgba(37, 84, 217, .18)",
+          transition: "all .3s ease",
+          "@media (prefers-reduced-motion: reduce)": {
+            transition: "none"
+          },
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 24px 48px rgba(37, 84, 217, .25)"
+          },
           ...cardFocusSx,
         }}
       >
-        <CardContent sx={{ p: { xs: 3.5, md: 4.5 } }}>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
+        <CardContent sx={{ 
+          p: { 
+            xs: 3.5, 
+            sm: 4.5, 
+            md: 5.5 
+          } 
+        }}>
+          <Typography 
+            variant="h5" 
+            fontWeight={700} 
+            sx={{ 
+              mb: 1.5,
+              fontSize: {
+                xs: "1.25rem",
+                sm: "1.5rem",
+                md: "1.75rem",
+              }
+            }}
+          >
             A better workflow for every field visit
           </Typography>
 
           <Typography
             variant="body2"
-            sx={{ color: "rgba(255,255,255,.82)", maxWidth: 780, lineHeight: 1.8 }}
+            sx={{ 
+              color: "rgba(255,255,255,.82)", 
+              maxWidth: 780, 
+              lineHeight: 1.8,
+              fontSize: {
+                xs: "0.875rem",
+                sm: "1rem",
+              }
+            }}
           >
             Start with the structured form for complete records, or ask the AI
             assistant to help turn unstructured notes into useful CRM data.
