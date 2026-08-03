@@ -52,6 +52,15 @@ const outlinedButtonSx = {
   }
 };
 
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
+  "&:hover": {
+    boxShadow: 8,
+    transform: "translateY(-4px)"
+  }
+};
+
 // Reusable card animation with reduced motion support
 const cardAnimation = {
   transition: "all 0.3s ease-in-out",
@@ -111,7 +120,8 @@ function Metrics() {
       sx={{
         borderRadius: 5,
         border: "1px solid #E7ECF5",
-        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+        minHeight: 170, // Metrics minHeight
+        ...cardShadowSx,
         ...cardAnimation,
       }}
     >
@@ -163,11 +173,25 @@ function Metrics() {
             </Box>
 
             <Box>
-              <Typography variant="h6" fontWeight={700} color="#172033" sx={{ mb: 0.5 }}>
+              <Typography 
+                variant="h6" 
+                fontWeight={700} 
+                color="#172033" 
+                sx={{ 
+                  mb: 0.5,
+                  fontSize: "1.25rem" // 20px
+                }}
+              >
                 Application metrics
               </Typography>
 
-              <Typography variant="body2" sx={{ color: "#475569" }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: "#475569",
+                  fontSize: "0.875rem" // 14px
+                }}
+              >
                 Live CRM platform health and activity overview.
               </Typography>
             </Box>
@@ -183,6 +207,7 @@ function Metrics() {
                   bgcolor: "#F5F7FB",
                   fontWeight: 700,
                   borderRadius: 2,
+                  fontSize: "0.75rem", // 12px
                 }}
               />
             )}
@@ -229,7 +254,11 @@ function Metrics() {
         {error && (
           <Alert
             severity="error"
-            sx={{ mb: 4, borderRadius: 3 }}
+            sx={{ 
+              mb: 4, 
+              borderRadius: 3,
+              fontSize: "0.875rem" // 14px
+            }}
             action={
               <Button
                 color="primary"
@@ -327,7 +356,7 @@ function Metrics() {
                   color: "#FFFFFF",
                   background:
                     "linear-gradient(135deg, #172554 0%, #2855D9 100%)",
-                  boxShadow: "0 10px 20px rgba(40,85,217,.2)",
+                  ...cardShadowSx,
                   ...cardAnimation,
                 }}
               >
@@ -352,12 +381,20 @@ function Metrics() {
                       color: "rgba(255,255,255,.72)",
                       fontWeight: 800,
                       letterSpacing: "0.08em",
+                      fontSize: "0.75rem", // 12px
                     }}
                   >
                     AUTO REFRESH
                   </Typography>
 
-                  <Typography variant="h5" fontWeight={800} sx={{ mt: 1.5 }}>
+                  <Typography 
+                    variant="h5" 
+                    fontWeight={800} 
+                    sx={{ 
+                      mt: 1.5,
+                      fontSize: "1.25rem" // 20px
+                    }}
+                  >
                     Every 30 seconds
                   </Typography>
 
@@ -368,7 +405,14 @@ function Metrics() {
                     }}
                   />
 
-                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,.8)", lineHeight: 1.8 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: "rgba(255,255,255,.8)", 
+                      lineHeight: 1.8,
+                      fontSize: "0.875rem" // 14px
+                    }}
+                  >
                     Metrics are automatically refreshed to keep operational data current.
                   </Typography>
                 </CardContent>
@@ -403,7 +447,8 @@ function MetricCard({
         borderRadius: 5,
         border: "1px solid #E7ECF5",
         background,
-        boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+        minHeight: 170, // Metrics minHeight for individual cards
+        ...cardShadowSx,
         ...cardAnimation,
       }}
     >
@@ -460,12 +505,20 @@ function MetricCard({
                 bgcolor: "#D9F9EE",
                 fontWeight: 700,
                 borderRadius: 2,
+                fontSize: "0.75rem", // 12px
               }}
             />
           )}
         </Box>
 
-        <Typography variant="subtitle2" sx={{ color: "#475569", mb: 0.5 }}>
+        <Typography 
+          variant="subtitle2" 
+          sx={{ 
+            color: "#475569", 
+            mb: 0.5,
+            fontSize: "0.875rem" // 14px
+          }}
+        >
           {label}
         </Typography>
 
@@ -477,12 +530,19 @@ function MetricCard({
             mt: 0.75,
             mb: 1,
             textTransform: isStatus ? "capitalize" : "none",
+            fontSize: "1.5rem", // 24px
           }}
         >
           {value}
         </Typography>
 
-        <Typography variant="caption" sx={{ color: "#475569" }}>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            color: "#475569",
+            fontSize: "0.875rem" // 14px
+          }}
+        >
           {description}
         </Typography>
       </CardContent>
