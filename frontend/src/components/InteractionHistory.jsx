@@ -81,6 +81,15 @@ const iconButtonSx = {
   }
 };
 
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
+  "&:hover": {
+    boxShadow: 8,
+    transform: "translateY(-4px)"
+  }
+};
+
 // Focus visibility for cards and containers
 const focusVisibleSx = {
   "&:focus-visible": {
@@ -231,7 +240,7 @@ function InteractionHistory() {
 
   const headerCellSx = {
     py: 2,
-    color: "#475569", // Improved contrast
+    color: "#475569",
     fontSize: "0.72rem",
     fontWeight: 800,
     letterSpacing: "0.06em",
@@ -244,6 +253,9 @@ function InteractionHistory() {
     color: textPrimary,
   };
 
+  // Uniform section spacing - 32px between sections
+  const sectionSpacing = 4; // 32px
+
   if (loading) {
     return <LoadingTable rows={8} />;
   }
@@ -255,7 +267,7 @@ function InteractionHistory() {
         <Alert
           severity="error"
           sx={{
-            mb: 3,
+            mb: sectionSpacing,
             borderRadius: 3,
             border: `1px solid ${isDark ? '#334155' : '#FFCDD2'}`,
             bgcolor: isDark ? '#1A1A2E' : '#FFEBEE',
@@ -280,13 +292,13 @@ function InteractionHistory() {
 
   return (
     <Box>
-      {/* Search and Refresh Controls */}
+      {/* Search and Refresh Controls - 32px spacing */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 4,
+          mb: sectionSpacing,
           flexWrap: "wrap",
           gap: 2,
         }}
@@ -332,7 +344,10 @@ function InteractionHistory() {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Typography 
             variant="body2" 
-            sx={{ color: "#475569" }} // Improved contrast
+            sx={{ 
+              color: "#475569",
+              fontSize: "0.875rem"
+            }}
           >
             {filteredInteractions.length} of {interactions.length} interactions
           </Typography>
@@ -376,10 +391,13 @@ function InteractionHistory() {
           variant="outlined"
           aria-label="Interaction History"
           sx={{
+            width: "100%",
             borderRadius: 4,
             borderColor: borderColor,
             overflowX: "auto",
             backgroundColor: cardBg,
+            minHeight: 450, // History minHeight
+            ...cardShadowSx,
             ...focusVisibleSx,
             "&::-webkit-scrollbar": {
               height: 6,
@@ -399,7 +417,7 @@ function InteractionHistory() {
         >
           <Table 
             aria-label="Interaction History"
-            sx={{ minWidth: 650 }}
+            sx={{ width: "100%", minWidth: 650 }}
           >
             <TableHead>
               <TableRow sx={{ bgcolor: headerBg }}>
@@ -430,7 +448,11 @@ function InteractionHistory() {
                   </TableCell>
                   <TableCell sx={{ ...tableCellSx, py: 1.75 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography fontWeight={600} color={textPrimary}>
+                      <Typography 
+                        fontWeight={600} 
+                        color={textPrimary}
+                        sx={{ fontSize: "0.875rem" }}
+                      >
                         {interaction.hcp_name || "—"}
                       </Typography>
                     </Box>
@@ -444,6 +466,7 @@ function InteractionHistory() {
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
+                        fontSize: "0.875rem",
                       }}
                     >
                       {interaction.summary || "—"}
@@ -459,6 +482,7 @@ function InteractionHistory() {
                           color: chipColor,
                           fontWeight: 700,
                           borderRadius: 2,
+                          fontSize: "0.75rem",
                           ...focusVisibleSx,
                         }}
                       />
@@ -467,7 +491,9 @@ function InteractionHistory() {
                     )}
                   </TableCell>
                   <TableCell sx={{ ...tableCellSx, py: 1.75 }}>
-                    {formatDate(interaction.follow_up)}
+                    <Typography sx={{ fontSize: "0.875rem" }}>
+                      {formatDate(interaction.follow_up)}
+                    </Typography>
                   </TableCell>
                   <TableCell align="right" sx={{ py: 1.75 }}>
                     <Tooltip title="Edit interaction">
@@ -547,13 +573,16 @@ function InteractionHistory() {
           },
         }}
       >
-        <DialogTitle sx={{ color: textPrimary }}>
+        <DialogTitle sx={{ color: textPrimary, fontSize: "1.25rem" }}>
           Delete Interaction
         </DialogTitle>
         <DialogContent>
           <Typography 
             variant="body2" 
-            sx={{ color: "#475569" }} // Improved contrast
+            sx={{ 
+              color: "#475569",
+              fontSize: "0.875rem"
+            }}
           >
             Are you sure you want to delete this interaction? This action cannot be undone.
           </Typography>
