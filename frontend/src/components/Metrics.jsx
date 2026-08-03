@@ -109,7 +109,7 @@ function Metrics() {
   return (
     <Card
       sx={{
-        borderRadius: 4,
+        borderRadius: 5,
         border: "1px solid #E7ECF5",
         boxShadow: "0 8px 25px rgba(15,23,42,.08)",
         ...cardAnimation,
@@ -117,7 +117,7 @@ function Metrics() {
     >
       <CardContent 
         sx={{ 
-          p: { xs: 2.5, md: 3.5 },
+          p: { xs: 3, md: 4 },
           transition: "all .3s",
           "@media (prefers-reduced-motion: reduce)": {
             transition: "none"
@@ -137,7 +137,7 @@ function Metrics() {
             alignItems: { xs: "flex-start", sm: "center" },
             flexDirection: { xs: "column", sm: "row" },
             gap: 2,
-            mb: 3,
+            mb: 4,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -145,9 +145,9 @@ function Metrics() {
               sx={{
                 display: "grid",
                 placeItems: "center",
-                width: 44,
-                height: 44,
-                borderRadius: 3,
+                width: 48,
+                height: 48,
+                borderRadius: 4,
                 bgcolor: "#E9FBF6",
                 color: "#10A683",
                 transition: "all .3s",
@@ -163,23 +163,23 @@ function Metrics() {
             </Box>
 
             <Box>
-              <Typography variant="h6" fontWeight={700} color="#172033">
+              <Typography variant="h6" fontWeight={700} color="#172033" sx={{ mb: 0.5 }}>
                 Application metrics
               </Typography>
 
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "#475569" }}>
                 Live CRM platform health and activity overview.
               </Typography>
             </Box>
           </Box>
 
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1.5} alignItems="center">
             {lastUpdated && (
               <Chip
                 size="small"
                 label={`Updated ${lastUpdated.toLocaleTimeString()}`}
                 sx={{
-                  color: "#64748B",
+                  color: "#475569",
                   bgcolor: "#F5F7FB",
                   fontWeight: 700,
                   borderRadius: 2,
@@ -229,7 +229,7 @@ function Metrics() {
         {error && (
           <Alert
             severity="error"
-            sx={{ mb: 3, borderRadius: 2.5 }}
+            sx={{ mb: 4, borderRadius: 3 }}
             action={
               <Button
                 color="primary"
@@ -323,7 +323,7 @@ function Metrics() {
               <Card
                 sx={{
                   height: "100%",
-                  borderRadius: 4,
+                  borderRadius: 5,
                   color: "#FFFFFF",
                   background:
                     "linear-gradient(135deg, #172554 0%, #2855D9 100%)",
@@ -333,6 +333,7 @@ function Metrics() {
               >
                 <CardContent
                   sx={{
+                    p: 3,
                     transition: "all .3s",
                     "@media (prefers-reduced-motion: reduce)": {
                       transition: "none"
@@ -356,18 +357,18 @@ function Metrics() {
                     AUTO REFRESH
                   </Typography>
 
-                  <Typography variant="h5" fontWeight={800} sx={{ mt: 1 }}>
+                  <Typography variant="h5" fontWeight={800} sx={{ mt: 1.5 }}>
                     Every 30 seconds
                   </Typography>
 
                   <Divider
                     sx={{
-                      my: 1.5,
+                      my: 2,
                       borderColor: "rgba(255,255,255,.18)",
                     }}
                   />
 
-                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,.8)" }}>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,.8)", lineHeight: 1.8 }}>
                     Metrics are automatically refreshed to keep operational data current.
                   </Typography>
                 </CardContent>
@@ -399,7 +400,7 @@ function MetricCard({
     <Card
       sx={{
         height: "100%",
-        borderRadius: 4,
+        borderRadius: 5,
         border: "1px solid #E7ECF5",
         background,
         boxShadow: "0 8px 25px rgba(15,23,42,.08)",
@@ -408,6 +409,7 @@ function MetricCard({
     >
       <CardContent
         sx={{
+          p: 3,
           transition: "all .3s",
           "@media (prefers-reduced-motion: reduce)": {
             transition: "none"
@@ -425,16 +427,16 @@ function MetricCard({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            mb: 2.5,
+            mb: 3,
           }}
         >
           <Box
             sx={{
               display: "grid",
               placeItems: "center",
-              width: 40,
-              height: 40,
-              borderRadius: 3,
+              width: 44,
+              height: 44,
+              borderRadius: 4,
               color,
               bgcolor: "#FFFFFFA8",
               transition: "all .3s",
@@ -463,7 +465,7 @@ function MetricCard({
           )}
         </Box>
 
-        <Typography variant="subtitle2" color="#64748B">
+        <Typography variant="subtitle2" sx={{ color: "#475569", mb: 0.5 }}>
           {label}
         </Typography>
 
@@ -473,14 +475,14 @@ function MetricCard({
           color="#172033"
           sx={{
             mt: 0.75,
-            mb: 0.5,
+            mb: 1,
             textTransform: isStatus ? "capitalize" : "none",
           }}
         >
           {value}
         </Typography>
 
-        <Typography variant="caption" color="#64748B">
+        <Typography variant="caption" sx={{ color: "#475569" }}>
           {description}
         </Typography>
       </CardContent>
