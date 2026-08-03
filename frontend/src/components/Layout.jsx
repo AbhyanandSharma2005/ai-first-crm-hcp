@@ -1,48 +1,33 @@
-import { Box, Toolbar } from "@mui/material";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import React from "react";
+import { Box, useTheme } from "@mui/material";
+import { Outlet } from "react-router-dom";
 
-const drawerWidth = 264;
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
+import { layout, mainContentSx } from "../config/layout";
+import { useTheme as useCustomTheme } from "../context/ThemeContext";
 
-function Layout({ children }) {
+function Layout() {
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const isDark = mode === 'dark';
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        minHeight: "100vh",
-        bgcolor: "#F5F7FB",
-      }}
-    >
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <Header />
       <Sidebar />
 
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          minWidth: 0,
-          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
-          bgcolor: "#F5F7FB",
+          ...mainContentSx,
+          backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
+          mt: `${layout.headerHeight}px`,
+          height: `calc(100vh - ${layout.headerHeight}px)`,
+          overflowY: "auto",
         }}
       >
-        <Header />
-
-        <Toolbar
-          sx={{
-            minHeight: { xs: 0, md: 14 },
-          }}
-        />
-
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: 1520,
-            mx: "auto",
-            px: { xs: 2, sm: 3, md: 4 },
-            pb: { xs: 3, md: 5 },
-          }}
-        >
-          {children}
-        </Box>
+        <Outlet />
       </Box>
     </Box>
   );
