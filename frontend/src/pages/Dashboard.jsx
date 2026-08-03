@@ -296,7 +296,14 @@ function Dashboard() {
       aria-label="Dashboard Main Content"
       sx={{
         width: "100%",
-        p: commonSpacing.pagePadding,
+        maxWidth: "1440px",
+        mx: "auto",
+        p: {
+          xs: 2,
+          sm: 3,
+          md: 4,
+          lg: 5,
+        },
         pb: 5,
         backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
         minHeight: "100vh",
@@ -565,7 +572,7 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards - 32px spacing - Now fills available space */}
+      {/* KPI Cards - 32px spacing - Full width cards */}
       <Grid 
         container 
         spacing={commonSpacing.gridSpacing}
@@ -595,7 +602,6 @@ function Dashboard() {
                 aria-label={card.ariaLabel}
                 sx={{
                   width: "100%",
-                  height: "100%",
                   borderRadius: 5,
                   border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
