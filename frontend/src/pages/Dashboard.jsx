@@ -90,7 +90,7 @@ const cardAnimation = {
   }
 };
 
-// KPI card animation
+// KPI card animation with consistent shadow
 const kpiCardAnimation = {
   transition: "all .3s ease",
   "@media (prefers-reduced-motion: reduce)": {
@@ -98,8 +98,8 @@ const kpiCardAnimation = {
     transform: "none"
   },
   "&:hover": {
-    transform: "translateY(-8px)",
-    boxShadow: "0 20px 45px rgba(0,0,0,.18)"
+    transform: "translateY(-4px)",
+    boxShadow: 8,
   }
 };
 
@@ -109,6 +109,15 @@ const cardFocusSx = {
     outline: "3px solid #1976D2",
     outlineOffset: 2,
     borderRadius: 6
+  }
+};
+
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
+  "&:hover": {
+    boxShadow: 8,
+    transform: "translateY(-4px)"
   }
 };
 
@@ -277,6 +286,9 @@ function Dashboard() {
 
   const cardStyles = getCardStyles();
 
+  // Uniform section spacing - 32px between sections
+  const sectionSpacing = 4; // 32px
+
   return (
     <Box
       component="main"
@@ -290,7 +302,7 @@ function Dashboard() {
         minHeight: "100vh",
       }}
     >
-      {/* Page Header */}
+      {/* Page Header - 32px spacing to next section */}
       <Box
         sx={{
           display: "flex",
@@ -305,10 +317,7 @@ function Dashboard() {
           },
           justifyContent: "space-between",
           gap: 2,
-          mb: {
-            xs: 4,
-            md: 5,
-          },
+          mb: sectionSpacing,
         }}
       >
         <Box>
@@ -318,11 +327,11 @@ function Dashboard() {
               color: theme.palette.text.primary,
               ...commonTypography.pageTitle,
               fontSize: {
-                xs: "1.5rem",
-                sm: "1.75rem",
+                xs: "1.75rem",
+                sm: "2rem",
                 md: "2.125rem",
               },
-              mb: 1,
+              mb: 0.5,
             }}
           >
             Dashboard
@@ -333,7 +342,8 @@ function Dashboard() {
             sx={{
               mb: 0,
               mt: 0.5,
-              color: "#475569", // Improved contrast
+              color: "#475569",
+              fontSize: "1rem",
             }}
           >
             Monitor field activity, healthcare professionals, and CRM insights.
@@ -365,7 +375,7 @@ function Dashboard() {
             sx={{
               borderColor: theme.palette.divider,
               bgcolor: theme.palette.background.paper,
-              color: "#475569", // Improved contrast
+              color: "#475569",
               fontWeight: 700,
               borderRadius: 2,
               width: {
@@ -405,13 +415,10 @@ function Dashboard() {
         </Stack>
       </Box>
 
-      {/* Hero Card - Enhanced with larger padding */}
+      {/* Hero Card - 32px spacing */}
       <Card
         sx={{
-          mb: {
-            xs: 4,
-            md: 5,
-          },
+          mb: sectionSpacing,
           overflow: "hidden",
           borderRadius: 5,
           color: "#FFFFFF",
@@ -558,15 +565,12 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards - Updated responsive breakpoints with increased spacing */}
+      {/* KPI Cards - 32px spacing */}
       <Grid 
         container 
         spacing={commonSpacing.gridSpacing}
         sx={{ 
-          mb: {
-            xs: 4,
-            md: 5,
-          }
+          mb: sectionSpacing,
         }}
       >
         {cards.map((card, index) => {
@@ -590,7 +594,7 @@ function Dashboard() {
                   borderRadius: 5,
                   border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
-                  boxShadow: "0 8px 25px rgba(15,23,42,.08)",
+                  ...cardShadowSx,
                   ...kpiCardAnimation,
                   ...cardFocusSx,
                 }}
@@ -650,10 +654,7 @@ function Dashboard() {
                       sx={{
                         color: style.accent,
                         fontWeight: 700,
-                        fontSize: {
-                          xs: "0.65rem",
-                          sm: "0.75rem",
-                        },
+                        fontSize: "0.75rem",
                       }}
                     >
                       {card.trend}
@@ -663,11 +664,8 @@ function Dashboard() {
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      fontSize: {
-                        xs: "0.75rem",
-                        sm: "0.875rem",
-                      },
-                      color: "#475569", // Improved contrast
+                      fontSize: "0.875rem",
+                      color: "#475569",
                       mb: 1,
                     }}
                   >
@@ -700,11 +698,8 @@ function Dashboard() {
                   <Typography
                     variant="caption"
                     sx={{
-                      fontSize: {
-                        xs: "0.65rem",
-                        sm: "0.75rem",
-                      },
-                      color: "#475569", // Improved contrast
+                      fontSize: "0.875rem",
+                      color: "#475569",
                     }}
                   >
                     {card.description}
@@ -716,12 +711,11 @@ function Dashboard() {
         })}
       </Grid>
 
-      {/* Dashboard Analytics */}
+      {/* Dashboard Analytics - 32px spacing */}
       <Box
         sx={{
           width: "100%",
-          mt: commonSpacing.sectionSpacing,
-          mb: commonSpacing.sectionSpacing,
+          mb: sectionSpacing,
         }}
       >
         <DashboardAnalytics
@@ -738,21 +732,21 @@ function Dashboard() {
         />
       </Box>
 
-      {/* Search HCP */}
+      {/* Search HCP - 32px spacing */}
       <Box
         sx={{
           width: "100%",
-          mt: commonSpacing.sectionSpacing,
+          mb: sectionSpacing,
         }}
       >
         <SearchHCP />
       </Box>
 
-      {/* Metrics */}
+      {/* Metrics - 32px spacing */}
       <Box
         sx={{
           width: "100%",
-          mt: commonSpacing.sectionSpacing,
+          mb: sectionSpacing,
         }}
       >
         <Metrics />
