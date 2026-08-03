@@ -211,8 +211,6 @@ function LogInteraction() {
       aria-label="Log Interaction Main Content"
       sx={{ 
         width: "100%",
-        maxWidth: 1600,
-        mx: "auto",
         pb: 5,
         backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
         minHeight: "100vh",
