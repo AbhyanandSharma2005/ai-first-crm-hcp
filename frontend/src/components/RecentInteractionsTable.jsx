@@ -110,7 +110,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
   const chipSize = isMobile ? "small" : "medium";
 
   const headerCellSx = {
-    py: 1.5,
+    py: 2,
     color: textSecondary,
     fontSize: "0.72rem",
     fontWeight: 800,
@@ -134,7 +134,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
           setPage(0);
         }}
         sx={{ 
-          mb: 3,
+          mb: 3.5,
           "& .MuiInputBase-root": {
             fontSize: isMobile ? "0.875rem" : "1rem",
             color: textPrimary,
@@ -146,6 +146,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
             color: textSecondary,
           },
           "& .MuiOutlinedInput-root": {
+            borderRadius: 3,
             "& fieldset": {
               borderColor: borderColor,
             },
@@ -170,7 +171,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
         component={Paper}
         variant="outlined"
         sx={{
-          borderRadius: 3,
+          borderRadius: 4,
           borderColor: borderColor,
           overflowX: "auto",
           backgroundColor: cardBg,
@@ -226,7 +227,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
               >
                 <TableCell 
                   sx={{ 
-                    py: isMobile ? 1.5 : 1.75,
+                    py: isMobile ? 1.75 : 2,
                     px: isMobile ? 1.5 : 2,
                   }}
                 >
@@ -234,12 +235,12 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                     <Avatar
                       sx={{
                         width: {
-                          xs: 32,
-                          md: 36,
+                          xs: 34,
+                          md: 38,
                         },
                         height: {
-                          xs: 32,
-                          md: 36,
+                          xs: 34,
+                          md: 38,
                         },
                         fontSize: {
                           xs: 11,
@@ -248,6 +249,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                         fontWeight: 800,
                         bgcolor: avatarBg,
                         color: avatarColor,
+                        borderRadius: 3,
                       }}
                     >
                       {(item.hcp_name || "H").charAt(0).toUpperCase()}
@@ -258,7 +260,8 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                         fontWeight={700} 
                         color={textPrimary}
                         sx={{
-                          fontSize: isMobile ? "0.8rem" : "0.875rem"
+                          fontSize: isMobile ? "0.8rem" : "0.875rem",
+                          mb: 0.25,
                         }}
                       >
                         <Highlighter
@@ -269,7 +272,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                       </Typography>
 
                       {!isMobile && (
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{ color: "#475569" }}>
                           Healthcare professional
                         </Typography>
                       )}
@@ -278,7 +281,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                 </TableCell>
 
                 {showProductColumn && (
-                  <TableCell sx={{ px: isMobile ? 1.5 : 2 }}>
+                  <TableCell sx={{ px: isMobile ? 1.5 : 2, py: isMobile ? 1.75 : 2 }}>
                     <Chip
                       label={
                         <Highlighter
@@ -291,7 +294,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                       sx={{
                         bgcolor: chipBg,
                         color: chipColor,
-                        borderRadius: 1.5,
+                        borderRadius: 2,
                         fontWeight: 700,
                         fontSize: isMobile ? "0.7rem" : "0.75rem",
                       }}
@@ -303,6 +306,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                   sx={{ 
                     maxWidth: isMobile ? 150 : 320,
                     px: isMobile ? 1.5 : 2,
+                    py: isMobile ? 1.75 : 2,
                   }}
                 >
                   <Typography
@@ -313,7 +317,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                       overflow: "hidden",
                       WebkitBoxOrient: "vertical",
                       WebkitLineClamp: isMobile ? 2 : 2,
-                      lineHeight: 1.55,
+                      lineHeight: 1.6,
                       fontSize: isMobile ? "0.75rem" : "0.875rem",
                     }}
                   >
@@ -328,7 +332,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                 </TableCell>
 
                 {showFollowupColumn && (
-                  <TableCell sx={{ px: isMobile ? 1.5 : 2 }}>
+                  <TableCell sx={{ px: isMobile ? 1.5 : 2, py: isMobile ? 1.75 : 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                       <CalendarMonthOutlinedIcon
                         sx={{ color: textSecondary, fontSize: isMobile ? 16 : 18 }}
@@ -352,7 +356,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                 )}
 
                 {showRecordColumn && (
-                  <TableCell align="right" sx={{ px: isMobile ? 1.5 : 2 }}>
+                  <TableCell align="right" sx={{ px: isMobile ? 1.5 : 2, py: isMobile ? 1.75 : 2 }}>
                     <Chip
                       label={`#${item.id ?? "\u2014"}`}
                       size={chipSize}
@@ -362,6 +366,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                         color: textSecondary,
                         fontWeight: 700,
                         fontSize: isMobile ? "0.65rem" : "0.75rem",
+                        borderRadius: 2,
                       }}
                     />
                   </TableCell>
@@ -374,7 +379,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
                 <TableCell
                   colSpan={showRecordColumn ? 5 : (showFollowupColumn ? 4 : 3)}
                   align="center"
-                  sx={{ py: 4 }}
+                  sx={{ py: 5 }}
                 >
                   <EmptyState.NoResults
                     searchTerm={searchTerm}
