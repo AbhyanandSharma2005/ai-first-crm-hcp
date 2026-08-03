@@ -193,6 +193,7 @@ function Header({ onMenuToggle }) {
                     xs: "none",
                     md: "inline",
                   },
+                  fontSize: "0.875rem", // 14px caption
                 }}
               >
                 - HCP Module
@@ -215,6 +216,7 @@ function Header({ onMenuToggle }) {
                 height: 20,
                 "& .MuiChip-label": {
                   px: 1,
+                  fontSize: "0.65rem", // 10.4px
                 },
                 display: {
                   xs: "none",
@@ -293,6 +295,7 @@ function Header({ onMenuToggle }) {
                     xs: "none",
                     lg: "block",
                   },
+                  fontSize: "0.875rem", // 14px
                 }}
               >
                 Field Representative
@@ -310,6 +313,7 @@ function Header({ onMenuToggle }) {
                     lg: "none",
                     md: "block",
                   },
+                  fontSize: "0.75rem", // 12px
                 }}
               >
                 FR
@@ -374,10 +378,18 @@ function Header({ onMenuToggle }) {
               }}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography fontWeight={600} color={theme.palette.text.primary}>
+                <Typography 
+                  fontWeight={600} 
+                  color={theme.palette.text.primary}
+                  sx={{ fontSize: "0.875rem" }} // 14px
+                >
                   Field Representative
                 </Typography>
-                <Typography variant="caption" color="#475569">
+                <Typography 
+                  variant="caption" 
+                  color="#475569"
+                  sx={{ fontSize: "0.75rem" }} // 12px
+                >
                   FR • HCP Module
                 </Typography>
               </Box>
@@ -393,7 +405,12 @@ function Header({ onMenuToggle }) {
                 }
               }}
             >
-              <Typography color={theme.palette.text.primary}>Profile</Typography>
+              <Typography 
+                color={theme.palette.text.primary}
+                sx={{ fontSize: "0.875rem" }} // 14px
+              >
+                Profile
+              </Typography>
             </MenuItem>
             <MenuItem 
               onClick={handleMenuClose}
@@ -406,7 +423,12 @@ function Header({ onMenuToggle }) {
                 }
               }}
             >
-              <Typography color={theme.palette.text.primary}>Settings</Typography>
+              <Typography 
+                color={theme.palette.text.primary}
+                sx={{ fontSize: "0.875rem" }} // 14px
+              >
+                Settings
+              </Typography>
             </MenuItem>
             <MenuItem 
               onClick={handleMenuClose}
@@ -423,7 +445,12 @@ function Header({ onMenuToggle }) {
                 }
               }}
             >
-              <Typography color={theme.palette.error.main}>Logout</Typography>
+              <Typography 
+                color={theme.palette.error.main}
+                sx={{ fontSize: "0.875rem" }} // 14px
+              >
+                Logout
+              </Typography>
             </MenuItem>
           </Menu>
         </Box>
