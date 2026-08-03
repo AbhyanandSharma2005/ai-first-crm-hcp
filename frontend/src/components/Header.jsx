@@ -122,7 +122,7 @@ function Header({ onMenuToggle }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          minHeight: 72,
+          minHeight: 72, // Increased from default 64 to 72
           px: {
             xs: 2,
             sm: 3,
