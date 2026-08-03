@@ -405,7 +405,7 @@ function Dashboard() {
         </Stack>
       </Box>
 
-      {/* Hero Card */}
+      {/* Hero Card - Enhanced with larger padding */}
       <Card
         sx={{
           mb: {
@@ -432,9 +432,9 @@ function Dashboard() {
         <CardContent
           sx={{
             p: {
-              xs: 3,
-              sm: 3.5,
-              md: 4.5,
+              xs: 3.5,
+              sm: 4.5,
+              md: 5.5,
             },
             transition: "all .3s",
             "@media (prefers-reduced-motion: reduce)": {
@@ -461,7 +461,7 @@ function Dashboard() {
                 xs: "column",
                 md: "row",
               },
-              gap: 3,
+              gap: 3.5,
             }}
           >
             <Box
@@ -496,9 +496,9 @@ function Dashboard() {
                   fontWeight: 800,
                   mb: 1.5,
                   fontSize: {
-                    xs: "1.125rem",
-                    sm: "1.25rem",
-                    md: "1.5rem",
+                    xs: "1.25rem",
+                    sm: "1.5rem",
+                    md: "1.75rem",
                   },
                 }}
               >
@@ -539,6 +539,8 @@ function Dashboard() {
                   xs: "100%",
                   sm: "auto",
                 },
+                py: 1.5,
+                px: 4,
                 transition: "all .25s",
                 "@media (prefers-reduced-motion: reduce)": {
                   transition: "none"
