@@ -306,8 +306,8 @@ function Dashboard() {
           justifyContent: "space-between",
           gap: 2,
           mb: {
-            xs: 3,
-            md: 4,
+            xs: 4,
+            md: 5,
           },
         }}
       >
@@ -322,6 +322,7 @@ function Dashboard() {
                 sm: "1.75rem",
                 md: "2.125rem",
               },
+              mb: 1,
             }}
           >
             Dashboard
@@ -344,7 +345,7 @@ function Dashboard() {
             xs: "column",
             sm: "row",
           }}
-          spacing={1.25}
+          spacing={1.5}
           alignItems={{
             xs: "stretch",
             sm: "center",
@@ -408,11 +409,11 @@ function Dashboard() {
       <Card
         sx={{
           mb: {
-            xs: 3,
-            md: 4,
+            xs: 4,
+            md: 5,
           },
           overflow: "hidden",
-          borderRadius: 4,
+          borderRadius: 5,
           color: "#FFFFFF",
           background:
             "radial-gradient(circle at 88% 15%, rgba(122, 164, 255, .48), transparent 28%), linear-gradient(125deg, #14213D 0%, #1D4ED8 100%)",
@@ -431,9 +432,9 @@ function Dashboard() {
         <CardContent
           sx={{
             p: {
-              xs: 2.5,
-              sm: 3,
-              md: 4,
+              xs: 3,
+              sm: 3.5,
+              md: 4.5,
             },
             transition: "all .3s",
             "@media (prefers-reduced-motion: reduce)": {
@@ -476,7 +477,7 @@ function Dashboard() {
                 size="small"
                 aria-label="AI-enabled workflow"
                 sx={{
-                  mb: 2,
+                  mb: 2.5,
                   color: "#DCE8FF",
                   bgcolor: "rgba(255,255,255,.13)",
                   fontWeight: 700,
@@ -493,7 +494,7 @@ function Dashboard() {
                 variant="h5"
                 sx={{
                   fontWeight: 800,
-                  mb: 1,
+                  mb: 1.5,
                   fontSize: {
                     xs: "1.125rem",
                     sm: "1.25rem",
@@ -508,7 +509,7 @@ function Dashboard() {
                 variant="body2"
                 sx={{
                   color: "rgba(255,255,255,.82)",
-                  lineHeight: 1.7,
+                  lineHeight: 1.8,
                   fontSize: {
                     xs: "0.875rem",
                     sm: "1rem",
@@ -555,14 +556,14 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards - Updated responsive breakpoints */}
+      {/* KPI Cards - Updated responsive breakpoints with increased spacing */}
       <Grid 
         container 
         spacing={commonSpacing.gridSpacing}
         sx={{ 
           mb: {
-            xs: 3,
-            md: 4,
+            xs: 4,
+            md: 5,
           }
         }}
       >
@@ -584,7 +585,7 @@ function Dashboard() {
                 aria-label={card.ariaLabel}
                 sx={{
                   height: "100%",
-                  borderRadius: 4,
+                  borderRadius: 5,
                   border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
                   boxShadow: "0 8px 25px rgba(15,23,42,.08)",
@@ -595,8 +596,8 @@ function Dashboard() {
                 <CardContent
                   sx={{
                     p: {
-                      xs: 2,
-                      sm: 2.5,
+                      xs: 3,
+                      sm: 3,
                     },
                     transition: "all .3s",
                     "@media (prefers-reduced-motion: reduce)": {
@@ -615,15 +616,15 @@ function Dashboard() {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "flex-start",
-                      mb: 2.5,
+                      mb: 3,
                     }}
                   >
                     <Avatar
                       sx={{
                         bgcolor: `${style.accent}18`,
                         color: style.accent,
-                        width: 44,
-                        height: 44,
+                        width: 48,
+                        height: 48,
                         borderRadius: 3,
                         transition: "all .3s",
                         "@media (prefers-reduced-motion: reduce)": {
@@ -665,6 +666,7 @@ function Dashboard() {
                         sm: "0.875rem",
                       },
                       color: "#475569", // Improved contrast
+                      mb: 1,
                     }}
                   >
                     {card.title}
@@ -674,7 +676,7 @@ function Dashboard() {
                     variant="h4"
                     sx={{
                       mt: 0.75,
-                      mb: 0.5,
+                      mb: 1,
                       color: theme.palette.text.primary,
                       fontWeight: 800,
                       textTransform:
