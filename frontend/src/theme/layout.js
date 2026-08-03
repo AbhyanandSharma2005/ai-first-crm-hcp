@@ -171,14 +171,27 @@ export const sectionSpacingSx = {
  * ============================================================
  * 
  * This is the CORRECT sx for the main content area.
- * The sidebar already occupies space via the Drawer component,
- * so we don't need to subtract it again with calc() or ml.
+ * The sidebar uses position: fixed, so we need to offset the
+ * main content with margin-left and adjust width accordingly.
  */
 export const mainContentSx = {
   flexGrow: 1,
-  width: "100%",
+  minHeight: "100vh",
   minWidth: 0,
 
+  // Margin left to offset the fixed sidebar
+  ml: {
+    xs: 0,
+    md: `${layout.drawerWidth}px`,
+  },
+
+  // Width takes into account the sidebar offset
+  width: {
+    xs: "100%",
+    md: `calc(100% - ${layout.drawerWidth}px)`,
+  },
+
+  // Padding for content
   p: {
     xs: 2,
     sm: 3,
@@ -187,6 +200,7 @@ export const mainContentSx = {
   },
 
   overflowX: "hidden",
+  overflowY: "auto",
 
   // The backgroundColor will be set by the theme
   // backgroundColor: theme.palette.background.default
