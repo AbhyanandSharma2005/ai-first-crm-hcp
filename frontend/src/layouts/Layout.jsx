@@ -3,9 +3,7 @@ import { Box, useMediaQuery, useTheme } from "@mui/material";
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-
-// Sidebar width constant - increased from 264 to 280
-const DRAWER_WIDTH = 280;
+import { layout, mainContentSx } from "../theme/layout";
 
 function Layout({ children }) {
     const theme = useTheme();
@@ -24,46 +22,22 @@ function Layout({ children }) {
                 sx={{
                     display: "flex",
                     flex: 1,
-                    mt: "72px", // Header height offset - increased from 64px to 72px
+                    mt: `${layout.headerHeight}px`,
+                    position: "relative",
+                    overflow: "hidden",
                 }}
             >
-                {/* Desktop Sidebar */}
+                {/* Desktop Sidebar - Fixed position */}
                 <Sidebar />
                 
-                {/* Mobile Sidebar Drawer */}
-                <Box
-                    component="nav"
-                    sx={{
-                        width: { md: DRAWER_WIDTH },
-                        flexShrink: { md: 0 },
-                        display: { xs: 'block', md: 'none' },
-                    }}
-                >
-                    {/* Mobile drawer implementation if needed */}
-                </Box>
-                
-                {/* Main Content */}
+                {/* Main Content - Offset to the right of fixed sidebar */}
                 <Box
                     component="main"
                     sx={{
-                        flexGrow: 1,
-                        width: {
-                            md: `calc(100% - ${DRAWER_WIDTH}px)`,
-                        },
-                        ml: {
-                            md: `${DRAWER_WIDTH}px`,
-                        },
-                        p: {
-                            xs: 2,
-                            sm: 3,
-                            md: 4,
-                        },
-                        minHeight: "calc(100vh - 72px)", // Updated to match new header height
+                        ...mainContentSx,
                         backgroundColor: theme.palette.background.default,
-                        transition: theme.transitions.create(["margin", "width"], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                        }),
+                        minHeight: `calc(100vh - ${layout.headerHeight}px)`,
+                        // The ml and width are now handled by mainContentSx
                     }}
                 >
                     {children}
