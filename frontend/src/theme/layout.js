@@ -202,6 +202,9 @@ export const mainContentSx = {
   overflowX: "hidden",
   overflowY: "auto",
 
+  // Position relative for proper stacking
+  position: "relative",
+
   // The backgroundColor will be set by the theme
   // backgroundColor: theme.palette.background.default
 };
