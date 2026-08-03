@@ -27,6 +27,15 @@ import { useTheme as useCustomTheme } from "../context/ThemeContext";
 import EmptyState from "./EmptyState";
 import LoadingTable from "./LoadingTable";
 
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
+  "&:hover": {
+    boxShadow: 8,
+    transform: "translateY(-4px)"
+  }
+};
+
 function RecentInteractionsTable({ interactions = [], loading = false }) {
 
   if (loading) {
@@ -120,7 +129,12 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
   };
 
   return (
-    <Box>
+    <Box
+      sx={{
+        width: "100%",
+        ...cardShadowSx,
+      }}
+    >
       {/* ============================================================
       Responsive Search Field
       ============================================================ */}
@@ -165,16 +179,19 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
       />
 
       {/* ============================================================
-      Responsive Table
+      Responsive Table - Wider with width:100%
       ============================================================ */}
       <TableContainer
         component={Paper}
         variant="outlined"
         sx={{
+          width: "100%",
           borderRadius: 4,
           borderColor: borderColor,
           overflowX: "auto",
           backgroundColor: cardBg,
+          minHeight: 450, // History minHeight
+          ...cardShadowSx,
           "&::-webkit-scrollbar": {
             height: 6,
           },
@@ -192,6 +209,7 @@ function RecentInteractionsTable({ interactions = [], loading = false }) {
         }}
       >
         <Table sx={{ 
+          width: "100%",
           minWidth: isMobile ? 500 : 650,
           "& .MuiTableCell-root": {
             borderColor: borderColor,
