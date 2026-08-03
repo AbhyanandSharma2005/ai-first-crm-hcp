@@ -565,12 +565,13 @@ function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards - 32px spacing */}
+      {/* KPI Cards - 32px spacing - Now fills available space */}
       <Grid 
         container 
         spacing={commonSpacing.gridSpacing}
         sx={{ 
           mb: sectionSpacing,
+          width: "100%",
         }}
       >
         {cards.map((card, index) => {
@@ -584,16 +585,22 @@ function Dashboard() {
               md={6}
               lg={3}
               key={card.title}
+              sx={{
+                display: "flex",
+              }}
             >
               <Card
                 tabIndex={0}
                 role="article"
                 aria-label={card.ariaLabel}
                 sx={{
+                  width: "100%",
                   height: "100%",
                   borderRadius: 5,
                   border: `1px solid ${theme.palette.divider}`,
                   background: style.background,
+                  display: "flex",
+                  flexDirection: "column",
                   ...cardShadowSx,
                   ...kpiCardAnimation,
                   ...cardFocusSx,
@@ -601,10 +608,13 @@ function Dashboard() {
               >
                 <CardContent
                   sx={{
+                    flex: 1,
                     p: {
                       xs: 3,
                       sm: 3,
                     },
+                    display: "flex",
+                    flexDirection: "column",
                     transition: "all .3s",
                     "@media (prefers-reduced-motion: reduce)": {
                       transition: "none"
@@ -661,45 +671,48 @@ function Dashboard() {
                     </Typography>
                   </Box>
 
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontSize: "0.875rem",
-                      color: "#475569",
-                      mb: 1,
-                    }}
-                  >
-                    {card.title}
-                  </Typography>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontSize: "0.875rem",
+                        color: "#475569",
+                        mb: 1,
+                      }}
+                    >
+                      {card.title}
+                    </Typography>
 
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      mt: 0.75,
-                      mb: 1,
-                      color: theme.palette.text.primary,
-                      fontWeight: 800,
-                      textTransform:
-                        card.title === "Application" ||
-                        card.title === "Environment"
-                          ? "capitalize"
-                          : "none",
-                      fontSize: {
-                        xs: "1.5rem",
-                        sm: "1.75rem",
-                        md: "2rem",
-                        lg: "2.125rem",
-                      },
-                    }}
-                  >
-                    {card.value}
-                  </Typography>
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        mt: 0.75,
+                        mb: 1,
+                        color: theme.palette.text.primary,
+                        fontWeight: 800,
+                        textTransform:
+                          card.title === "Application" ||
+                          card.title === "Environment"
+                            ? "capitalize"
+                            : "none",
+                        fontSize: {
+                          xs: "1.5rem",
+                          sm: "1.75rem",
+                          md: "2rem",
+                          lg: "2.125rem",
+                        },
+                      }}
+                    >
+                      {card.value}
+                    </Typography>
+                  </Box>
 
                   <Typography
                     variant="caption"
                     sx={{
                       fontSize: "0.875rem",
                       color: "#475569",
+                      mt: "auto",
                     }}
                   >
                     {card.description}
