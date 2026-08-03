@@ -230,7 +230,7 @@ function InteractionHistory() {
   });
 
   const headerCellSx = {
-    py: 1.5,
+    py: 2,
     color: "#475569", // Improved contrast
     fontSize: "0.72rem",
     fontWeight: 800,
@@ -255,8 +255,8 @@ function InteractionHistory() {
         <Alert
           severity="error"
           sx={{
-            mb: 2,
-            borderRadius: 2,
+            mb: 3,
+            borderRadius: 3,
             border: `1px solid ${isDark ? '#334155' : '#FFCDD2'}`,
             bgcolor: isDark ? '#1A1A2E' : '#FFEBEE',
             ...focusVisibleSx,
@@ -286,7 +286,7 @@ function InteractionHistory() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          mb: 4,
           flexWrap: "wrap",
           gap: 2,
         }}
@@ -302,7 +302,7 @@ function InteractionHistory() {
           sx={{
             flex: { xs: "1 1 100%", sm: "0 1 300px" },
             "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
+              borderRadius: 3,
               backgroundColor: isDark ? "#0F172A" : "#FFFFFF",
               "& fieldset": {
                 borderColor: borderColor,
@@ -376,7 +376,7 @@ function InteractionHistory() {
           variant="outlined"
           aria-label="Interaction History"
           sx={{
-            borderRadius: 3,
+            borderRadius: 4,
             borderColor: borderColor,
             overflowX: "auto",
             backgroundColor: cardBg,
@@ -425,17 +425,17 @@ function InteractionHistory() {
                     ...focusVisibleSx,
                   }}
                 >
-                  <TableCell sx={{ ...tableCellSx, fontWeight: 600 }}>
+                  <TableCell sx={{ ...tableCellSx, fontWeight: 600, py: 1.75 }}>
                     #{interaction.id}
                   </TableCell>
-                  <TableCell sx={tableCellSx}>
+                  <TableCell sx={{ ...tableCellSx, py: 1.75 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Typography fontWeight={600} color={textPrimary}>
                         {interaction.hcp_name || "—"}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ ...tableCellSx, maxWidth: 200 }}>
+                  <TableCell sx={{ ...tableCellSx, maxWidth: 200, py: 1.75 }}>
                     <Typography
                       variant="body2"
                       sx={{
@@ -449,7 +449,7 @@ function InteractionHistory() {
                       {interaction.summary || "—"}
                     </Typography>
                   </TableCell>
-                  <TableCell sx={tableCellSx}>
+                  <TableCell sx={{ ...tableCellSx, py: 1.75 }}>
                     {interaction.product ? (
                       <Chip
                         label={interaction.product}
@@ -466,10 +466,10 @@ function InteractionHistory() {
                       "—"
                     )}
                   </TableCell>
-                  <TableCell sx={tableCellSx}>
+                  <TableCell sx={{ ...tableCellSx, py: 1.75 }}>
                     {formatDate(interaction.follow_up)}
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" sx={{ py: 1.75 }}>
                     <Tooltip title="Edit interaction">
                       <IconButton
                         color="warning"
@@ -540,7 +540,7 @@ function InteractionHistory() {
         onClose={() => setDeleteDialogOpen(false)}
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: 4,
             backgroundColor: cardBg,
             border: `1px solid ${borderColor}`,
             ...focusVisibleSx,
@@ -558,7 +558,7 @@ function InteractionHistory() {
             Are you sure you want to delete this interaction? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
           <Button
             onClick={() => setDeleteDialogOpen(false)}
             color="inherit"
