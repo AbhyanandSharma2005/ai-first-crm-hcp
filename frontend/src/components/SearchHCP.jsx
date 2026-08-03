@@ -219,6 +219,7 @@ function SearchHCP() {
       role="article"
       aria-label="Search Healthcare Professionals"
       sx={{
+        width: "100%",
         borderRadius: 5,
         border: `1px solid ${borderColor}`,
         backgroundColor: cardBg,
@@ -463,7 +464,7 @@ function SearchHCP() {
         )}
 
         {results.length > 0 && (
-          <Box>
+          <Box sx={{ width: "100%" }}>
             <Box
               sx={{
                 display: "flex",
@@ -502,6 +503,7 @@ function SearchHCP() {
               variant="outlined"
               aria-label="Search Results"
               sx={{
+                width: "100%",
                 borderRadius: 4,
                 borderColor: borderColor,
                 overflowX: "auto",
@@ -516,7 +518,7 @@ function SearchHCP() {
             >
               <Table 
                 aria-label="Healthcare Professional Search Results"
-                sx={{ minWidth: 650 }}
+                sx={{ width: "100%", minWidth: 650 }}
               >
                 <TableHead>
                   <TableRow sx={{ bgcolor: headerBg }}>
