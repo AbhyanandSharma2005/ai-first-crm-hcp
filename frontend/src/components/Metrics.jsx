@@ -118,6 +118,7 @@ function Metrics() {
   return (
     <Card
       sx={{
+        width: "100%",
         borderRadius: 5,
         border: "1px solid #E7ECF5",
         minHeight: 170, // Metrics minHeight
@@ -291,8 +292,8 @@ function Metrics() {
         {loading ? (
           <LoadingCards count={4} />
         ) : metrics ? (
-          <Grid container spacing={commonSpacing.gridSpacing}>
-            <Grid item xs={12} sm={6} lg={4}>
+          <Grid container spacing={commonSpacing.gridSpacing} sx={{ width: "100%" }}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <MetricCard
                 label="Total interactions"
                 value={metrics.total_interactions ?? "—"}
@@ -303,7 +304,7 @@ function Metrics() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} lg={4}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <MetricCard
                 label="Healthcare professionals"
                 value={metrics.total_hcps ?? "—"}
@@ -314,7 +315,7 @@ function Metrics() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} lg={4}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <MetricCard
                 label="Application status"
                 value={metrics.status || "Unknown"}
@@ -326,7 +327,7 @@ function Metrics() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} lg={4}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <MetricCard
                 label="Environment"
                 value={metrics.environment || "—"}
@@ -337,7 +338,7 @@ function Metrics() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} lg={4}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <MetricCard
                 label="API service"
                 value={metrics.api || "Available"}
@@ -348,9 +349,10 @@ function Metrics() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} lg={4}>
+            <Grid item xs={12} sm={6} lg={4} sx={{ display: "flex" }}>
               <Card
                 sx={{
+                  width: "100%",
                   height: "100%",
                   borderRadius: 5,
                   color: "#FFFFFF",
@@ -443,6 +445,7 @@ function MetricCard({
   return (
     <Card
       sx={{
+        width: "100%",
         height: "100%",
         borderRadius: 5,
         border: "1px solid #E7ECF5",
