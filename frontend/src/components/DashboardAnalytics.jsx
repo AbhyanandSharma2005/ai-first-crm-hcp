@@ -46,12 +46,45 @@ import EmptyState from "./EmptyState";
 //-----------------------------------------------------
 
 //-----------------------------------------------------
+// Typography Scale
+// (Step 16 - Better Typography)
+//-----------------------------------------------------
+
+const typographyScale = {
+    pageTitle: { fontSize: "34px" },
+    sectionTitle: { fontSize: "24px" },
+    body: { fontSize: "16px" },
+    caption: { fontSize: "14px" }
+};
+
+//-----------------------------------------------------
+// Chart Sizing
+// (Step 7 - Increase Chart Height)
+//-----------------------------------------------------
+
+const CHART_HEIGHT = 360;
+
+//-----------------------------------------------------
+// Card Sizing
+// (Step 12 - Bigger Cards)
+//-----------------------------------------------------
+
+const cardMinHeights = {
+    metrics: 170,
+    analytics: 450,
+    search: 380,
+    history: 450
+};
+
+//-----------------------------------------------------
 // Reusable Animation Fragments
 // (Phase 13.8.14.7 - Motion Design System)
 //-----------------------------------------------------
 
+// Step 15 — Consistent Shadow: boxShadow: 2, hover boxShadow: 8 + translateY(-4px)
 const cardAnimation = {
     transition: "all 0.3s ease-in-out",
+    boxShadow: 2,
 
     "@media (prefers-reduced-motion: reduce)": {
         transition: "none",
@@ -59,10 +92,8 @@ const cardAnimation = {
     },
 
     "&:hover": {
-        transform: "translateY(-6px) scale(1.01)",
-
-        boxShadow:
-            "0 18px 40px rgba(15,23,42,0.18)"
+        transform: "translateY(-4px)",
+        boxShadow: 8
     }
 };
 
@@ -107,7 +138,6 @@ const standardCardSx = {
     borderRadius: 4,
     border: "1px solid",
     borderColor: "divider",
-    boxShadow: "0 8px 25px rgba(15,23,42,.08)",
     ...cardAnimation,
     ...focusVisibleSx
 };
@@ -1386,7 +1416,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                     background:
                         "linear-gradient(135deg,#0F172A 0%, #1E3A8A 100%)",
                     color: "#ffffff",
-                    boxShadow: "0 12px 30px rgba(15,23,42,0.25)",
+                    boxShadow: 2,
                     border: "1px solid",
                     borderColor: "divider",
                     transition: "all 0.3s ease-in-out",
@@ -1397,7 +1427,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                     "&:hover": {
                         background:
                             "linear-gradient(135deg,#ffffff,#F8FBFF)",
-                        transform: "translateY(-6px)"
+                        transform: "translateY(-4px)",
+                        boxShadow: 8
                     }
                 }}
             >
@@ -1435,7 +1466,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                     variant="h4"
                                     sx={{
                                         fontWeight: 800,
-                                        letterSpacing: "-0.03em"
+                                        letterSpacing: "-0.03em",
+                                        ...typographyScale.pageTitle
                                     }}
                                 >
                                     Dashboard Analytics
@@ -1446,7 +1478,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Typography
                                 variant="body1"
                                 sx={{
-                                    opacity: 0.9
+                                    opacity: 0.9,
+                                    ...typographyScale.body
                                 }}
                             >
                                 AI-powered CRM insights and performance monitoring
@@ -1576,12 +1609,14 @@ function DashboardAnalytics({ onDataLoaded }) {
             </Box>
 
             {/* =========================================================
-            Dashboard Filters
+            Dashboard Filters (Search)
         ========================================================== */}
 
-            <DashboardFilters
-                onApply={setFilters}
-            />
+            <Box sx={{ minHeight: cardMinHeights.search }}>
+                <DashboardFilters
+                    onApply={setFilters}
+                />
+            </Box>
 
             {/* =========================================================
             Empty State
@@ -1620,12 +1655,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                         role="article"
                         aria-label="Analytics Card: Total HCPs"
                         sx={{
-                            height: "100%",
+                            minHeight: cardMinHeights.metrics,
                             borderRadius: 4,
                             background:
                                 "linear-gradient(135deg,#1565C0,#42A5F5)",
                             color: "#fff",
-                            boxShadow: "0 10px 25px rgba(21,101,192,.25)",
+                            boxShadow: 2,
                             border: "1px solid",
                             borderColor: "divider",
                             transition: "all 0.3s ease-in-out",
@@ -1636,7 +1671,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             "&:hover": {
                                 background:
                                     "linear-gradient(135deg,#ffffff,#F8FBFF)",
-                                transform: "translateY(-6px)"
+                                transform: "translateY(-4px)",
+                                boxShadow: 8
                             },
                             ...focusVisibleSx
                         }}
@@ -1648,7 +1684,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 variant="subtitle2"
                                 sx={{
                                     opacity: .9,
-                                    letterSpacing: 1
+                                    letterSpacing: 1,
+                                    ...typographyScale.caption
                                 }}
                             >
                                 TOTAL HCPs
@@ -1672,7 +1709,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    opacity: .9
+                                    opacity: .9,
+                                    ...typographyScale.body
                                 }}
                             >
                                 Registered Healthcare Professionals
@@ -1695,12 +1733,12 @@ function DashboardAnalytics({ onDataLoaded }) {
                         role="article"
                         aria-label="Analytics Card: Total Interactions"
                         sx={{
-                            height: "100%",
+                            minHeight: cardMinHeights.metrics,
                             borderRadius: 4,
                             background:
                                 "linear-gradient(135deg,#00897B,#26A69A)",
                             color: "#fff",
-                            boxShadow: "0 10px 25px rgba(0,137,123,.25)",
+                            boxShadow: 2,
                             border: "1px solid",
                             borderColor: "divider",
                             transition: "all 0.3s ease-in-out",
@@ -1711,7 +1749,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             "&:hover": {
                                 background:
                                     "linear-gradient(135deg,#ffffff,#F8FBFF)",
-                                transform: "translateY(-6px)"
+                                transform: "translateY(-4px)",
+                                boxShadow: 8
                             },
                             ...focusVisibleSx
                         }}
@@ -1723,7 +1762,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 variant="subtitle2"
                                 sx={{
                                     opacity: .9,
-                                    letterSpacing: 1
+                                    letterSpacing: 1,
+                                    ...typographyScale.caption
                                 }}
                             >
                                 TOTAL INTERACTIONS
@@ -1747,7 +1787,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    opacity: .9
+                                    opacity: .9,
+                                    ...typographyScale.body
                                 }}
                             >
                                 Meetings, Calls & Follow-ups Logged
@@ -1780,10 +1821,13 @@ function DashboardAnalytics({ onDataLoaded }) {
                         tabIndex={0}
                         role="article"
                         aria-label="Analytics Card: Top Doctors"
-                        sx={standardCardSx}
+                        sx={{
+                            ...standardCardSx,
+                            minHeight: cardMinHeights.analytics
+                        }}
                     >
                         <CardContent sx={cardContentAnimationSx}>
-                            <TopDoctorsChart />
+                            <TopDoctorsChart height={CHART_HEIGHT} />
                         </CardContent>
                     </Card>
 
@@ -1800,10 +1844,13 @@ function DashboardAnalytics({ onDataLoaded }) {
                     tabIndex={0}
                     role="article"
                     aria-label="Analytics Card: Product Leaderboard"
-                    sx={standardCardSx}
+                    sx={{
+                        ...standardCardSx,
+                        minHeight: cardMinHeights.analytics
+                    }}
                 >
                     <CardContent sx={cardContentAnimationSx}>
-                        <ProductLeaderboard />
+                        <ProductLeaderboard height={CHART_HEIGHT} />
                     </CardContent>
                 </Card>
             </Box>
@@ -1817,10 +1864,13 @@ function DashboardAnalytics({ onDataLoaded }) {
                     tabIndex={0}
                     role="article"
                     aria-label="Analytics Card: Doctor Activity Heatmap"
-                    sx={standardCardSx}
+                    sx={{
+                        ...standardCardSx,
+                        minHeight: cardMinHeights.analytics
+                    }}
                 >
                     <CardContent sx={cardContentAnimationSx}>
-                        <DoctorHeatmap />
+                        <DoctorHeatmap height={CHART_HEIGHT} />
                     </CardContent>
                 </Card>
             </Box>
@@ -1835,7 +1885,8 @@ function DashboardAnalytics({ onDataLoaded }) {
                 sx={{
                     color: "#0F172A",
                     mb: 2,
-                    mt: standardSectionSpacing
+                    mt: standardSectionSpacing,
+                    ...typographyScale.sectionTitle
                 }}
             >
                 Analytics Overview
@@ -1863,7 +1914,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                         aria-label="Analytics Card: Product Distribution"
                         sx={{
                             ...standardCardSx,
-                            height: "100%",
+                            minHeight: cardMinHeights.analytics,
                             overflow: "hidden"
                         }}
                     >
@@ -1882,7 +1933,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Typography
                                     variant="h6"
                                     fontWeight={700}
-                                    sx={{ mb: 2 }}
+                                    sx={{ mb: 2, ...typographyScale.sectionTitle }}
                                 >
                                     Product Distribution
                                 </Typography>
@@ -1911,6 +1962,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <ProductPieChart
                                 products={stats.products}
                                 colors={CHART_COLORS}
+                                height={CHART_HEIGHT}
                             />
 
                         </CardContent>
@@ -1935,7 +1987,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                         aria-label="Analytics Card: Monthly Interaction Trend"
                         sx={{
                             ...standardCardSx,
-                            height: "100%",
+                            minHeight: cardMinHeights.analytics,
                             overflow: "hidden"
                         }}
                     >
@@ -1954,7 +2006,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 <Typography
                                     variant="h6"
                                     fontWeight={700}
-                                    sx={{ mb: 2 }}
+                                    sx={{ mb: 2, ...typographyScale.sectionTitle }}
                                 >
                                     Monthly Interaction Trend
                                 </Typography>
@@ -1983,6 +2035,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                             <InteractionTrend
                                 monthlyData={monthlyData}
                                 colors={CHART_COLORS}
+                                height={CHART_HEIGHT}
                             />
 
                         </CardContent>
@@ -2007,8 +2060,6 @@ function DashboardAnalytics({ onDataLoaded }) {
                     background:
                         "linear-gradient(135deg,#EEF6FF,#F8FBFF)",
                     border: "1px solid #D6E4FF",
-                    boxShadow:
-                        "0 6px 18px rgba(21,101,192,.08)",
                     ...cardAnimation,
                     ...focusVisibleSx
                 }}
@@ -2029,7 +2080,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                sx={{ color: "#475569" }}
+                                sx={{ color: "#475569", ...typographyScale.caption }}
                             >
                                 Active Products
                             </Typography>
@@ -2052,7 +2103,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                sx={{ color: "#475569" }}
+                                sx={{ color: "#475569", ...typographyScale.caption }}
                             >
                                 Latest Update
                             </Typography>
@@ -2075,7 +2126,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
                             <Typography
                                 variant="subtitle2"
-                                sx={{ color: "#475569" }}
+                                sx={{ color: "#475569", ...typographyScale.caption }}
                             >
                                 API Response Time
                             </Typography>
@@ -2097,7 +2148,7 @@ function DashboardAnalytics({ onDataLoaded }) {
 
             </Card>
             {/* =========================================================
-            Recent Interactions
+            Recent Interactions (History)
         ========================================================== */}
 
             <Card
@@ -2106,6 +2157,7 @@ function DashboardAnalytics({ onDataLoaded }) {
                 aria-label="Analytics Card: Recent Interactions"
                 sx={{
                     ...standardCardSx,
+                    minHeight: cardMinHeights.history,
                     mb: standardSectionSpacing,
                     overflow: "hidden"
                 }}
@@ -2128,13 +2180,14 @@ function DashboardAnalytics({ onDataLoaded }) {
                                 variant="subtitle2"
                                 fontWeight={700}
                                 color="#0F172A"
+                                sx={typographyScale.caption}
                             >
                                 Recent Interactions
                             </Typography>
 
                             <Typography
                                 variant="body2"
-                                sx={{ color: "#475569" }}
+                                sx={{ color: "#475569", ...typographyScale.body }}
                             >
                                 Latest 5 doctor interactions recorded in the CRM.
                             </Typography>
