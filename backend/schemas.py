@@ -145,10 +145,21 @@ class InteractionBase(BaseModel):
 
 
 class InteractionCreate(InteractionBase):
+    """
+    Schema for creating a new interaction.
+    Includes session_id for tracking conversation context.
+    """
+
+    session_id: str = Field(
+        ...,
+        description="Session ID for tracking conversation context",
+        examples=["frontend-session-12345"]
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
+                "session_id": "frontend-session-12345",
                 "hcp_name": "Dr Sharma",
                 "specialization": "Cardiology",
                 "hospital": "Apollo Hospital",
@@ -176,12 +187,14 @@ class InteractionUpdate(BaseModel):
     outcome: Optional[str] = None
     follow_up: Optional[date] = None
     notes: Optional[str] = None
+    session_id: Optional[str] = None
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "summary": "Doctor requested latest clinical study.",
-                "follow_up": "2026-08-20"
+                "follow_up": "2026-08-20",
+                "session_id": "frontend-session-12345"
             }
         }
     )
@@ -301,6 +314,12 @@ class DoctorHeatmapResponse(BaseModel):
 # ==========================================================
 
 class ChatRequest(BaseModel):
+
+    session_id: str = Field(
+        ...,
+        description="Session ID for conversation context",
+        examples=["frontend-session-12345"]
+    )
 
     message: str = Field(
         ...,
@@ -434,13 +453,20 @@ class EditInteractionRequest(BaseModel):
         examples=["2026-08-25"]
     )
 
+    session_id: Optional[str] = Field(
+        default=None,
+        description="Session ID for tracking conversation context",
+        examples=["frontend-session-12345"]
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "interaction_id": 15,
                 "summary": "Doctor requested the latest brochure.",
                 "product": "CardioX",
-                "follow_up": "2026-08-25"
+                "follow_up": "2026-08-25",
+                "session_id": "frontend-session-12345"
             }
         }
     )
