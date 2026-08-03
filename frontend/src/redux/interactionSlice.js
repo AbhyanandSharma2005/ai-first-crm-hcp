@@ -32,9 +32,19 @@ export const sendChatMessage = createAsyncThunk(
  */
 export const submitInteraction = createAsyncThunk(
   "interaction/submit",
-  async (formData, { rejectWithValue }) => {
+  async (formData, { rejectWithValue, getState }) => {
     try {
-      const response = await API.post("/interaction/", formData);
+      // Get the session ID from the Redux state
+      const state = getState();
+      const session_id = state.interaction.sessionId;
+      
+      // Include session_id with the form data
+      const payload = {
+        session_id: session_id,
+        ...formData,
+      };
+      
+      const response = await API.post("/interaction/", payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -58,6 +68,52 @@ export const fetchInteractions = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch interactions."
+      );
+    }
+  }
+);
+
+/**
+ * Update an existing interaction.
+ * PUT /interaction/{id}
+ */
+export const updateInteraction = createAsyncThunk(
+  "interaction/update",
+  async ({ id, formData }, { rejectWithValue, getState }) => {
+    try {
+      // Get the session ID from the Redux state
+      const state = getState();
+      const session_id = state.interaction.sessionId;
+      
+      // Include session_id with the update data
+      const payload = {
+        session_id: session_id,
+        ...formData,
+      };
+      
+      const response = await API.put(`/interaction/${id}`, payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update interaction."
+      );
+    }
+  }
+);
+
+/**
+ * Delete an interaction.
+ * DELETE /interaction/{id}
+ */
+export const deleteInteraction = createAsyncThunk(
+  "interaction/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await API.delete(`/interaction/${id}`);
+      return { id, ...response.data };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete interaction."
       );
     }
   }
@@ -134,6 +190,9 @@ const interactionSlice = createSlice({
     clearFormMessages(state) {
       state.formSuccess = null;
       state.formError = null;
+    },
+    setSessionId(state, action) {
+      state.sessionId = action.payload;
     },
   },
 
@@ -212,6 +271,54 @@ const interactionSlice = createSlice({
         state.interactionsLoading = false;
         state.interactionsError = action.payload;
       });
+
+    // updateInteraction
+    builder
+      .addCase(updateInteraction.pending, (state) => {
+        state.formLoading = true;
+        state.formError = null;
+        state.formSuccess = null;
+      })
+      .addCase(updateInteraction.fulfilled, (state, action) => {
+        state.formLoading = false;
+        state.formSuccess =
+          action.payload?.message || "Interaction updated successfully!";
+        // Update the interaction in the list if it exists
+        const updatedInteraction = action.payload?.data;
+        if (updatedInteraction) {
+          const index = state.interactions.findIndex(
+            (item) => item.id === updatedInteraction.id
+          );
+          if (index !== -1) {
+            state.interactions[index] = updatedInteraction;
+          }
+        }
+      })
+      .addCase(updateInteraction.rejected, (state, action) => {
+        state.formLoading = false;
+        state.formError = action.payload;
+      });
+
+    // deleteInteraction
+    builder
+      .addCase(deleteInteraction.pending, (state) => {
+        state.interactionsLoading = true;
+        state.interactionsError = null;
+      })
+      .addCase(deleteInteraction.fulfilled, (state, action) => {
+        state.interactionsLoading = false;
+        // Remove the deleted interaction from the list
+        const deletedId = action.payload?.id;
+        if (deletedId) {
+          state.interactions = state.interactions.filter(
+            (item) => item.id !== deletedId
+          );
+        }
+      })
+      .addCase(deleteInteraction.rejected, (state, action) => {
+        state.interactionsLoading = false;
+        state.interactionsError = action.payload;
+      });
   },
 });
 
@@ -221,6 +328,7 @@ export const {
   setFormField,
   resetForm,
   clearFormMessages,
+  setSessionId,
 } = interactionSlice.actions;
 
 export default interactionSlice.reducer;
