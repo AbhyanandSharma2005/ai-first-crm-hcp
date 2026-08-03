@@ -50,6 +50,15 @@ const cardFocusSx = {
   }
 };
 
+// Consistent card shadow
+const cardShadowSx = {
+  boxShadow: 2,
+  "&:hover": {
+    boxShadow: 8,
+    transform: "translateY(-4px)"
+  }
+};
+
 function SectionHeader({ icon, title, description, color }) {
   const theme = useTheme();
   const { mode } = useCustomTheme();
@@ -74,6 +83,7 @@ function SectionHeader({ icon, title, description, color }) {
           borderRadius: 4,
           bgcolor: isDark ? `${color}30` : `${color}16`,
           color,
+          ...cardShadowSx,
           "&:focus-visible": {
             outline: "3px solid #1976D2",
             outlineOffset: 2,
@@ -89,7 +99,7 @@ function SectionHeader({ icon, title, description, color }) {
           variant="h6" 
           fontWeight={700} 
           color={isDark ? "#F1F5F9" : "#172033"}
-          sx={{ mb: 0.5 }}
+          sx={{ mb: 0.5, fontSize: "1.25rem" }}
         >
           {title}
         </Typography>
@@ -98,7 +108,8 @@ function SectionHeader({ icon, title, description, color }) {
           variant="body2" 
           sx={{ 
             mt: 0.25,
-            color: "#475569" // Improved contrast
+            color: "#475569",
+            fontSize: "0.875rem"
           }}
         >
           {description}
@@ -139,17 +150,16 @@ function LogInteraction() {
   const chipColor = isDark ? "#60A5FA" : "#2855D9";
   const cardBg = isDark ? "#1E293B" : "#FFFFFF";
 
+  // Uniform section spacing - 32px between sections
+  const sectionSpacing = 4; // 32px
+
   const sectionCardSx = {
     height: "100%",
     borderRadius: 5,
     border: `1px solid ${borderColor}`,
-    boxShadow: 1,
     overflow: "hidden",
     backgroundColor: cardBg,
-    transition: "0.25s",
-    "&:hover": {
-      boxShadow: 4,
-    },
+    ...cardShadowSx,
     ...cardFocusSx,
   };
 
@@ -222,8 +232,8 @@ function LogInteraction() {
         p: commonSpacing.pagePadding,
       }}
     >
-      {/* Page Header */}
-      <Box sx={{ mb: 5 }}>
+      {/* Page Header - 32px spacing */}
+      <Box sx={{ mb: sectionSpacing }}>
         <Stack
           direction="row"
           alignItems="center"
@@ -256,7 +266,7 @@ function LogInteraction() {
             color: textPrimary,
             ...commonTypography.pageTitle,
             fontSize: { xs: "1.75rem", sm: "2rem", md: "2.125rem" },
-            mb: 1,
+            mb: 0.5,
           }}
         >
           Log an interaction
@@ -268,7 +278,8 @@ function LogInteraction() {
             mt: 0.5, 
             maxWidth: 680, 
             lineHeight: 1.8,
-            color: "#475569" // Improved contrast
+            color: "#475569",
+            fontSize: "1rem"
           }}
         >
           Capture meaningful HCP conversations, use AI to structure insights,
@@ -276,13 +287,13 @@ function LogInteraction() {
         </Typography>
       </Box>
 
-      {/* Hero Card - Enhanced with larger padding */}
+      {/* Hero Card - 32px spacing */}
       <Card
         tabIndex={0}
         role="article"
         aria-label="Workflow overview"
         sx={{
-          mb: 5,
+          mb: sectionSpacing,
           borderRadius: 5,
           overflow: "hidden",
           color: "#FFFFFF",
