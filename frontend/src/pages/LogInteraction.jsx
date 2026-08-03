@@ -61,17 +61,17 @@ function SectionHeader({ icon, title, description, color }) {
         display: "flex",
         alignItems: "flex-start",
         gap: 1.5,
-        mb: 3,
+        mb: 3.5,
       }}
     >
       <Box
         sx={{
-          width: 44,
-          height: 44,
+          width: 48,
+          height: 48,
           display: "grid",
           placeItems: "center",
           flexShrink: 0,
-          borderRadius: 3,
+          borderRadius: 4,
           bgcolor: isDark ? `${color}30` : `${color}16`,
           color,
           "&:focus-visible": {
@@ -85,7 +85,12 @@ function SectionHeader({ icon, title, description, color }) {
       </Box>
 
       <Box>
-        <Typography variant="h6" fontWeight={700} color={isDark ? "#F1F5F9" : "#172033"}>
+        <Typography 
+          variant="h6" 
+          fontWeight={700} 
+          color={isDark ? "#F1F5F9" : "#172033"}
+          sx={{ mb: 0.5 }}
+        >
           {title}
         </Typography>
 
@@ -136,7 +141,7 @@ function LogInteraction() {
 
   const sectionCardSx = {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 5,
     border: `1px solid ${borderColor}`,
     boxShadow: 1,
     overflow: "hidden",
@@ -218,12 +223,12 @@ function LogInteraction() {
       }}
     >
       {/* Page Header */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 5 }}>
         <Stack
           direction="row"
           alignItems="center"
           spacing={1}
-          sx={{ mb: 1.25 }}
+          sx={{ mb: 1.5 }}
         >
           <Chip
             label="HCP ACTIVITY"
@@ -251,6 +256,7 @@ function LogInteraction() {
             color: textPrimary,
             ...commonTypography.pageTitle,
             fontSize: { xs: "1.75rem", sm: "2rem", md: "2.125rem" },
+            mb: 1,
           }}
         >
           Log an interaction
@@ -261,7 +267,7 @@ function LogInteraction() {
           sx={{ 
             mt: 0.5, 
             maxWidth: 680, 
-            lineHeight: 1.7,
+            lineHeight: 1.8,
             color: "#475569" // Improved contrast
           }}
         >
@@ -276,8 +282,8 @@ function LogInteraction() {
         role="article"
         aria-label="Workflow overview"
         sx={{
-          mb: 4,
-          borderRadius: 4,
+          mb: 5,
+          borderRadius: 5,
           overflow: "hidden",
           color: "#FFFFFF",
           background:
@@ -286,14 +292,14 @@ function LogInteraction() {
           ...cardFocusSx,
         }}
       >
-        <CardContent sx={{ p: { xs: 3, md: 3.5 } }}>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 0.75 }}>
+        <CardContent sx={{ p: { xs: 3.5, md: 4.5 } }}>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
             A better workflow for every field visit
           </Typography>
 
           <Typography
             variant="body2"
-            sx={{ color: "rgba(255,255,255,.82)", maxWidth: 780 }}
+            sx={{ color: "rgba(255,255,255,.82)", maxWidth: 780, lineHeight: 1.8 }}
           >
             Start with the structured form for complete records, or ask the AI
             assistant to help turn unstructured notes into useful CRM data.
@@ -311,7 +317,7 @@ function LogInteraction() {
             aria-label="Structured interaction form"
             sx={sectionCardSx}
           >
-            <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <SectionHeader
                 icon={<EditNoteOutlinedIcon />}
                 title="Structured interaction form"
@@ -344,7 +350,7 @@ function LogInteraction() {
             aria-label="AI conversation assistant"
             sx={sectionCardSx}
           >
-            <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <SectionHeader
                 icon={<AutoAwesomeOutlinedIcon />}
                 title="AI conversation assistant"
@@ -376,7 +382,7 @@ function LogInteraction() {
             aria-label="Interaction history"
             sx={sectionCardSx}
           >
-            <CardContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <SectionHeader
                 icon={<HistoryOutlinedIcon />}
                 title="Interaction history"
