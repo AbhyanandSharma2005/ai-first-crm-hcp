@@ -13,12 +13,12 @@
 
 export const layout = {
   /**
-   * Sidebar width
+   * Sidebar width - increased from 264 to 280 for better professionalism
    */
   drawerWidth: 280,
 
   /**
-   * Header height
+   * Header height - increased from 64 to 72 for more breathing room
    */
   headerHeight: 72,
 
