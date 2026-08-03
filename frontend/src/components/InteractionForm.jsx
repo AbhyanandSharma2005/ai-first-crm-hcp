@@ -13,6 +13,19 @@ import {
 } from "@mui/material";
 import { submitInteraction, clearFormMessages } from "../redux/interactionSlice";
 
+// Fixes a browser paint/repaint glitch where the date input's
+// shrunk label overlaps the native dd-mm-yyyy placeholder until
+// something (like :hover on a parent card) forces a repaint.
+// translateZ(0) promotes the field to its own compositing layer
+// so it paints correctly on first render, independent of any
+// parent hover/transform animation.
+const dateFieldSx = {
+  transform: "translateZ(0)",
+  "& .MuiInputBase-root": {
+    transform: "translateZ(0)",
+  },
+};
+
 function InteractionForm() {
   const dispatch = useDispatch();
   const { formLoading, formSuccess, formError } = useSelector(
@@ -144,6 +157,7 @@ function InteractionForm() {
                 label="Interaction Date"
                 InputLabelProps={{ shrink: true }}
                 disabled={formLoading}
+                sx={dateFieldSx}
               />
             )}
           />
@@ -243,6 +257,7 @@ function InteractionForm() {
                 label="Follow-up Date"
                 InputLabelProps={{ shrink: true }}
                 disabled={formLoading}
+                sx={dateFieldSx}
               />
             )}
           />
